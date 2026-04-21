@@ -1,0 +1,51 @@
+{
+  "client": "INDIGO ENTERTAINMENT",
+  "event_title": "JUARA BACKSTAGE SIMULATION",
+  "event_date": "20-22 JUNI 2026",
+  "venue": "Gelora Bung Karno - Backstage Area",
+  "city": "Jakarta",
+  "quot_number": "042/QUOT/JBBS/VI/2026",
+  "signatory": "Eka Marutha Yuswardana",
+  "ppn_rate": 0.12,
+  "asf_rate": 0.10,
+  "zones": [
+    {
+      "name": "Backstage / Artist Village",
+      "sections": [
+        {
+          "name": "Artist A (VVIP)",
+          "items": [
+            { "item": "Artist Tent Standard", "qty": 1 },
+            { "item": "Sofa", "qty": 4, "price": 450000, "spec": "Premium Black Leather" },
+            { "item": "Meals", "qty": 10, "freq": 3, "dur": "time" }
+          ]
+        },
+        {
+          "name": "Artist B (Standard)",
+          "items": [
+            { "item": "Artist Tent Standard", "qty": 1 },
+            { "item": "Meals", "qty": 5, "freq": 2, "dur": "time" }
+          ]
+        },
+        {
+          "name": "Medical Support Site 1",
+          "items": [
+            { "item": "Medical Unit Standard", "qty": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Main Entrance Gate",
+      "sections": [
+        {
+          "name": "Entry Point 1",
+          "items": [
+            { "item": "Entrance Gate System", "qty": 1 },
+            { "item": "Project Manager", "qty": 1, "spec": "Dedicated Security PIC" }
+          ]
+        }
+      ]
+    }
+  ]
+}

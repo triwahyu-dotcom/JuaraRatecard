@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotation - OCBC Disney Orchestra</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 10px;
+            color: #1a1a1a;
+            background: #f0f0f0;
+            line-height: 1.4;
+        }
+        
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 20mm 15mm 25mm 15mm;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        
+        @media print {
+            body { background: white; }
+            .page {
+                margin: 0;
+                padding: 15mm;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            .page:last-child { page-break-after: avoid; }
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .header-left { flex: 1; }
+        .header-right {
+            text-align: right;
+            min-width: 200px;
+        }
+        .header-info {
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+        .header-info td {
+            padding: 1px 5px 1px 0;
+            vertical-align: top;
+        }
+        .header-info .label {
+            font-weight: 700;
+            min-width: 90px;
+        }
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+        .logo::first-letter {
+            color: #e53935;
+        }
+        .to-info, .quot-num {
+            font-size: 9px;
+            margin-top: 3px;
+        }
+        
+        /* Title */
+        .page-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 900;
+            margin: 15px 0 20px;
+            letter-spacing: 1px;
+        }
+        
+        /* Main Table */
+        .quot-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin-bottom: 10px;
+        }
+        .quot-table thead th {
+            background: #1a1a1a;
+            color: white;
+            font-weight: 700;
+            padding: 6px 5px;
+            text-align: center;
+            font-size: 8.5px;
+            text-transform: uppercase;
+        }
+        .quot-table tbody td {
+            padding: 4px 5px;
+            border-bottom: 1px solid #e5e5e5;
+            vertical-align: top;
+        }
+        .quot-table .col-no { width: 30px; text-align: center; }
+        .quot-table .col-item { min-width: 140px; }
+        
+        .section-header td {
+            background: #f5f5f5;
+            font-weight: 700;
+            border-bottom: 2px solid #ccc;
+        }
+        .subsection-header td {
+            background: #fafafa;
+            font-weight: 600;
+            font-style: italic;
+            padding-left: 15px !important;
+        }
+        .category-header td {
+            font-weight: 600;
+            padding-left: 20px !important;
+        }
+        
+        .item-name { text-align: left; }
+        .item-name.indent-1 { padding-left: 25px !important; }
+        .item-name.indent-2 { padding-left: 40px !important; font-size: 8px; color: #666; }
+        .spec { color: #555; font-size: 8px; max-width: 130px; }
+        .num { text-align: right; white-space: nowrap; }
+        .unit { text-align: center; color: #555; font-size: 8px; }
+        
+        /* Totals */
+        .totals-table {
+            margin-left: auto;
+            border-collapse: collapse;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        .totals-table td {
+            padding: 3px 10px;
+            font-size: 9.5px;
+        }
+        .totals-label {
+            text-align: right;
+            font-weight: 600;
+        }
+        .totals-value {
+            text-align: right;
+            font-weight: 600;
+            min-width: 110px;
+            border-bottom: 1px solid #ddd;
+        }
+        .total-row td {
+            font-weight: 900;
+            font-size: 11px;
+            border-top: 2px solid #1a1a1a;
+            border-bottom: 2px solid #1a1a1a;
+        }
+        
+        /* Notes */
+        .notes {
+            font-size: 8.5px;
+            margin-top: 15px;
+            color: #444;
+        }
+        .notes ul {
+            margin-left: 15px;
+            margin-top: 3px;
+        }
+        .notes li { margin-bottom: 2px; }
+        
+        /* Signatory */
+        .signatory {
+            margin-top: 30px;
+            font-size: 9.5px;
+        }
+        .signature-space {
+            height: 50px;
+        }
+        .signer-name {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">SUMMARY QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item" colspan="2">ITEM / TASK</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>A</td>
+                <td colspan="8"><strong>SUMMARY</strong></td>
+            </tr>
+            <tr>
+        <td class="num">1</td>
+        <td>SAFETY & PERMIT</td>
+        <td></td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">191.650.000</td>
+        <td class="num">191.650.000</td>
+    </tr><tr>
+        <td class="num">2</td>
+        <td>VENUE - SETUP - SYSTEM</td>
+        <td></td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">417.680.000</td>
+        <td class="num">417.680.000</td>
+    </tr><tr>
+        <td class="num">3</td>
+        <td>COMMITTEE</td>
+        <td></td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">190.450.000</td>
+        <td class="num">190.450.000</td>
+    </tr><tr>
+        <td class="num">4</td>
+        <td>TALENT</td>
+        <td></td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">70.000.000</td>
+        <td class="num">70.000.000</td>
+    </tr><tr>
+        <td class="num">5</td>
+        <td>TRANSPORTASI</td>
+        <td></td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">4.800.000</td>
+        <td class="num">4.800.000</td>
+    </tr><tr>
+        <td class="num">6</td>
+        <td>AKOMODASI</td>
+        <td></td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">10.000.000</td>
+        <td class="num">10.000.000</td>
+    </tr>
+        </tbody>
+    </table>
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">884.580.000</td></tr>
+        <tr><td class="totals-label">Special Discount</td><td class="totals-value">-</td></tr>
+        <tr><td class="totals-label">Cost After Discount</td><td class="totals-value">884.580.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">789.803.571</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">94.776.428</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">884.579.999</td></tr>
+    </table>
+    <div class="notes"><strong>Notes :</strong><ul>
+        <li>Tidak termasuk pengurusan Impesariat Artist Luar Negeri</li>
+    </ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+</div>
+
+    
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item">ITEM / TASK</th>
+                <th>SPECIFICATION</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>A</td>
+                <td colspan="8"><strong>SAFETY & PERMIT</strong></td>
+            </tr>
+            <tr>
+        <td></td>
+        <td class="item-name ">Ambulance</td>
+        <td class="spec">Standby unit</td>
+        <td class="num">2</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">complimentary</td>
+        <td class="num">complimentary</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name ">DAMKAR</td>
+        <td class="spec">Standby unit</td>
+        <td class="num">1</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">complimentary</td>
+        <td class="num">complimentary</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name ">Team Medis</td>
+        <td class="spec">Team Medis Incld Mobil Ambulance & Peralatan Keselamatan</td>
+        <td class="num">1</td>
+        <td class="unit">team</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">1.650.000</td>
+        <td class="num">1.650.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name ">Ijin Keramaian</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">lot</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">130.000.000</td>
+        <td class="num">130.000.000</td>
+    </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">MABES POLRI</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">POLDA</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">POLRES</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">POLSEK</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">Lingkungan</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+        <td></td>
+        <td class="item-name ">Personil Pengamanan</td>
+        <td class="spec">incld. Meals</td>
+        <td class="num">240</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">250.000</td>
+        <td class="num">60.000.000</td>
+    </tr>
+        </tbody>
+    </table>
+    
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">191.650.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">171.116.071</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">20.533.928</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">191.649.999</td></tr>
+    </table>
+    <div class="notes"><strong>NOTE :</strong><ul><li>Tidak termasuk pengurusan Impesariat Artist Luar Negeri</li><li>240 personil PAM dihitung dari 3% dari 8000 Audiens yang akan hadir</li></ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+    
+</div>
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item">ITEM / TASK</th>
+                <th>SPECIFICATION</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>B</td>
+                <td colspan="8"><strong>VENUE - SETUP - SYSTEM</strong></td>
+            </tr>
+            <tr class="subsection-header"><td></td><td colspan="8"><strong>Outdoor Area</strong></td></tr><tr class="category-header"><td></td><td colspan="8"><strong>Parking Area</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Portable Toilet</td>
+        <td class="spec">Toilet Box Single Cabin</td>
+        <td class="num">4</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">2.750.000</td>
+        <td class="num">11.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Perimeter & Gate</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Standard Baricade</td>
+        <td class="spec">Barikade Hitam tinggi 1,2 m</td>
+        <td class="num">200</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">35.000</td>
+        <td class="num">7.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Queue Line Bludru</td>
+        <td class="spec"></td>
+        <td class="num">50</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">125.000</td>
+        <td class="num">6.250.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Totem Signage</td>
+        <td class="spec">dim.122x244</td>
+        <td class="num">5</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">2.100.000</td>
+        <td class="num">10.500.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Tent & Covering</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Sarnavil 3x3</td>
+        <td class="spec">tanpa flooring</td>
+        <td class="num">6</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">500.000</td>
+        <td class="num">3.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Sarnavil 5x5</td>
+        <td class="spec">tanpa flooring</td>
+        <td class="num">4</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">750.000</td>
+        <td class="num">3.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Flooring Karpet</td>
+        <td class="spec">H: 10 cm, per m2</td>
+        <td class="num">100</td>
+        <td class="unit">m2</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">40.000</td>
+        <td class="num">4.000.000</td>
+    </tr><tr class="subsection-header"><td></td><td colspan="8"><strong>Indoor Area</strong></td></tr><tr class="category-header"><td></td><td colspan="8"><strong>Ballroom Area</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Covering Flooring Stage</td>
+        <td class="spec">multiplex fin.mellaminto</td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">110.000.000</td>
+        <td class="num">110.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">LED Screen</td>
+        <td class="spec">P2.6 dim.14x8 incl.Rehearsal H-1</td>
+        <td class="num">112</td>
+        <td class="unit">m2</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">600.000</td>
+        <td class="num">67.200.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">LED Wing</td>
+        <td class="spec">2 unit | dim. 5x3 hanging truss</td>
+        <td class="num">30</td>
+        <td class="unit">m2</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">600.000</td>
+        <td class="num">18.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Back Stage Area</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Futura Chair</td>
+        <td class="spec">incl. cover</td>
+        <td class="num">80</td>
+        <td class="unit">unit</td>
+        <td class="num">2</td>
+        <td class="unit">day</td>
+        <td class="num">18.000</td>
+        <td class="num">2.880.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Square Table</td>
+        <td class="spec"></td>
+        <td class="num">30</td>
+        <td class="unit">unit</td>
+        <td class="num">2</td>
+        <td class="unit">day</td>
+        <td class="num">120.000</td>
+        <td class="num">7.200.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Electricity</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Genset 100 kVA</td>
+        <td class="spec">12 hours, silent type, incl. panel</td>
+        <td class="num">2</td>
+        <td class="unit">unit</td>
+        <td class="num">2</td>
+        <td class="unit">day</td>
+        <td class="num">4.500.000</td>
+        <td class="num">18.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Instalasi listrik tenda</td>
+        <td class="spec">2A</td>
+        <td class="num">20</td>
+        <td class="unit">titik</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">150.000</td>
+        <td class="num">3.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Cable canal</td>
+        <td class="spec">per meter, incl. covering</td>
+        <td class="num">350</td>
+        <td class="unit">m</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">75.000</td>
+        <td class="num">26.250.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Sound System</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Sound System 25000 Watt</td>
+        <td class="spec">Full range + subwoofer</td>
+        <td class="num">1</td>
+        <td class="unit">set</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">20.000.000</td>
+        <td class="num">20.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Lighting Support</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Par LED</td>
+        <td class="spec"></td>
+        <td class="num">24</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">150.000</td>
+        <td class="num">3.600.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Par Can</td>
+        <td class="spec"></td>
+        <td class="num">12</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">400.000</td>
+        <td class="num">4.800.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Moving Head Wash 1200w</td>
+        <td class="spec">1200 watt</td>
+        <td class="num">16</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">1.500.000</td>
+        <td class="num">24.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Follow Spot</td>
+        <td class="spec">2500 watt</td>
+        <td class="num">2</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">2.000.000</td>
+        <td class="num">4.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Multimedia Support</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Switcher + Monitor</td>
+        <td class="spec">Ediroll v8</td>
+        <td class="num">1</td>
+        <td class="unit">package</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">15.000.000</td>
+        <td class="num">15.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Rent Video Camera + Triport</td>
+        <td class="spec">DV Cam incld editing</td>
+        <td class="num">4</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">5.000.000</td>
+        <td class="num">20.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Special FX</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Co2</td>
+        <td class="spec">incl. tabung cadangan</td>
+        <td class="num">4</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">3.500.000</td>
+        <td class="num">14.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Confetti Canon</td>
+        <td class="spec"></td>
+        <td class="num">6</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">project</td>
+        <td class="num">2.500.000</td>
+        <td class="num">15.000.000</td>
+    </tr>
+        </tbody>
+    </table>
+    
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">417.680.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">372.928.571</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">44.751.428</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">417.680.000</td></tr>
+    </table>
+    <div class="notes"><strong>NOTE :</strong><ul><li>Offering Validations:</li><li>The offer price above valid as long as the term specified</li></ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+    
+</div>
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item">ITEM / TASK</th>
+                <th>SPECIFICATION</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>C</td>
+                <td colspan="8"><strong>COMMITTEE</strong></td>
+            </tr>
+            <tr class="category-header"><td></td><td colspan="8"><strong>Project Management</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Project Manager</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">12.000.000</td>
+        <td class="num">12.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Project Officer</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">8.000.000</td>
+        <td class="num">8.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Head Production</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">8.000.000</td>
+        <td class="num">8.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Production Staff</td>
+        <td class="spec"></td>
+        <td class="num">2</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">4.000.000</td>
+        <td class="num">8.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Logistics Staff</td>
+        <td class="spec"></td>
+        <td class="num">2</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">2.500.000</td>
+        <td class="num">5.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Head Floor</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">4.500.000</td>
+        <td class="num">4.500.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Floor Staff</td>
+        <td class="spec"></td>
+        <td class="num">5</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">650.000</td>
+        <td class="num">3.250.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Seating Arrangement</td>
+        <td class="spec"></td>
+        <td class="num">10</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">650.000</td>
+        <td class="num">6.500.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Show Management</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Show Management Package</td>
+        <td class="spec">Incld GR D-1 & D-Day</td>
+        <td class="num">1</td>
+        <td class="unit">pckg</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">42.500.000</td>
+        <td class="num">42.500.000</td>
+    </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">Show Director</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">Stage Manager</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">Stage Crew</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">MC Reminder</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">Music Jockey</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+                <td></td>
+                <td class="item-name indent-2">Visual Jockey</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">LO Talent</td>
+        <td class="spec"></td>
+        <td class="num">5</td>
+        <td class="unit">prs</td>
+        <td class="num">2</td>
+        <td class="unit">day</td>
+        <td class="num">1.500.000</td>
+        <td class="num">15.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Safety & Security</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Safety & Security Supervisor</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">7.000.000</td>
+        <td class="num">7.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Internal Guard Coordinator</td>
+        <td class="spec"></td>
+        <td class="num">4</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">2.000.000</td>
+        <td class="num">8.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Internal Guard Loading & Unloading</td>
+        <td class="spec"></td>
+        <td class="num">3</td>
+        <td class="unit">prs</td>
+        <td class="num">2</td>
+        <td class="unit">shift</td>
+        <td class="num">450.000</td>
+        <td class="num">2.700.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Internal Guard D-day</td>
+        <td class="spec"></td>
+        <td class="num">30</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">450.000</td>
+        <td class="num">13.500.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Crowd Control</td>
+        <td class="spec"></td>
+        <td class="num">20</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">450.000</td>
+        <td class="num">9.000.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Parking Crew</td>
+        <td class="spec"></td>
+        <td class="num">10</td>
+        <td class="unit">prs</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">450.000</td>
+        <td class="num">4.500.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Equipment</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">HT</td>
+        <td class="spec"></td>
+        <td class="num">30</td>
+        <td class="unit">unit</td>
+        <td class="num">1</td>
+        <td class="unit">day</td>
+        <td class="num">40.000</td>
+        <td class="num">1.200.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Clearcomm</td>
+        <td class="spec">for show specification</td>
+        <td class="num">8</td>
+        <td class="unit">unit</td>
+        <td class="num">2</td>
+        <td class="unit">day</td>
+        <td class="num">300.000</td>
+        <td class="num">4.800.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Meals & Consumables</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Meals GR</td>
+        <td class="spec"></td>
+        <td class="num">45</td>
+        <td class="unit">pax</td>
+        <td class="num">2</td>
+        <td class="unit">time</td>
+        <td class="num">30.000</td>
+        <td class="num">2.700.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Meals D-day Event</td>
+        <td class="spec"></td>
+        <td class="num">145</td>
+        <td class="unit">pax</td>
+        <td class="num">2</td>
+        <td class="unit">time</td>
+        <td class="num">30.000</td>
+        <td class="num">8.700.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Mineral Water</td>
+        <td class="spec"></td>
+        <td class="num">25</td>
+        <td class="unit">carton</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">45.000</td>
+        <td class="num">1.125.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Snack</td>
+        <td class="spec"></td>
+        <td class="num">145</td>
+        <td class="unit">pax</td>
+        <td class="num">1</td>
+        <td class="unit">time</td>
+        <td class="num">20.000</td>
+        <td class="num">2.900.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">ID Card</td>
+        <td class="spec"></td>
+        <td class="num">145</td>
+        <td class="unit">pcs</td>
+        <td class="num">1</td>
+        <td class="unit">time</td>
+        <td class="num">35.000</td>
+        <td class="num">5.075.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Operational</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Car Rent Team Project</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">unit</td>
+        <td class="num">3</td>
+        <td class="unit">day</td>
+        <td class="num">350.000</td>
+        <td class="num">1.050.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Car Rent Logistics</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">unit</td>
+        <td class="num">3</td>
+        <td class="unit">day</td>
+        <td class="num">350.000</td>
+        <td class="num">1.050.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Akomodasi Team Project</td>
+        <td class="spec"></td>
+        <td class="num">4</td>
+        <td class="unit">room</td>
+        <td class="num">2</td>
+        <td class="unit">night</td>
+        <td class="num">550.000</td>
+        <td class="num">4.400.000</td>
+    </tr>
+        </tbody>
+    </table>
+    
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">190.450.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">170.044.642</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">20.405.357</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">190.449.999</td></tr>
+    </table>
+    <div class="notes"><strong>NOTE :</strong><ul><li>Offering Validations:</li><li>The offer price above valid as long as the term specified</li><li>The Offer Price Included Rehearsal D-1</li></ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+    
+</div>
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item">ITEM / TASK</th>
+                <th>SPECIFICATION</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>D</td>
+                <td colspan="8"><strong>TALENT</strong></td>
+            </tr>
+            <tr class="category-header"><td></td><td colspan="8"><strong>Dancer</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Dancer Group 1</td>
+        <td class="spec">incl. Costume</td>
+        <td class="num">15</td>
+        <td class="unit">prsn</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">2.100.000</td>
+        <td class="num">31.500.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Dancer Group 2</td>
+        <td class="spec">incl. Costume</td>
+        <td class="num">10</td>
+        <td class="unit">prsn</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">2.100.000</td>
+        <td class="num">21.000.000</td>
+    </tr><tr class="category-header"><td></td><td colspan="8"><strong>Properties</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Dance Properties</td>
+        <td class="spec">Costume & props set</td>
+        <td class="num">25</td>
+        <td class="unit">prsn</td>
+        <td class="num">1</td>
+        <td class="unit">event</td>
+        <td class="num">700.000</td>
+        <td class="num">17.500.000</td>
+    </tr>
+        </tbody>
+    </table>
+    
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">70.000.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">62.499.999</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">7.499.999</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">69.999.999</td></tr>
+    </table>
+    <div class="notes"><strong>NOTE :</strong><ul><li>Offering Validations:</li><li>The offer price above valid as long as the term specified</li><li>The Offer Price Included Rehearsal D-1</li></ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+    
+</div>
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item">ITEM / TASK</th>
+                <th>SPECIFICATION</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>E</td>
+                <td colspan="8"><strong>TRANSPORTASI</strong></td>
+            </tr>
+            <tr class="category-header"><td></td><td colspan="8"><strong>Kendaraan Operasional</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Avanza (incl. Supir)</td>
+        <td class="spec"></td>
+        <td class="num">2</td>
+        <td class="unit">unit</td>
+        <td class="num">3</td>
+        <td class="unit">day</td>
+        <td class="num">350.000</td>
+        <td class="num">2.100.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Inova (incl. Supir)</td>
+        <td class="spec"></td>
+        <td class="num">1</td>
+        <td class="unit">unit</td>
+        <td class="num">3</td>
+        <td class="unit">day</td>
+        <td class="num">550.000</td>
+        <td class="num">1.650.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Grandmax (incl. Supir)</td>
+        <td class="spec">Logistik</td>
+        <td class="num">1</td>
+        <td class="unit">unit</td>
+        <td class="num">3</td>
+        <td class="unit">day</td>
+        <td class="num">350.000</td>
+        <td class="num">1.050.000</td>
+    </tr>
+        </tbody>
+    </table>
+    
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">4.800.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">4.285.714</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">514.285</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">4.800.000</td></tr>
+    </table>
+    <div class="notes"><strong>NOTE :</strong><ul><li>Offering Validations:</li><li>The offer price above valid as long as the term specified</li><li>The Offer Price Included Rehearsal D-1</li></ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+    
+</div>
+<div class="page">
+    
+    <div class="header">
+        <div class="header-left">
+            <table class="header-info">
+                <tr><td class="label">CLIENT</td><td>: OCBC</td></tr>
+                <tr><td class="label">EVENT TITLE</td><td>: OCBC Disney Orchestra</td></tr>
+                <tr><td class="label">DATE</td><td>: 15 Mei 2026</td></tr>
+                <tr><td class="label">VENUE</td><td>: Sentul International Convention Center</td></tr>
+                <tr><td class="label">CITY</td><td>: Bogor</td></tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <div class="logo">JUARA</div>
+            <div class="to-info"><strong>TO : OCBC</strong></div>
+            <div class="quot-num"><strong>NUMBER</strong> : 01/QUOT/JBBS/OCBC-DISNEYORCHESTRA/V/2026</div>
+        </div>
+    </div>
+    <h1 class="page-title">QUOTATION</h1>
+    
+    <table class="quot-table">
+        <thead>
+            <tr>
+                <th class="col-no">NO</th>
+                <th class="col-item">ITEM / TASK</th>
+                <th>SPECIFICATION</th>
+                <th colspan="2">QTY</th>
+                <th colspan="2">FREQ / DUR</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-header">
+                <td>F</td>
+                <td colspan="8"><strong>AKOMODASI</strong></td>
+            </tr>
+            <tr class="category-header"><td></td><td colspan="8"><strong>Hotel</strong></td></tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Hotel Team EO</td>
+        <td class="spec">Bintang 3</td>
+        <td class="num">6</td>
+        <td class="unit">room</td>
+        <td class="num">2</td>
+        <td class="unit">night</td>
+        <td class="num">550.000</td>
+        <td class="num">6.600.000</td>
+    </tr><tr>
+        <td></td>
+        <td class="item-name indent-1">Hotel Talent</td>
+        <td class="spec">Bintang 4</td>
+        <td class="num">4</td>
+        <td class="unit">room</td>
+        <td class="num">1</td>
+        <td class="unit">night</td>
+        <td class="num">850.000</td>
+        <td class="num">3.400.000</td>
+    </tr>
+        </tbody>
+    </table>
+    
+    <table class="totals-table">
+        <tr><td class="totals-label">Cost</td><td class="totals-value">10.000.000</td></tr>
+        <tr><td class="totals-label">Tax Base</td><td class="totals-value">8.928.571</td></tr>
+        <tr><td class="totals-label">PPN 12%</td><td class="totals-value">1.071.428</td></tr>
+        <tr class="total-row"><td class="totals-label">Total</td><td class="totals-value">9.999.999</td></tr>
+    </table>
+    <div class="notes"><strong>NOTE :</strong><ul><li>Offering Validations:</li><li>The offer price above valid as long as the term specified</li><li>The Offer Price Included Rehearsal D-1</li></ul></div>
+    <div class="signatory">
+        <p>Bogor, 15 Mei 2026</p>
+        <p>Submitted by,</p>
+        <div class="signature-space"></div>
+        <p class="signer-name"><u>Eka Marutha Yuswardana</u></p>
+        <p>PT Juara Berhasil Berkah Sejahtera</p>
+    </div>
+    
+</div>
+</body>
+</html>

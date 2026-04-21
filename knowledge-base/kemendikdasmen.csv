@@ -1,0 +1,100 @@
+Unnamed: 0, ,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10,Unnamed: 11,Unnamed: 12,Unnamed: 13,Unnamed: 14,Unnamed: 15,Unnamed: 16,Unnamed: 17
+,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+,CLIENT,,,,,: We Do,,,,PT. JUARA BERHASIL BERKAH SEJAHTERA,,,,,,,
+,PROJECT TITLE,,,,,: Rapat Konsolidasi Nasional Kemendikdasmen,,,,,,,,,,,
+,DURATION,,,,,: 3 Days,,,,,,,,,,,
+,VENUE,,,,,: PPSDM Kemendikdasmen,,,,,QUOT NO.,,: 010/QUOT/WEDO/I/2026,,,,
+,CITY,,,,,: Depok,,,,,DATE,,: 2 Februari 2026,,,,
+,,,,,,,,,,,,,,,,,
+,NO ,ITEM / TASK,,,,,SPECIFICATION,QTY,,FRQ,,,,PRICE,AMOUNT,NEGO,
+,A,PERMIT,,,,,,,,,,,,,,PRICE,AMOUNT
+,,Permit,,,,,,1,pax,1,event,1.0,time,50000000,50000000,,
+,,,POLRES,,,,,,,,,,,,,,
+,,,POLSEK,,,,,,,,,,,,,,
+,,,DISHUB,,,,,,,,,,,,,,
+,,PAM ,,,,,,25,prsn,3,day,1.0,time,300000,22500000,,
+,,Ambulance,,,,,Bersurat ke Dinkes oleh PPSDM. jam kerja 8jam/shift(*24jam/hari),2,unit,5,shift,1.0,time,3000000,30000000,2500000,25000000
+,,Damkar,,,,,,1,unit,3,day,1.0,time,4500000,13500000,4000000,12000000
+,,,,,,,,,,,,,,,,,
+,B,VENUE - SYSTEM - SETUP,,,,,,,,,,,,,,,
+,,SETUP,,,,,,,,,,,,,,,
+,,,,Signage ,,,"tripod signage, foam Sticker print",75,unit,1,event,1.0,time,350000,26250000,,
+,,,,Halte Signage,,,dim.122x244 | Multiplex fin.flexy print,2,unit,1,event,1.0,time,2500000,5000000,,
+,,,,Signage Information Center,,,Roll Up Banner | 2 unit tiap Asrama,8,unit,1,event,1.0,time,600000,4800000,,
+,,,,Qeue Line,,,,40,unit,3,day,1.0,time,125000,15000000,,
+,,,,,,,,,,,,,,,,,
+,C,PARTICIPANT,,,,,,,,,,,,,,,
+,,ID Card & Lanyard Peserta,,,,,PVC ,850,pcs,1,event,1.0,time,25000,21250000,,
+,,ID Card & Lanyard Narasumber,,,,,PVC ,10,pcs,1,event,1.0,time,25000,250000,,
+,,ID Card & Lanyard Undangan,,,,,PVC ,150,pcs,1,event,1.0,time,25000,3750000,,
+,,Luggage Tag,,,,,,400,pcs,1,event,1.0,time,12500,5000000,,
+,,Hi-Ace,,,,,"include: meals driver, stand by overtime",30,unit,4,day,1.0,time,1800000,216000000,,
+,,Sticker Kendaraan,,,,,,30,pcs,1,event,1.0,time,7500,225000,,
+,,,,,,,,,,,,,,,,,
+,D,COMMITTEE,,,,,,,,,,,,,,,
+,,Project Officer,,,,,,1,prsn,1,event,1.0,time,15000000,15000000,9000000,9000000
+,,,Traffic Administrator,,,,,1,prsn,1,event,1.0,time,7500000,7500000,0,0
+,,Safety & Security Officer,,,,,,1,prsn,1,event,1.0,time,7500000,7500000,5000000,5000000
+,,,Coordinator Internal Guard,,,,Jam 06.00 - 21.30,1,prsn,4,day,1.0,time,1000000,4000000,750000,3000000
+,,,,Internal Guard 9 - 11 Februari,,,Jam 06.00 - 21.30,10,prsn,4,day,1.0,time,600000,24000000,500000,20000000
+,,,Coordinator Crowd Control,,,,Jam 06.00 - 21.30,2,prsn,4,day,1.0,time,1000000,8000000,750000,6000000
+,,,,Crowd Control 9 - 11 Februari,,,Jam 06.00 - 21.30,10,prsn,4,day,1.0,time,600000,24000000,500000,20000000
+,,,Parking Area Staff,,,,Jam 06.00 - 21.30,4,prsn,4,day,1.0,time,600000,9600000,500000,8000000
+,,,PIC Kepesertaan,,,,Jam 06.00 - 21.30,1,prsn,4,day,1.0,time,1000000,4000000,750000,3000000
+,,,,Kepesertaan Staff,,,Jam 06.00 - 21.30,2,prsn,4,day,1.0,time,600000,4800000,500000,4000000
+,,,,Luggage Storage Staff,,,Jam 06.00 - 21.30,4,prsn,2,day,1.0,time,600000,4800000,500000,4000000
+,,,,TL Kepesertaan,,,3 orang masing-masing Asrama | stand by 24 jam,12,prsn,4,day,1.0,time,1000000,48000000,750000,36000000
+,,,,Shuttle Coordinator,,,Jam 06.00 - 21.30,1,prsn,4,day,1.0,time,1000000,4000000,750000,3000000
+,,Usher,,,,,Jam 06.00 - 21.30,10,prsn,4,day,1.0,time,1000000,40000000,750000,30000000
+,,Information Center,,,,,Jam 06.00 - 21.30,2,prsn,4,day,1.0,time,1000000,8000000,750000,6000000
+,,Head Logistic,,,,,Jam 06.00 - 21.29,1,prsn,4,day,1.0,time,1000000,4000000,,
+,,,Logistic Staff,,,,Jam 06.00 - 21.30,2,prsn,4,day,1.0,time,600000,4800000,,
+,,Runner,,,,,Jam 06.00 - 21.31,5,prsn,4,day,1.0,time,600000,12000000,,
+,,,,,,,,,,,,,,,,,
+,E,EQUIPMENT & OPERATIONAL,,,,,,,,,,,,,,,
+,,Transportation,,,,,,,,,,,,,,,
+,,,Rent Car,,,,,2,unit,4,day,1.0,time,750000,6000000,,
+,,,Safety & Security Team,,,,,2,unit,4, day,1.0,time,750000,6000000,450000,3600000
+,,,,,,,,,,,,,,,,,
+,,Accomodation,,,,,,,,,,,,,,,
+,,,Safety & Security Team,,,,,4,room,3,night,1.0,time,550000,6600000,500000,6000000
+,,,Project Team,,,,,4,room,3,night,1.0,time,850000,10200000,500000,3000000
+,,,,,,,,,,,,,,,,,
+,,Meals & Refreshment,,,,,,,,,,,,,,,
+,,,Snack Team Project & Safety Security,,,,,80,prs,4,day,1.0,time,25000,8000000,,
+,,,Snack Pengamanan ,,,,,30,prs,3,day,1.0,time,25000,2250000,,
+,,,Meals Team Project & Safety Security,,,,,80,prs,4,day,2.0,time,60000,19200000,,
+,,,Meals Pengamanan,,,,,30,prs,3,day,2.0,time,60000,5400000,,
+,,,AMDK,,,,,50,crtn,1,event,1.0,time,50000,2500000,,0
+,,,Refreshment,,,,,1,pax,1,event,1.0,time,3000000,3000000,1500000,1500000
+,,HT,,,,,,,,,,,,,,,
+,,,Icom,,,,,60,unit,3,day,1.0,time,75000,13500000,,
+,,Stationeries,,,,,,,,,,,,,,,
+,,,Laptop ,,,,,2,unit,3,day,1.0,time,350000,2100000,,
+,,,Printer,,,,,1,unit,3,day,1.0,time,450000,1350000,,
+,,,ATK,,,,,1,pckg,1,event,1.0,time,1500000,1500000,,
+,,,,,,,,,,,,,,,,,
+,F,FEES,,,,,,,,,,,,,,,
+,,Services,,,,,,,,,,,,,,,
+,,,Safety & Security Plan,,,,,1,pax,1,event,1.0,time,20000000,20000000,15000000,15000000
+,,,CCTV Security System,,,,,1,pckg,3,day,1.0,time,handled by we do,handled by we do,,
+,,,,Ruang sidang komisi 1-9,,,,9,unit,3,day,1.0,time,,,,
+,,,,Ruang garuda,,,,1,unit,3,day,1.0,time,,,,
+,,,,Ruang merah putih,,,,1,unit,3,day,1.0,time,,,,
+,,,,Area Registrasi,,,,1,unit,3,day,1.0,time,,,,
+,,,,Area parkir VIP,,,,1,unit,3,day,1.0,time,,,,
+,,,,Area parkir reguler,,,,1,unit,3,day,1.0,time,,,,
+,,,,Area mobilisasi kendaraan,,,,2,unit,3,day,1.0,time,,,,
+,,,Survey & Meeting,,,,,,,,,,,,,,
+,,,,Per Diem,,,,5,prs,2,day,1.0,time,450000,4500000,450000,900000
+,,,,Transport,,,,5,unit,2,day,1.0,time,350000,3500000,350000,700000
+,,,,Konsumsi,,,,5,prs,2,day,1.0,time,45000,450000,45000,90000
+,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,Total Cost,763575000,,224790000
+,,,,,,,,,,,,,,Man Fee 10%,76357500,,22479000
+,,,,,,,,,,,,,,Subtotal,839932500,,247269000
+,,,,,,,,,,,,,,Tax Base,769938125,,
+,,,,,,,,,,,,,,PPN 12%,92392575,,
+,,,,,,,,,,,,,,Grand Total,932325075,,

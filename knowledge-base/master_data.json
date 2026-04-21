@@ -1,0 +1,3231 @@
+{
+  "metadata": {
+    "source": "Excel Migration Phase 2",
+    "date": "2026-04-14"
+  },
+  "items": [
+    {
+      "item_code": "PD-CD-001",
+      "category": "Planning & Development",
+      "subcategory": "Creative Design",
+      "item_name": "Key Visual",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-CD-002",
+      "category": "Planning & Development",
+      "subcategory": "Creative Design",
+      "item_name": "2D Visual",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-CD-003",
+      "category": "Planning & Development",
+      "subcategory": "Creative Design",
+      "item_name": "3D Visual",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-CM-001",
+      "category": "Planning & Development",
+      "subcategory": "Content & Multimedia Planning",
+      "item_name": "Bumper Video",
+      "default_unit": "pcs",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "Opening",
+          "unit": "pcs",
+          "type": "service"
+        },
+        {
+          "name": "Event",
+          "unit": "pcs",
+          "type": "service"
+        },
+        {
+          "name": "Transisi",
+          "unit": "pcs",
+          "type": "service"
+        },
+        {
+          "name": "Speaker",
+          "unit": "pcs",
+          "type": "service"
+        }
+      ]
+    },
+    {
+      "item_code": "PD-CM-002",
+      "category": "Planning & Development",
+      "subcategory": "Content & Multimedia Planning",
+      "item_name": "Manifesto Video",
+      "default_unit": "pcs",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-CM-003",
+      "category": "Planning & Development",
+      "subcategory": "Content & Multimedia Planning",
+      "item_name": "Animation",
+      "default_unit": "pcs",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-CM-004",
+      "category": "Planning & Development",
+      "subcategory": "Content & Multimedia Planning",
+      "item_name": "Screen Content Planning",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-RP-001",
+      "category": "Planning & Development",
+      "subcategory": "Registration & Participant Planning",
+      "item_name": "Registration Flow",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-RP-002",
+      "category": "Planning & Development",
+      "subcategory": "Registration & Participant Planning",
+      "item_name": "Manual Book Kepesertaan",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-RP-003",
+      "category": "Planning & Development",
+      "subcategory": "Registration & Participant Planning",
+      "item_name": "Participant Journey Plan",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PD-RS-001",
+      "category": "Planning & Development",
+      "subcategory": "Reporting Support",
+      "item_name": "Event Reporting",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-001",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "POLSEK",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-002",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "POLRES",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-003",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "POLDA",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-004",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "DISHUB",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-005",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "SATPOL PP",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-006",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "KODAM",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-007",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "KODIM",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-GA-008",
+      "category": "Permit & Retribusi",
+      "subcategory": "Government / Authority Permit",
+      "item_name": "KORAMIL",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-AC-001",
+      "category": "Permit & Retribusi",
+      "subcategory": "Area Access & Coordination",
+      "item_name": "Koordinasi Kawasan",
+      "default_unit": "lot",
+      "item_type": "coordination",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-AC-002",
+      "category": "Permit & Retribusi",
+      "subcategory": "Area Access & Coordination",
+      "item_name": "Dana Koordinasi Antar Lintas",
+      "default_unit": "lot",
+      "item_type": "coordination",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-AC-003",
+      "category": "Permit & Retribusi",
+      "subcategory": "Area Access & Coordination",
+      "item_name": "Parking Area Permit",
+      "default_unit": "lot",
+      "item_type": "permit",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-AC-004",
+      "category": "Permit & Retribusi",
+      "subcategory": "Area Access & Coordination",
+      "item_name": "Loading Access",
+      "default_unit": "lot",
+      "item_type": "coordination",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-AC-005",
+      "category": "Permit & Retribusi",
+      "subcategory": "Area Access & Coordination",
+      "item_name": "Tribune Access",
+      "default_unit": "lot",
+      "item_type": "coordination",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-SS-001",
+      "category": "Permit & Retribusi",
+      "subcategory": "Security Support",
+      "item_name": "PAM",
+      "default_unit": "lot",
+      "item_type": "security",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-SS-002",
+      "category": "Permit & Retribusi",
+      "subcategory": "Security Support",
+      "item_name": "PASPAMPRES",
+      "default_unit": "lot",
+      "item_type": "security",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "Advance",
+          "unit": "lot",
+          "type": "security"
+        },
+        {
+          "name": "Main Group",
+          "unit": "lot",
+          "type": "security"
+        },
+        {
+          "name": "Deteksi",
+          "unit": "lot",
+          "type": "security"
+        },
+        {
+          "name": "Hologram",
+          "unit": "lot",
+          "type": "security"
+        }
+      ]
+    },
+    {
+      "item_code": "PR-ME-001",
+      "category": "Permit & Retribusi",
+      "subcategory": "Medical & Emergency",
+      "item_name": "Ambulance",
+      "default_unit": "unit/day",
+      "item_type": "medical",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "Reguler",
+          "unit": "unit/day",
+          "type": "medical"
+        },
+        {
+          "name": "VVIP Mini ICU",
+          "unit": "unit/day",
+          "type": "medical"
+        }
+      ]
+    },
+    {
+      "item_code": "PR-ME-002",
+      "category": "Permit & Retribusi",
+      "subcategory": "Medical & Emergency",
+      "item_name": "Doctor",
+      "default_unit": "person/day",
+      "item_type": "medical",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PR-ME-003",
+      "category": "Permit & Retribusi",
+      "subcategory": "Medical & Emergency",
+      "item_name": "Damkar",
+      "default_unit": "unit/day",
+      "item_type": "medical",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-RS-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Registration Setup",
+      "item_name": "Registration System",
+      "default_unit": "pckg",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-RS-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Registration Setup",
+      "item_name": "Registration Tools",
+      "default_unit": "pckg",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-RS-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Registration Setup",
+      "item_name": "Registration Backdrop",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-CM-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Common Setup Item",
+      "item_name": "Queue Line",
+      "default_unit": "unit",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-CM-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Common Setup Item",
+      "item_name": "Signage",
+      "default_unit": "pcs",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-CM-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Common Setup Item",
+      "item_name": "IBM Table",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-CM-004",
+      "category": "Venue / Setup / System",
+      "subcategory": "Common Setup Item",
+      "item_name": "Futura Chair",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-FP-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Foyer / Public Area Setup",
+      "item_name": "Photobooth Backdrop",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-FP-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Foyer / Public Area Setup",
+      "item_name": "Photowall Backdrop",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-FP-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Foyer / Public Area Setup",
+      "item_name": "Doorstop Backdrop",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Curtain",
+      "default_unit": "m1",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Sofa",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Round Table",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-004",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Centrepiece",
+      "default_unit": "pcs",
+      "item_type": "decor",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-005",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Bendera Pataka",
+      "default_unit": "pcs",
+      "item_type": "property",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-006",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Simbol Negara",
+      "default_unit": "pcs",
+      "item_type": "property",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-007",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Foto Presiden & Wakil Presiden",
+      "default_unit": "set",
+      "item_type": "property",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-008",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Amenities",
+      "default_unit": "pckg",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VH-009",
+      "category": "Venue / Setup / System",
+      "subcategory": "VIP / Holding Room Setup",
+      "item_name": "Refreshments",
+      "default_unit": "pckg",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-SR-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Special Support Room",
+      "item_name": "Medic Tools",
+      "default_unit": "pckg",
+      "item_type": "medical",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-SR-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Special Support Room",
+      "item_name": "Full Body Mirror",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-SR-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Special Support Room",
+      "item_name": "AC Portable",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-EG-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Entrance & Security Gate",
+      "item_name": "Gate Entrance System",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-EG-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Entrance & Security Gate",
+      "item_name": "Secdoor",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TS-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Tent & Shelter",
+      "item_name": "Tenda Pengamanan",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TS-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Tent & Shelter",
+      "item_name": "Tenda Medis",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VT-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Venue Treatment",
+      "item_name": "Flooring",
+      "default_unit": "m2",
+      "item_type": "material",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VT-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Venue Treatment",
+      "item_name": "Carpetting",
+      "default_unit": "m2",
+      "item_type": "material",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VT-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Venue Treatment",
+      "item_name": "Lem dan Double Tape",
+      "default_unit": "lot",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VT-004",
+      "category": "Venue / Setup / System",
+      "subcategory": "Venue Treatment",
+      "item_name": "Geser Ring",
+      "default_unit": "lot",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VT-005",
+      "category": "Venue / Setup / System",
+      "subcategory": "Venue Treatment",
+      "item_name": "Ongkos Pasang",
+      "default_unit": "lot",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-VT-006",
+      "category": "Venue / Setup / System",
+      "subcategory": "Venue Treatment",
+      "item_name": "Ongkir",
+      "default_unit": "lot",
+      "item_type": "logistic",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TE-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Technical System",
+      "item_name": "LED System",
+      "default_unit": "set/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TE-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Technical System",
+      "item_name": "Base LED",
+      "default_unit": "set/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TE-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Technical System",
+      "item_name": "Rigging LED",
+      "default_unit": "set/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TE-004",
+      "category": "Venue / Setup / System",
+      "subcategory": "Technical System",
+      "item_name": "Sound System",
+      "default_unit": "set/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TE-005",
+      "category": "Venue / Setup / System",
+      "subcategory": "Technical System",
+      "item_name": "Cable Installation",
+      "default_unit": "lot",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-TE-006",
+      "category": "Venue / Setup / System",
+      "subcategory": "Technical System",
+      "item_name": "Lampu Penerangan",
+      "default_unit": "set/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-SF-001",
+      "category": "Venue / Setup / System",
+      "subcategory": "Support Facility",
+      "item_name": "Toilet Portable",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-SF-002",
+      "category": "Venue / Setup / System",
+      "subcategory": "Support Facility",
+      "item_name": "Misty Fan",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "VS-SF-003",
+      "category": "Venue / Setup / System",
+      "subcategory": "Support Facility",
+      "item_name": "Square Table",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MC-VD-001",
+      "category": "Multimedia / Creative",
+      "subcategory": "Visual Design",
+      "item_name": "Branding Visual",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MC-VD-002",
+      "category": "Multimedia / Creative",
+      "subcategory": "Visual Design",
+      "item_name": "Screen Visual",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MC-MV-001",
+      "category": "Multimedia / Creative",
+      "subcategory": "Motion & Video Content",
+      "item_name": "Event Video Content",
+      "default_unit": "pcs",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MC-SO-001",
+      "category": "Multimedia / Creative",
+      "subcategory": "Show Content Operation",
+      "item_name": "Content Operator",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BP-001",
+      "category": "Production / Fabrication",
+      "subcategory": "Branding Production",
+      "item_name": "Welcome Banner",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BP-002",
+      "category": "Production / Fabrication",
+      "subcategory": "Branding Production",
+      "item_name": "T-Banner",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BP-003",
+      "category": "Production / Fabrication",
+      "subcategory": "Branding Production",
+      "item_name": "Baliho",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BP-004",
+      "category": "Production / Fabrication",
+      "subcategory": "Branding Production",
+      "item_name": "Umbul-Umbul",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BP-005",
+      "category": "Production / Fabrication",
+      "subcategory": "Branding Production",
+      "item_name": "Bendera Partai",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BP-006",
+      "category": "Production / Fabrication",
+      "subcategory": "Branding Production",
+      "item_name": "Spanduk",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BD-001",
+      "category": "Production / Fabrication",
+      "subcategory": "Backdrop & Display Fabrication",
+      "item_name": "Cover Rantis",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-BD-002",
+      "category": "Production / Fabrication",
+      "subcategory": "Backdrop & Display Fabrication",
+      "item_name": "Fascade",
+      "default_unit": "set",
+      "item_type": "fabrication",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "PF-PI-001",
+      "category": "Production / Fabrication",
+      "subcategory": "Print & Installation",
+      "item_name": "Cetak dan Pasang",
+      "default_unit": "lot",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-PT-001",
+      "category": "Manpower / Crew",
+      "subcategory": "Project Team",
+      "item_name": "Project Director",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-PT-002",
+      "category": "Manpower / Crew",
+      "subcategory": "Project Team",
+      "item_name": "Project Officer",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-PT-003",
+      "category": "Manpower / Crew",
+      "subcategory": "Project Team",
+      "item_name": "Traffic & Administrator",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-PT-004",
+      "category": "Manpower / Crew",
+      "subcategory": "Project Team",
+      "item_name": "Production Manager",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-PT-005",
+      "category": "Manpower / Crew",
+      "subcategory": "Project Team",
+      "item_name": "Production Staff",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-FS-001",
+      "category": "Manpower / Crew",
+      "subcategory": "Floor & Show Team",
+      "item_name": "Floor Manager",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-FS-002",
+      "category": "Manpower / Crew",
+      "subcategory": "Floor & Show Team",
+      "item_name": "Floor Staff",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-FS-003",
+      "category": "Manpower / Crew",
+      "subcategory": "Floor & Show Team",
+      "item_name": "Show Management",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-FS-004",
+      "category": "Manpower / Crew",
+      "subcategory": "Floor & Show Team",
+      "item_name": "Usher",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-FS-005",
+      "category": "Manpower / Crew",
+      "subcategory": "Floor & Show Team",
+      "item_name": "Seating Arrangement Support",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-LT-001",
+      "category": "Manpower / Crew",
+      "subcategory": "Logistics Team",
+      "item_name": "Logistic Manager",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-LT-002",
+      "category": "Manpower / Crew",
+      "subcategory": "Logistics Team",
+      "item_name": "Logistic Staff",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-LT-003",
+      "category": "Manpower / Crew",
+      "subcategory": "Logistics Team",
+      "item_name": "Logistic Staff Loading",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-SS-001",
+      "category": "Manpower / Crew",
+      "subcategory": "Safety / Security Team",
+      "item_name": "Safety Security Officer",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-SS-002",
+      "category": "Manpower / Crew",
+      "subcategory": "Safety / Security Team",
+      "item_name": "Safety Security Supervisor",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-SS-003",
+      "category": "Manpower / Crew",
+      "subcategory": "Safety / Security Team",
+      "item_name": "VIP Escort",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-OS-001",
+      "category": "Manpower / Crew",
+      "subcategory": "Operational Support",
+      "item_name": "Registration Crew",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "CR-OS-002",
+      "category": "Manpower / Crew",
+      "subcategory": "Operational Support",
+      "item_name": "Area PIC",
+      "default_unit": "person/day",
+      "item_type": "crew",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TE-MT-001",
+      "category": "Talent / Entertainment",
+      "subcategory": "Main Talent",
+      "item_name": "MC",
+      "default_unit": "person/show",
+      "item_type": "talent",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TE-MT-002",
+      "category": "Talent / Entertainment",
+      "subcategory": "Main Talent",
+      "item_name": "Moderator / Host",
+      "default_unit": "person/show",
+      "item_type": "talent",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TE-MT-003",
+      "category": "Talent / Entertainment",
+      "subcategory": "Main Talent",
+      "item_name": "Band / Guest Star",
+      "default_unit": "group/show",
+      "item_type": "talent",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TE-MT-004",
+      "category": "Talent / Entertainment",
+      "subcategory": "Main Talent",
+      "item_name": "Dancer",
+      "default_unit": "person/show",
+      "item_type": "talent",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TE-SP-001",
+      "category": "Talent / Entertainment",
+      "subcategory": "Speaker / Public Figure",
+      "item_name": "Speaker",
+      "default_unit": "person/show",
+      "item_type": "talent",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TE-TS-001",
+      "category": "Talent / Entertainment",
+      "subcategory": "Talent Support",
+      "item_name": "Talent Rider",
+      "default_unit": "lot",
+      "item_type": "hospitality",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TL-VR-001",
+      "category": "Transportation / Logistics",
+      "subcategory": "Vehicle Rental",
+      "item_name": "Rent Car",
+      "default_unit": "unit/day",
+      "item_type": "transport",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "Project Team",
+          "unit": "unit/day",
+          "type": "transport"
+        },
+        {
+          "name": "VIP",
+          "unit": "unit/day",
+          "type": "transport"
+        },
+        {
+          "name": "Safety & Security",
+          "unit": "unit/day",
+          "type": "transport"
+        }
+      ]
+    },
+    {
+      "item_code": "TL-VR-002",
+      "category": "Transportation / Logistics",
+      "subcategory": "Vehicle Rental",
+      "item_name": "Survey Transport",
+      "default_unit": "trip",
+      "item_type": "transport",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TL-LM-001",
+      "category": "Transportation / Logistics",
+      "subcategory": "Loading & Mobility Support",
+      "item_name": "Loading Transport",
+      "default_unit": "trip",
+      "item_type": "transport",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TL-LM-002",
+      "category": "Transportation / Logistics",
+      "subcategory": "Loading & Mobility Support",
+      "item_name": "Material Mobilization",
+      "default_unit": "trip",
+      "item_type": "transport",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "TL-AP-001",
+      "category": "Transportation / Logistics",
+      "subcategory": "Access & Parking",
+      "item_name": "Parking Area Support",
+      "default_unit": "lot",
+      "item_type": "transport",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TA-001",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Accommodation",
+      "item_name": "Safety & Security Team Room",
+      "default_unit": "room/night",
+      "item_type": "accommodation",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TA-002",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Accommodation",
+      "item_name": "Project Team Room",
+      "default_unit": "room/night",
+      "item_type": "accommodation",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-VH-001",
+      "category": "Accommodation / Consumption",
+      "subcategory": "VIP & VVIP Hospitality",
+      "item_name": "Catering VIP",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-VH-002",
+      "category": "Accommodation / Consumption",
+      "subcategory": "VIP & VVIP Hospitality",
+      "item_name": "Catering DPP",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-VH-003",
+      "category": "Accommodation / Consumption",
+      "subcategory": "VIP & VVIP Hospitality",
+      "item_name": "VIP Table Setup",
+      "default_unit": "set",
+      "item_type": "hospitality",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-VH-004",
+      "category": "Accommodation / Consumption",
+      "subcategory": "VIP & VVIP Hospitality",
+      "item_name": "VIP Mineral Water",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TM-001",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Meals & Refreshment",
+      "item_name": "Snack Team",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TM-002",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Meals & Refreshment",
+      "item_name": "Snack Pengamanan",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TM-003",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Meals & Refreshment",
+      "item_name": "Meals Team",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TM-004",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Meals & Refreshment",
+      "item_name": "Meals Pengamanan",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TM-005",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Meals & Refreshment",
+      "item_name": "Refreshment Loading",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-TM-006",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Team Meals & Refreshment",
+      "item_name": "AMDK",
+      "default_unit": "dus",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-001",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Amenities",
+      "default_unit": "pckg",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-002",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Sandal",
+      "default_unit": "pair",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-003",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Tissue Kering",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-004",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Tissue Basah",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-005",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Sabun Cuci Tangan",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-006",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Sabun Mandi",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-007",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Ember",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-008",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Gayung",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-009",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Sajadah",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-AS-010",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Amenities & Room Supplies",
+      "item_name": "Tempat Sampah Rotan",
+      "default_unit": "pcs",
+      "item_type": "consumable",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "AC-PC-001",
+      "category": "Accommodation / Consumption",
+      "subcategory": "Participant Consumption",
+      "item_name": "UMKM Free Meals",
+      "default_unit": "pax",
+      "item_type": "consumption",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-ED-001",
+      "category": "Documentation / Reporting",
+      "subcategory": "Event Documentation",
+      "item_name": "Event Documentation",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-ED-002",
+      "category": "Documentation / Reporting",
+      "subcategory": "Event Documentation",
+      "item_name": "Photographer",
+      "default_unit": "person/day",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-ED-003",
+      "category": "Documentation / Reporting",
+      "subcategory": "Event Documentation",
+      "item_name": "Videographer",
+      "default_unit": "person/day",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-VD-001",
+      "category": "Documentation / Reporting",
+      "subcategory": "Video Documentation",
+      "item_name": "Highlight Video",
+      "default_unit": "pcs",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-RP-001",
+      "category": "Documentation / Reporting",
+      "subcategory": "Reporting",
+      "item_name": "Event Reporting",
+      "default_unit": "pckg",
+      "item_type": "service",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-AD-001",
+      "category": "Documentation / Reporting",
+      "subcategory": "Accreditation & Document Support",
+      "item_name": "ID Card",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "VIP",
+          "unit": "pcs",
+          "type": "print"
+        },
+        {
+          "name": "DPP",
+          "unit": "pcs",
+          "type": "print"
+        }
+      ]
+    },
+    {
+      "item_code": "DR-AD-002",
+      "category": "Documentation / Reporting",
+      "subcategory": "Accreditation & Document Support",
+      "item_name": "ID Card & Lanyard",
+      "default_unit": "set",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "Team EO",
+          "unit": "set",
+          "type": "print"
+        }
+      ]
+    },
+    {
+      "item_code": "DR-AD-003",
+      "category": "Documentation / Reporting",
+      "subcategory": "Accreditation & Document Support",
+      "item_name": "Tyvec Peserta",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-AD-004",
+      "category": "Documentation / Reporting",
+      "subcategory": "Accreditation & Document Support",
+      "item_name": "Sticker Kendaraan",
+      "default_unit": "pcs",
+      "item_type": "print",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "DR-AD-005",
+      "category": "Documentation / Reporting",
+      "subcategory": "Accreditation & Document Support",
+      "item_name": "Legalisir Hologram",
+      "default_unit": "pcs",
+      "item_type": "admin",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-SC-001",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Survey Cost",
+      "item_name": "Per Diem",
+      "default_unit": "person/day",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-SC-002",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Survey Cost",
+      "item_name": "Transport",
+      "default_unit": "trip",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-SC-003",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Survey Cost",
+      "item_name": "Konsumsi",
+      "default_unit": "pax",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-OT-001",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Operational Tools & Supplies",
+      "item_name": "ATK",
+      "default_unit": "lot",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-OT-002",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Operational Tools & Supplies",
+      "item_name": "Laptop",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-OT-003",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Operational Tools & Supplies",
+      "item_name": "Printer",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-CE-001",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Communication Equipment",
+      "item_name": "HT",
+      "default_unit": "unit/day",
+      "item_type": "rental",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": [
+        {
+          "name": "Icom",
+          "unit": "unit/day",
+          "type": "rental"
+        },
+        {
+          "name": "Repeater",
+          "unit": "unit/day",
+          "type": "rental"
+        },
+        {
+          "name": "Satellite",
+          "unit": "unit/day",
+          "type": "rental"
+        }
+      ]
+    },
+    {
+      "item_code": "MS-AO-001",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Additional Operational Cost",
+      "item_name": "Ongkir",
+      "default_unit": "lot",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-AO-002",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Additional Operational Cost",
+      "item_name": "Ongkos Pasang",
+      "default_unit": "lot",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MS-AO-003",
+      "category": "Miscellaneous / Additional Cost",
+      "subcategory": "Additional Operational Cost",
+      "item_name": "Lem dan Double Tape",
+      "default_unit": "lot",
+      "item_type": "misc",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-001",
+      "category": "Miscellaneous",
+      "subcategory": "Permit",
+      "item_name": "Pemadam Kebakaran",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-002",
+      "category": "Miscellaneous",
+      "subcategory": "Permit",
+      "item_name": "Team Medis",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 1650000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-003",
+      "category": "Miscellaneous",
+      "subcategory": "Perimeter",
+      "item_name": "Standard Baricade",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 35000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-004",
+      "category": "Miscellaneous",
+      "subcategory": "Perimeter",
+      "item_name": "Gubeng",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-005",
+      "category": "Miscellaneous",
+      "subcategory": "Perimeter",
+      "item_name": "Queue Line Stretch",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 75000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-006",
+      "category": "Miscellaneous",
+      "subcategory": "Perimeter",
+      "item_name": "Queue Line Bludru",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 125000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-007",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Sarnavil 3X3",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-008",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Sarnavil 5X5",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 750000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-009",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Roders",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 90000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-010",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Tratak",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 50000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-011",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Flooring Karpet",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 40000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-012",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Flooring Melaminto",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 200000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-013",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Sarnavil 3X3 Incl. Flooring",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-014",
+      "category": "Miscellaneous",
+      "subcategory": "Tenda",
+      "item_name": "Sarnavil 5X5 Incl. Flooring",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-015",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Instalasi Listrik Tenda",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 150000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-016",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Cable Canal",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 75000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-017",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Genset 40 Kva",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 3000000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-018",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Genset 60 Kva",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 3500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-019",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Genset 80 Kva",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 4000000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-020",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Genset 100 Kva",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 4500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-021",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Genset 150 Kva",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 5000000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-022",
+      "category": "Miscellaneous",
+      "subcategory": "Electrical",
+      "item_name": "Genset 250 Kva",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 6500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-023",
+      "category": "Miscellaneous",
+      "subcategory": "Stage",
+      "item_name": "Stage",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-024",
+      "category": "Miscellaneous",
+      "subcategory": "Stage",
+      "item_name": "Stage Tent",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-025",
+      "category": "Miscellaneous",
+      "subcategory": "Stage",
+      "item_name": "Rigging",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-026",
+      "category": "Miscellaneous",
+      "subcategory": "Sound System",
+      "item_name": "Sound System 5000 Watt",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 3500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-027",
+      "category": "Miscellaneous",
+      "subcategory": "Sound System",
+      "item_name": "Sound System 10000 Watt",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 7500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-028",
+      "category": "Miscellaneous",
+      "subcategory": "Sound System",
+      "item_name": "Sound System 15000 Watt",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 12500000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-029",
+      "category": "Miscellaneous",
+      "subcategory": "Sound System",
+      "item_name": "Sound System 20000 Watt",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 18000000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-030",
+      "category": "Miscellaneous",
+      "subcategory": "Sound System",
+      "item_name": "Sound System 25000 Watt",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 20000000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-031",
+      "category": "Miscellaneous",
+      "subcategory": "LED Screen",
+      "item_name": "Led Screen P4.9",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 400000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-032",
+      "category": "Miscellaneous",
+      "subcategory": "LED Screen",
+      "item_name": "Led Screen P3.9",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 450000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-033",
+      "category": "Miscellaneous",
+      "subcategory": "LED Screen",
+      "item_name": "Led Screen P2.9",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 550000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-034",
+      "category": "Miscellaneous",
+      "subcategory": "LED Screen",
+      "item_name": "Led Screen P2.6",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 600000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-035",
+      "category": "Miscellaneous",
+      "subcategory": "LED TV",
+      "item_name": "Led Tv 55\"",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 750000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-036",
+      "category": "Miscellaneous",
+      "subcategory": "Projector",
+      "item_name": "Projector 5000 Lumens",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-037",
+      "category": "Miscellaneous",
+      "subcategory": "Projector",
+      "item_name": "Projector 7000 Lumens",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-038",
+      "category": "Miscellaneous",
+      "subcategory": "Projector",
+      "item_name": "Projector 10.000 Lumens",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-039",
+      "category": "Miscellaneous",
+      "subcategory": "Projector",
+      "item_name": "Projector 15.000 Lumens",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-040",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Par Led",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 150000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-041",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Par Can",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 400000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-042",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Single Par Can",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-043",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Mini Brute",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-044",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Acl",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-045",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Follow Spot",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-046",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Fresnell",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-047",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Strobo / Blitz",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-048",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Smoke Gun Standard",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-049",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Moving Head *Wash",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-050",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Beam",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-051",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Sky Tracker- 1 Color",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-052",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Sky Tracker - 1 Color",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-053",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Avolite Pearl 2010",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-054",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Hollogen - Area Venue (Satuan )",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-055",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Tower Lampu Penerangan Area",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-056",
+      "category": "Miscellaneous",
+      "subcategory": "Lighting Support",
+      "item_name": "Lampu Penerangan Tend Support + Cabling",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-057",
+      "category": "Miscellaneous",
+      "subcategory": "Multimedia Support",
+      "item_name": "Switcher + Monitor",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-058",
+      "category": "Miscellaneous",
+      "subcategory": "Multimedia Support",
+      "item_name": "Rent Video Camera + Triport",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-059",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Giant Canon Convety",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-060",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Co2",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-061",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Napalm",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-062",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Blower",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-063",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Miror Ball 60 Inc",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-064",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Sirine Red",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-065",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Pyro",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-066",
+      "category": "Miscellaneous",
+      "subcategory": "Special FX",
+      "item_name": "Fireworks",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-067",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Futura Non Cover",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-068",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Futura Cover",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-069",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Single Sofa",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-070",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Sofa Puff",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-071",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Tiffany Chair",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-072",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Bean Bag",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-073",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Barstool",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-074",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Chair",
+      "item_name": "Baso Chair",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-075",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Ibm",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-076",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Ibm Cover",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-077",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Coffee Table",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-078",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Bar Table",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-079",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Bar Table With Cover",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-080",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Garden Desk Set",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-081",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Parasol",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-082",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Rent Ac",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-083",
+      "category": "Miscellaneous",
+      "subcategory": "Rent Table",
+      "item_name": "Portable Toilet",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-084",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Project Manager",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-085",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Production Crew",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-086",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Logistic Crew",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-087",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Talent Manager",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-088",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Lo Vip",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-089",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Lo Artis",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-090",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Lo",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-091",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Floor Crew",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-092",
+      "category": "Miscellaneous",
+      "subcategory": "Project Management",
+      "item_name": "Runners",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-093",
+      "category": "Miscellaneous",
+      "subcategory": "Safety and Security Management",
+      "item_name": "Safety And Security Manager",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-094",
+      "category": "Miscellaneous",
+      "subcategory": "Safety and Security Management",
+      "item_name": "Safety And Security Supervisor",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-095",
+      "category": "Miscellaneous",
+      "subcategory": "Safety and Security Management",
+      "item_name": "Crowd Control",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-096",
+      "category": "Miscellaneous",
+      "subcategory": "Safety and Security Management",
+      "item_name": "Security/Internal Guard",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-097",
+      "category": "Miscellaneous",
+      "subcategory": "Safety and Security Management",
+      "item_name": "Liasion Officer",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-098",
+      "category": "Miscellaneous",
+      "subcategory": "Safety and Security Management",
+      "item_name": "Pic Medic",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-099",
+      "category": "Miscellaneous",
+      "subcategory": "Show Management",
+      "item_name": "Pawang Hujan",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-100",
+      "category": "Miscellaneous",
+      "subcategory": "Local Talent",
+      "item_name": "Talent (Band Pembuka)",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-101",
+      "category": "Miscellaneous",
+      "subcategory": "Local Talent",
+      "item_name": "Dancer (Local)",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-102",
+      "category": "Miscellaneous",
+      "subcategory": "Local Talent",
+      "item_name": "Dj (Local)",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-103",
+      "category": "Miscellaneous",
+      "subcategory": "Local Talent",
+      "item_name": "Sewa Ht",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 40000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-104",
+      "category": "Miscellaneous",
+      "subcategory": "Local Talent",
+      "item_name": "Sewa Clear Comm",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": 300000,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-105",
+      "category": "Miscellaneous",
+      "subcategory": "Incl. Supir",
+      "item_name": "Avanza",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-106",
+      "category": "Miscellaneous",
+      "subcategory": "Incl. Supir",
+      "item_name": "Inova",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-107",
+      "category": "Miscellaneous",
+      "subcategory": "Incl. Supir",
+      "item_name": "Grandmax",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-108",
+      "category": "Miscellaneous",
+      "subcategory": "Incl. Supir",
+      "item_name": "Hiace",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-109",
+      "category": "Miscellaneous",
+      "subcategory": "Incl. Supir",
+      "item_name": "Alphard",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-110",
+      "category": "Miscellaneous",
+      "subcategory": "Incl. Supir",
+      "item_name": "Bus",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-111",
+      "category": "Miscellaneous",
+      "subcategory": "Hotel Team EO",
+      "item_name": "Hotel Team Eo",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    },
+    {
+      "item_code": "MISC-112",
+      "category": "Miscellaneous",
+      "subcategory": "Hotel Talent Band National",
+      "item_name": "Hotel Talent Band National",
+      "default_unit": "unit",
+      "item_type": "legacy",
+      "unit_price": null,
+      "unit_cost": null,
+      "variants": []
+    }
+  ],
+  "zones": [
+    {
+      "Zone Code": "ZN-001",
+      "Zone Name": "Registration Area",
+      "Description": "Registrasi peserta / check-in area",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-002",
+      "Zone Name": "Foyer Area",
+      "Description": "Area publik / foyer / greeting area",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-003",
+      "Zone Name": "Holding Room",
+      "Description": "Ruang tunggu talent / VIP",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-004",
+      "Zone Name": "VIP Room",
+      "Description": "Ruang VIP / VVIP",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-005",
+      "Zone Name": "Medical Room",
+      "Description": "Ruang medis / standby dokter",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-006",
+      "Zone Name": "Talent Room",
+      "Description": "Ruang talent / wardrobe / makeup",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-007",
+      "Zone Name": "Committee Room",
+      "Description": "Ruang panitia / sekretariat",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-008",
+      "Zone Name": "Outdoor Area",
+      "Description": "Area outdoor / halaman / pelataran",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-009",
+      "Zone Name": "Entrance Gate",
+      "Description": "Area gerbang / security gate",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-010",
+      "Zone Name": "Main Hall",
+      "Description": "Area ballroom / hall utama",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-011",
+      "Zone Name": "Backstage",
+      "Description": "Area belakang panggung / operator",
+      "Status": "active"
+    },
+    {
+      "Zone Code": "ZN-012",
+      "Zone Name": "Loading Area",
+      "Description": "Area loading barang / vendor access",
+      "Status": "active"
+    }
+  ],
+  "units": [
+    {
+      "Unit Code": "UNT-001",
+      "Unit Symbol": "pcs",
+      "Unit Name": "Pieces",
+      "Unit Group": "count"
+    },
+    {
+      "Unit Code": "UNT-002",
+      "Unit Symbol": "set",
+      "Unit Name": "Set",
+      "Unit Group": "count"
+    },
+    {
+      "Unit Code": "UNT-003",
+      "Unit Symbol": "lot",
+      "Unit Name": "Lot",
+      "Unit Group": "bundle"
+    },
+    {
+      "Unit Code": "UNT-004",
+      "Unit Symbol": "pax",
+      "Unit Name": "Person",
+      "Unit Group": "people"
+    },
+    {
+      "Unit Code": "UNT-005",
+      "Unit Symbol": "pckg",
+      "Unit Name": "Package",
+      "Unit Group": "bundle"
+    },
+    {
+      "Unit Code": "UNT-006",
+      "Unit Symbol": "m1",
+      "Unit Name": "Meter Linear",
+      "Unit Group": "length"
+    },
+    {
+      "Unit Code": "UNT-007",
+      "Unit Symbol": "m2",
+      "Unit Name": "Meter Persegi",
+      "Unit Group": "area"
+    },
+    {
+      "Unit Code": "UNT-008",
+      "Unit Symbol": "unit",
+      "Unit Name": "Unit",
+      "Unit Group": "count"
+    },
+    {
+      "Unit Code": "UNT-009",
+      "Unit Symbol": "unit/day",
+      "Unit Name": "Unit per Day",
+      "Unit Group": "rental_time"
+    },
+    {
+      "Unit Code": "UNT-010",
+      "Unit Symbol": "set/day",
+      "Unit Name": "Set per Day",
+      "Unit Group": "rental_time"
+    },
+    {
+      "Unit Code": "UNT-011",
+      "Unit Symbol": "person/day",
+      "Unit Name": "Person per Day",
+      "Unit Group": "labor_time"
+    },
+    {
+      "Unit Code": "UNT-012",
+      "Unit Symbol": "person/show",
+      "Unit Name": "Person per Show",
+      "Unit Group": "talent_time"
+    },
+    {
+      "Unit Code": "UNT-013",
+      "Unit Symbol": "group/show",
+      "Unit Name": "Group per Show",
+      "Unit Group": "talent_time"
+    },
+    {
+      "Unit Code": "UNT-014",
+      "Unit Symbol": "trip",
+      "Unit Name": "Trip",
+      "Unit Group": "transport"
+    },
+    {
+      "Unit Code": "UNT-015",
+      "Unit Symbol": "room/night",
+      "Unit Name": "Room per Night",
+      "Unit Group": "accommodation_time"
+    },
+    {
+      "Unit Code": "UNT-016",
+      "Unit Symbol": "pair",
+      "Unit Name": "Pair",
+      "Unit Group": "count"
+    },
+    {
+      "Unit Code": "UNT-017",
+      "Unit Symbol": "dus",
+      "Unit Name": "Dus / Carton",
+      "Unit Group": "bundle"
+    },
+    {
+      "Unit Code": "UNT-018",
+      "Unit Symbol": "pct",
+      "Unit Name": "Percent",
+      "Unit Group": "percentage"
+    }
+  ]
+}
