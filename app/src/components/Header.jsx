@@ -1,42 +1,15 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { Link, useLocation } from 'react-router-dom'
 
 const NAV_LINKS = [
   { to: '/', label: 'Dashboard' },
-  { to: '/ratecard', label: 'Ratecard', adminOnly: true },
+  { to: '/ratecard', label: 'Ratecard' },
 ]
 
 export default function Header() {
   const { pathname } = useLocation()
-  const navigate = useNavigate()
-  const { user, profile, isAdmin, signOut, loading } = useAuth()
 
   const isBuilder = pathname.startsWith('/new') || pathname.startsWith('/edit')
   const isPreview = pathname.startsWith('/preview')
-  const isLogin = pathname === '/login'
-
-  const handleLogout = async () => {
-    await signOut()
-    navigate('/login')
-  }
-
-  // Minimal header for Login page
-  if (isLogin) {
-    return (
-      <header style={{
-        background: 'transparent',
-        position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100, height: 80,
-        display: 'flex', alignItems: 'center', justifyContent: 'center'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <svg width="24" height="24" viewBox="0 0 75 65" fill="none">
-            <path d="M37.5 0L75 65H0L37.5 0Z" fill="white"/>
-          </svg>
-          <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '0.1em' }}>JUARA</span>
-        </div>
-      </header>
-    )
-  }
 
   return (
     <header style={{
@@ -50,28 +23,35 @@ export default function Header() {
         {/* Logo Section */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="24" height="24" viewBox="0 0 75 65" fill="none">
+            {/* Vercel-like Triangle Logo (Simplified) */}
+            <svg width="24" height="24" viewBox="0 0 75 65" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M37.5 0L75 65H0L37.5 0Z" fill="white"/>
             </svg>
-            <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-.02em', color: 'var(--text)' }}>
+            <span style={{
+              fontWeight: 700, fontSize: 18,
+              letterSpacing: '-.02em', color: 'var(--text)',
+            }}>
               JUARA
             </span>
           </Link>
           <div style={{ width: 1, height: 24, background: 'var(--border)', margin: '0 4px' }} />
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-3)' }}>Quotation Builder</span>
+          <span style={{
+            fontSize: 13, fontWeight: 500, color: 'var(--text-3)',
+          }}>Quotation Builder</span>
         </div>
 
-        {/* Main Nav — Filtered by Role */}
-        {!isBuilder && !isPreview && user && (
+        {/* Main Nav — Center focus like Vercel */}
+        {!isBuilder && !isPreview && (
           <nav style={{ 
             display: 'flex', 
             alignItems: 'center', 
+            gap: 0, 
             height: '100%',
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)'
           }}>
-            {NAV_LINKS.filter(l => !l.adminOnly || isAdmin).map(link => {
+            {NAV_LINKS.map(link => {
               const active = pathname === link.to
               return (
                 <Link key={link.to} to={link.to}
@@ -89,8 +69,13 @@ export default function Header() {
                   {link.label}
                   {active && (
                     <div style={{
-                      position: 'absolute', bottom: -1, left: 0, right: 0, height: 2,
-                      background: 'var(--text)', borderRadius: '2px 2px 0 0'
+                      position: 'absolute',
+                      bottom: -1,
+                      left: 0,
+                      right: 0,
+                      height: 2,
+                      background: 'var(--text)',
+                      borderRadius: '2px 2px 0 0'
                     }} />
                   )}
                 </Link>
@@ -99,32 +84,17 @@ export default function Header() {
           </nav>
         )}
 
-        {/* Right Actions & User Profile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          {user && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ textAlign: 'right', display: 'none', md: 'block' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>{user.email.split('@')[0]}</div>
-                <div style={{ fontSize: 10, color: 'var(--text-3)', textTransform: 'uppercase' }}>{profile?.role || 'viewer'}</div>
-              </div>
-              <button 
-                onClick={handleLogout}
-                className="btn btn-ghost btn-sm" 
-                style={{ border: '1px solid var(--border)', padding: '4px 10px', height: 28 }}
-              >
-                Sign Out
-              </button>
-            </div>
-          )}
-
+        {/* Right Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {(isBuilder || isPreview) && (
-            <Link to="/" className="btn btn-ghost btn-sm">Back</Link>
+            <Link to="/" className="btn btn-ghost btn-sm" style={{ border: 'none' }}>Back</Link>
           )}
-          
-          {!isBuilder && !isPreview && user && (
-            <Link to="/new" className="btn btn-primary btn-sm" style={{ fontWeight: 600 }}>
-              Create New
-            </Link>
+          {!isBuilder && !isPreview && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Link to="/new" className="btn btn-primary btn-sm" style={{ fontWeight: 600 }}>
+                Create New
+              </Link>
+            </div>
           )}
         </div>
       </div>
