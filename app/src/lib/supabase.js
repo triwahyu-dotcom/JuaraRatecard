@@ -8,3 +8,12 @@ export const supabase = supabaseUrl && supabaseAnonKey
   : null;
 
 export const isSupabaseEnabled = !!supabase;
+
+// Auth Helpers
+export const auth = {
+  signUp: (email, password) => supabase.auth.signUp({ email, password }),
+  signIn: (email, password) => supabase.auth.signInWithPassword({ email, password }),
+  signOut: () => supabase.auth.signOut(),
+  onAuthStateChange: (cb) => supabase.auth.onAuthStateChange(cb),
+  getSession: () => supabase.auth.getSession(),
+};

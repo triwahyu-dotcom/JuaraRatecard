@@ -9,15 +9,22 @@
 
 ## 2. Cara Mengakses Aplikasi
 
-### 🌐 Melalui Browser (Live Vercel)
-Aplikasi sudah online dan dapat diakses dari perangkat apa saja (Laptop/Tablet) melalui link berikut:
-**[https://juara-ratecard.vercel.app](https://juara-ratecard.vercel.app)**
+---
 
-### 💻 Melalui Folder Lokal (Mac Only)
-Jika Anda bekerja secara offline di kantor:
-1.  Buka folder `juara-ratecard`.
-2.  Double-klik file **`JUARA_LAUNCHER.command`**.
-3.  Aplikasi akan terbuka otomatis di browser Anda.
+## 3. Keamanan & Sistem Multi-User
+
+Aplikasi ini sekarang dilengkapi dengan sistem keamanan tingkat industri untuk melindungi data ratecard perusahaan.
+
+### 🔑 Cara Login
+1.  Buka [https://juara-ratecard.vercel.app/login](https://juara-ratecard.vercel.app/login).
+2.  Masukkan **Email Bisnis** dan **Password** yang telah didaftarkan.
+3.  Sistem akan mengarahkan Anda ke Dashboard sesuai dengan hak akses Anda.
+
+### 👥 Peran Pengguna (Roles)
+Sistem membedakan tiga tingkat akses:
+*   **Admin**: Hak akses penuh. Bisa mengubah harga Master Ratecard, menambah kategori produk, dan mengelola seluruh penawaran.
+*   **Editor**: Bisa membuat, mengedit, dan menduplikasi penawaran (quotation), tetapi **tidak bisa** mengubah harga dasar (Master) di halaman Ratecard.
+*   **Viewer**: Hanya bisa melihat daftar penawaran dan melakukan Preview/Print. Cocok untuk pihak manajemen yang hanya perlu meninjau dokumen.
 
 ---
 
