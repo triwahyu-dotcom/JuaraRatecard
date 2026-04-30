@@ -1,0 +1,3568 @@
+{
+  "items": [
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A1. Konsep & Survey",
+      "item_name": "Survey & Koordinasi",
+      "unit": "pckg",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "transport + meals"
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A1. Konsep & Survey",
+      "item_name": "Concept & Ideation",
+      "unit": "pckg",
+      "unit_cost": 7000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A1. Konsep & Survey",
+      "item_name": "Concept & Ideation Development",
+      "unit": "pckg",
+      "unit_cost": 7000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A1. Konsep & Survey",
+      "item_name": "Event Proposal (Konsep)",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A1. Konsep & Survey",
+      "item_name": "Event Concept & Planning",
+      "unit": "pckg",
+      "unit_cost": 15000000.0,
+      "unit_sell": 20000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A2. Creative Design",
+      "item_name": "Creative Design 2D Visual",
+      "unit": "pckg",
+      "unit_cost": 4000000.0,
+      "unit_sell": 7500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A2. Creative Design",
+      "item_name": "Creative Design 3D Visual",
+      "unit": "pckg",
+      "unit_cost": 4000000.0,
+      "unit_sell": 7500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A2. Creative Design",
+      "item_name": "Creative Design 2D + 3D",
+      "unit": "pckg",
+      "unit_cost": 7000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A2. Creative Design",
+      "item_name": "3D Design Item Production",
+      "unit": "pckg",
+      "unit_cost": 4000000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "per revisi major"
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A2. Creative Design",
+      "item_name": "Revisi 3D Production",
+      "unit": "pckg",
+      "unit_cost": 1000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "update overall scenery"
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A3. Multimedia & Video",
+      "item_name": "Bumper Video (Opening/Transisi)",
+      "unit": "pckg",
+      "unit_cost": 18000000.0,
+      "unit_sell": 25000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A3. Multimedia & Video",
+      "item_name": "Manifesto / Profile Video",
+      "unit": "pckg",
+      "unit_cost": 22000000.0,
+      "unit_sell": 35000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A3. Multimedia & Video",
+      "item_name": "Multimedia Content (bumper, motion)",
+      "unit": "pckg",
+      "unit_cost": 35000000.0,
+      "unit_sell": 50000000.0,
+      "remarks": "Full paket"
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A3. Multimedia & Video",
+      "item_name": "Safety Planning & Flow Animation",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": "Khusus AFM"
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A4. Ticketing & Registration",
+      "item_name": "Ticketing Management Service (TMS)",
+      "unit": "pckg",
+      "unit_cost": 25000000.0,
+      "unit_sell": 40000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A4. Ticketing & Registration",
+      "item_name": "Registration Flow Design",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 5000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A4. Ticketing & Registration",
+      "item_name": "Manual Book Kepesertaan",
+      "unit": "pcs",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "print"
+    },
+    {
+      "category": "A. PLANNING & DEVELOPMENT",
+      "sub_category": "A4. Ticketing & Registration",
+      "item_name": "Participant Journey Plan",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": ""
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Ijin Kegiatan - POLSEK",
+      "unit": "pckg",
+      "unit_cost": 8000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per wilayah"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Ijin Kegiatan - POLRES",
+      "unit": "pckg",
+      "unit_cost": 12000000.0,
+      "unit_sell": 16000000.0,
+      "remarks": "per wilayah"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Ijin Kegiatan - POLDA",
+      "unit": "pckg",
+      "unit_cost": 12000000.0,
+      "unit_sell": 16000000.0,
+      "remarks": "per wilayah"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Ijin Kegiatan (POLSEK-POLRES-POLDA)",
+      "unit": "pckg",
+      "unit_cost": 15000000.0,
+      "unit_sell": 25000000.0,
+      "remarks": "paket lengkap"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "PAM Personil Kepolisian",
+      "unit": "prsn",
+      "unit_cost": 150000.0,
+      "unit_sell": 275000.0,
+      "remarks": "incl. meals"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Voojrider / Patwal Mobil",
+      "unit": "pckg",
+      "unit_cost": 3000000.0,
+      "unit_sell": 4550000.0,
+      "remarks": "1 unit"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Patwal Motor",
+      "unit": "pckg",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "rolling thunder"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B1. Ijin Kepolisian",
+      "item_name": "Parkir Area",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 15000000.0,
+      "remarks": "bayar EO"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B2. Instansi Lain",
+      "item_name": "DISHUB",
+      "unit": "pckg",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "ijin lalu lintas"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B2. Instansi Lain",
+      "item_name": "SATPOL PP",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "permit"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B2. Instansi Lain",
+      "item_name": "KODAM / KODIM / KORAMIL",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "permit"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B2. Instansi Lain",
+      "item_name": "Koordinasi Kawasan",
+      "unit": "lot",
+      "unit_cost": 0.0,
+      "unit_sell": 15000000.0,
+      "remarks": "coordination"
+    },
+    {
+      "category": "B. PERMIT & RETRIBUSI",
+      "sub_category": "B2. Instansi Lain",
+      "item_name": "Dana Koordinasi Antar Lintas",
+      "unit": "lot",
+      "unit_cost": 0.0,
+      "unit_sell": 5000000.0,
+      "remarks": "ormas setempat"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C1. Medical",
+      "item_name": "Ambulance + Tim Medis (Reguler)",
+      "unit": "unit",
+      "unit_cost": 2000000.0,
+      "unit_sell": 2600000.0,
+      "remarks": "inc. dokter & nakes"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C1. Medical",
+      "item_name": "Ambulance Mini ICU (VIP)",
+      "unit": "unit",
+      "unit_cost": 6000000.0,
+      "unit_sell": 7500000.0,
+      "remarks": "inc. dokter & peralatan"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C1. Medical",
+      "item_name": "Doctor VVIP",
+      "unit": "prsn",
+      "unit_cost": 3000000.0,
+      "unit_sell": 4000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C1. Medical",
+      "item_name": "Tim Medis Incl. Ambulance",
+      "unit": "unit",
+      "unit_cost": 1650000.0,
+      "unit_sell": 2200000.0,
+      "remarks": "8 jam"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C1. Medical",
+      "item_name": "Mini ICU Setup",
+      "unit": "pckg",
+      "unit_cost": 7500000.0,
+      "unit_sell": 10000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C2. Pemadam & HSE",
+      "item_name": "Damkar",
+      "unit": "unit",
+      "unit_cost": 3000000.0,
+      "unit_sell": 4750000.0,
+      "remarks": "1 unit standby"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C2. Pemadam & HSE",
+      "item_name": "Rain Master",
+      "unit": "pckg",
+      "unit_cost": 750000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "pawang hujan"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C2. Pemadam & HSE",
+      "item_name": "Safety & Security Plan",
+      "unit": "pckg",
+      "unit_cost": 8000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": "dokumen risk assessment"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C2. Pemadam & HSE",
+      "item_name": "Crowd Management Plan",
+      "unit": "pckg",
+      "unit_cost": 6000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "incl. audience flow"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "PASPAMPRES",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 13500000.0,
+      "remarks": "paket full"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "PASPAMPRES - Advance",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "PASPAMPRES - Deteksi",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "PASPAMPRES - Main Group",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "Internal Security (Non Ormas)",
+      "unit": "prsn",
+      "unit_cost": 400000.0,
+      "unit_sell": 500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "Internal Guard / Body Guard",
+      "unit": "prsn",
+      "unit_cost": 400000.0,
+      "unit_sell": 550000.0,
+      "remarks": "non ormas"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "Security / Internal Guard",
+      "unit": "prsn",
+      "unit_cost": 400000.0,
+      "unit_sell": 550000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "Akomodasi Team Security",
+      "unit": "room",
+      "unit_cost": 750000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "per room"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C3. Pengamanan (Personil)",
+      "item_name": "RI-1 Requirement Items (Presiden)",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 13500000.0,
+      "remarks": "kebutuhan protokol istana"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Secdoor",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "X-Ray Machine",
+      "unit": "unit",
+      "unit_cost": 5500000.0,
+      "unit_sell": 7000000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Scanner Carribe (registrasi)",
+      "unit": "unit",
+      "unit_cost": 250000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Hologram / Legalisir Akses",
+      "unit": "pcs",
+      "unit_cost": 2500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "VIP, panitia, peserta"
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Hologram Sticker (per pcs)",
+      "unit": "pcs",
+      "unit_cost": 2500.0,
+      "unit_sell": 5000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Social Mapping",
+      "unit": "pckg",
+      "unit_cost": 700000.0,
+      "unit_sell": 1000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Portable Toilet (Single Cabin)",
+      "unit": "unit",
+      "unit_cost": 2250000.0,
+      "unit_sell": 2750000.0,
+      "remarks": ""
+    },
+    {
+      "category": "C. HSE & SAFETY",
+      "sub_category": "C4. Peralatan & Equipment HSE",
+      "item_name": "Portable Toilet VIP",
+      "unit": "unit",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "AC, wastafel, full service"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Sewa Venue (Indoor / Ballroom)",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "Per hari, by client/venue \u2014 Sering by client \u2014 isi 0 jika disediakan klien"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Sewa Venue (Outdoor / Lapangan)",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "Per hari, by client/venue \u2014 Sering by client \u2014 isi 0 jika disediakan klien"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Sewa Venue Loading Day",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "Per hari loading in/out \u2014 Kadang gratis, kadang berbayar"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Venue Technical Support",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "Tim supporting venue/gedung \u2014 Istiqlal, venue khusus"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Venue Dressing Room / Backstage",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "Per event jika berbayar"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Parking Area Management",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 15000000.0,
+      "remarks": "Bayar EO ke pengelola parkir \u2014 Tergantung lokasi"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D1. Sewa Venue",
+      "item_name": "Sound Check / GR Venue Fee",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "Biaya GR di venue (jika ada) \u2014 Beberapa venue charge terpisah"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Stage 6x8m (Trust 60 + Lidah)",
+      "unit": "pckg",
+      "unit_cost": 4500000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "rigging system"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Stage 8x10m (Trust 60 + Lidah)",
+      "unit": "pckg",
+      "unit_cost": 6500000.0,
+      "unit_sell": 9000000.0,
+      "remarks": "rigging system"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Stage 10x12m (Trust 60 + Lidah)",
+      "unit": "pckg",
+      "unit_cost": 9000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": "rigging system"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Stage 12x14m (Trust 60 + Lidah)",
+      "unit": "pckg",
+      "unit_cost": 12000000.0,
+      "unit_sell": 17000000.0,
+      "remarks": "rigging system"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Stage Orchestra 10x8 H1.6",
+      "unit": "pckg",
+      "unit_cost": 40000000.0,
+      "unit_sell": 55000000.0,
+      "remarks": "multiplek fin. melaminto"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Main Stage Indoor LT.1",
+      "unit": "pckg",
+      "unit_cost": 140000000.0,
+      "unit_sell": 180000000.0,
+      "remarks": "dim.610x1952 h.40cm"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "FOH 5x5m (Single Deck)",
+      "unit": "pckg",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "Trust 60"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "FOH 6x4m (Single Deck)",
+      "unit": "pckg",
+      "unit_cost": 3000000.0,
+      "unit_sell": 4500000.0,
+      "remarks": "Trust 60"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Level 1 Stage / Front Lower",
+      "unit": "set",
+      "unit_cost": 6000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "854x122x20cm melaminto"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Level 3 Stage / Back Upper",
+      "unit": "set",
+      "unit_cost": 5500000.0,
+      "unit_sell": 7000000.0,
+      "remarks": "1220x60x60cm melaminto"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Band Stage",
+      "unit": "set",
+      "unit_cost": 5500000.0,
+      "unit_sell": 7000000.0,
+      "remarks": "366x366x10cm melaminto"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Choir Stage",
+      "unit": "set",
+      "unit_cost": 7500000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "488x366x10cm 2 layer"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Camera Stage",
+      "unit": "set",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "122x244x40cm"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Dekorasi Stage",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "multiplek + sticker"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Black Curtain",
+      "unit": "pckg",
+      "unit_cost": 16500000.0,
+      "unit_sell": 22000000.0,
+      "remarks": "dim.10x20m"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D2. Stage",
+      "item_name": "Cover FOH",
+      "unit": "set",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "122x854 kain hitam"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "LED Screen P2.6 (per m2)",
+      "unit": "m2",
+      "unit_cost": 500000.0,
+      "unit_sell": 800000.0,
+      "remarks": "outdoor/indoor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "LED Screen P3/P4 2x3m (Indoor)",
+      "unit": "unit",
+      "unit_cost": 3000000.0,
+      "unit_sell": 4500000.0,
+      "remarks": "incl. matrix & processor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "LED Screen P3/P4 4x6m (Indoor)",
+      "unit": "unit",
+      "unit_cost": 7000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "incl. matrix & processor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "LED Screen P6/P7 4x6m (Outdoor)",
+      "unit": "unit",
+      "unit_cost": 8000000.0,
+      "unit_sell": 11000000.0,
+      "remarks": "incl. matrix & processor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Base LED Indoor",
+      "unit": "pckg",
+      "unit_cost": 9000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": "122x1952 h.150"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Base LED Outdoor",
+      "unit": "pckg",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3000000.0,
+      "remarks": "dim.122x400 h.150cm"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Truss Safety LED Indoor 6x18m",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 14000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Truss Safety LED Outdoor 4x4m",
+      "unit": "pckg",
+      "unit_cost": 4500000.0,
+      "unit_sell": 6000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Projector 7.000 Lumens",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Projector 10.000 Lumens",
+      "unit": "unit",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Projector 15.000 Lumens",
+      "unit": "unit",
+      "unit_cost": 4000000.0,
+      "unit_sell": 5500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "LED TV 65\" incl. stand",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D3. LED Screen & Visual",
+      "item_name": "Switcher + Monitor (Edirol V8)",
+      "unit": "pckg",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Sound System 5.000 Watt",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 7500000.0,
+      "remarks": "inc. band gear groundstack"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Sound System 10.000 Watt",
+      "unit": "pckg",
+      "unit_cost": 8000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": "line array inc. band gear"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Sound System 15.000 Watt Indoor",
+      "unit": "pckg",
+      "unit_cost": 17500000.0,
+      "unit_sell": 22000000.0,
+      "remarks": "incl. riders artis"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Sound System 20.000 Watt",
+      "unit": "pckg",
+      "unit_cost": 15000000.0,
+      "unit_sell": 22000000.0,
+      "remarks": "line array"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Sound System 40.000 Watt",
+      "unit": "pckg",
+      "unit_cost": 25000000.0,
+      "unit_sell": 35000000.0,
+      "remarks": "line array"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Mini Sound System 2.000 Watt",
+      "unit": "pckg",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2200000.0,
+      "remarks": "standing"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Sound Delay 5.000 Watt",
+      "unit": "pckg",
+      "unit_cost": 2200000.0,
+      "unit_sell": 3000000.0,
+      "remarks": "standing"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Mic Wireless (Shure/Sennheiser)",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Delegate Mic",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 300000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Goose Mic",
+      "unit": "unit",
+      "unit_cost": 600000.0,
+      "unit_sell": 750000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "IEM G4 (In-Ear Monitor)",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D4. Sound System",
+      "item_name": "Rigging Sound (per side 9x3m)",
+      "unit": "side",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Lighting System Lengkap (Indoor)",
+      "unit": "pckg",
+      "unit_cost": 6000000.0,
+      "unit_sell": 8500000.0,
+      "remarks": "beam, parled, freshnell"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Lighting System (Standard)",
+      "unit": "pckg",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "LED 8 unit + fresnell + tripod"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Laser System",
+      "unit": "pckg",
+      "unit_cost": 30000000.0,
+      "unit_sell": 50000000.0,
+      "remarks": "paket"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Par LED (54x3W RGBW)",
+      "unit": "unit",
+      "unit_cost": 100000.0,
+      "unit_sell": 150000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Moving Head Wash 575W",
+      "unit": "unit",
+      "unit_cost": 450000.0,
+      "unit_sell": 650000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Follow Spot 1500W",
+      "unit": "unit",
+      "unit_cost": 600000.0,
+      "unit_sell": 850000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Follow Spot 2500W (HMI)",
+      "unit": "unit",
+      "unit_cost": 900000.0,
+      "unit_sell": 1250000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Freshnell 2KVA",
+      "unit": "unit",
+      "unit_cost": 300000.0,
+      "unit_sell": 400000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Stromi RGBW",
+      "unit": "pckg",
+      "unit_cost": 5500000.0,
+      "unit_sell": 7500000.0,
+      "remarks": "20 unit package"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "HPIT Penerangan Area (1000W)",
+      "unit": "unit",
+      "unit_cost": 300000.0,
+      "unit_sell": 400000.0,
+      "remarks": "tanpa tower"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D5. Lighting System",
+      "item_name": "Tower Lampu 4 Lampu (@1000W)",
+      "unit": "pckg",
+      "unit_cost": 900000.0,
+      "unit_sell": 1200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D6. Generator",
+      "item_name": "Genset 60 KVA (incl. solar)",
+      "unit": "unit",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "12 hours, silent type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D6. Generator",
+      "item_name": "Genset 80 KVA (incl. solar)",
+      "unit": "unit",
+      "unit_cost": 3200000.0,
+      "unit_sell": 4500000.0,
+      "remarks": "12 hours, silent type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D6. Generator",
+      "item_name": "Genset 100 KVA (incl. solar)",
+      "unit": "unit",
+      "unit_cost": 4500000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "12 hours, silent type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D6. Generator",
+      "item_name": "Genset 150 KVA (incl. solar)",
+      "unit": "unit",
+      "unit_cost": 6000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "12 hours, silent type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D6. Generator",
+      "item_name": "Genset 250 KVA (incl. solar)",
+      "unit": "unit",
+      "unit_cost": 6500000.0,
+      "unit_sell": 9000000.0,
+      "remarks": "12 hours, silent type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D6. Generator",
+      "item_name": "Cable Canal",
+      "unit": "mtr",
+      "unit_cost": 75000.0,
+      "unit_sell": 100000.0,
+      "remarks": "per meter"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D7. Special FX",
+      "item_name": "Pyrotechnic Standard",
+      "unit": "unit",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "per titik"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D7. Special FX",
+      "item_name": "CO2 Blast (incl. tabung)",
+      "unit": "unit",
+      "unit_cost": 800000.0,
+      "unit_sell": 1200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D7. Special FX",
+      "item_name": "Balloon Drop",
+      "unit": "unit",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D7. Special FX",
+      "item_name": "Konfeti Canon Giant",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D8. Tenda & Shelter",
+      "item_name": "Tenda Sarnafil 3x3 (excl. flooring)",
+      "unit": "unit",
+      "unit_cost": 600000.0,
+      "unit_sell": 850000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D8. Tenda & Shelter",
+      "item_name": "Tenda Sarnafil 3x3 (incl. flooring)",
+      "unit": "unit",
+      "unit_cost": 900000.0,
+      "unit_sell": 1200000.0,
+      "remarks": "incl. carpet + lighting"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D8. Tenda & Shelter",
+      "item_name": "Tenda Sarnafil 5x5 (Putih, incl. flooring)",
+      "unit": "unit",
+      "unit_cost": 1200000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "incl. carpet + lighting"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D8. Tenda & Shelter",
+      "item_name": "Tenda Sarnafil 5x5 (Hitam, incl. flooring)",
+      "unit": "unit",
+      "unit_cost": 1300000.0,
+      "unit_sell": 1700000.0,
+      "remarks": "incl. carpet + lighting"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D8. Tenda & Shelter",
+      "item_name": "Tenda Plafon / Tratak (per m2)",
+      "unit": "m2",
+      "unit_cost": 50000.0,
+      "unit_sell": 75000.0,
+      "remarks": "non dekor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D8. Tenda & Shelter",
+      "item_name": "Roders",
+      "unit": "m2",
+      "unit_cost": 90000.0,
+      "unit_sell": 120000.0,
+      "remarks": "per m2"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Registration Backdrop (244x366cm)",
+      "unit": "set",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "multiplek fin flexy"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Photowall / Doorstop (366x244cm)",
+      "unit": "set",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "multiplek fin flexy"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Side Backdrop (300x110cm)",
+      "unit": "set",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "multiplek fin flexy"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "T-Banner (3x1m, iron frame)",
+      "unit": "unit",
+      "unit_cost": 250000.0,
+      "unit_sell": 375000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Tripod Banner",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 400000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Totem Signage",
+      "unit": "unit",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Queue Line / Baricade Antrian",
+      "unit": "unit",
+      "unit_cost": 130000.0,
+      "unit_sell": 195000.0,
+      "remarks": "bank queue line"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Rowing Baricade",
+      "unit": "mtr",
+      "unit_cost": 35000.0,
+      "unit_sell": 45000.0,
+      "remarks": "per meter"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Standard Baricade",
+      "unit": "unit",
+      "unit_cost": 35000.0,
+      "unit_sell": 50000.0,
+      "remarks": "hitam tinggi 1.2m"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Mini Garden / Tanaman Hias",
+      "unit": "mtr",
+      "unit_cost": 400000.0,
+      "unit_sell": 750000.0,
+      "remarks": "per meter"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Pataka + Flag",
+      "unit": "set",
+      "unit_cost": 500000.0,
+      "unit_sell": 750000.0,
+      "remarks": "merah putih + event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D9. Branding & Signage",
+      "item_name": "Welcome Banner Flexy 1x5m",
+      "unit": "pcs",
+      "unit_cost": 130000.0,
+      "unit_sell": 200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Futura Chair incl. cover",
+      "unit": "unit",
+      "unit_cost": 20000.0,
+      "unit_sell": 35000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "IBM Table (180x60cm) incl. skirting",
+      "unit": "unit",
+      "unit_cost": 80000.0,
+      "unit_sell": 120000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Round Table (180cm)",
+      "unit": "unit",
+      "unit_cost": 60000.0,
+      "unit_sell": 150000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Sofa",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 300000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Coffee Table",
+      "unit": "unit",
+      "unit_cost": 150000.0,
+      "unit_sell": 250000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Centerpiece Meja",
+      "unit": "unit",
+      "unit_cost": 150000.0,
+      "unit_sell": 250000.0,
+      "remarks": "per meja"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "AC Portable 3PK",
+      "unit": "unit",
+      "unit_cost": 450000.0,
+      "unit_sell": 700000.0,
+      "remarks": "incl. instalasi"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "AC Portable 5PK",
+      "unit": "unit",
+      "unit_cost": 650000.0,
+      "unit_sell": 950000.0,
+      "remarks": "incl. instalasi"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Misty Fan",
+      "unit": "unit",
+      "unit_cost": 400000.0,
+      "unit_sell": 550000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Flooring Multiplek",
+      "unit": "m2",
+      "unit_cost": 60000.0,
+      "unit_sell": 75000.0,
+      "remarks": "per m2"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D10. Furniture & Equipment",
+      "item_name": "Carpet per m2",
+      "unit": "m2",
+      "unit_cost": 20000.0,
+      "unit_sell": 35000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D11. Multimedia Produksi",
+      "item_name": "Live Camera Paket (6 cam + Switcher + JJ)",
+      "unit": "pckg",
+      "unit_cost": 28000000.0,
+      "unit_sell": 40000000.0,
+      "remarks": "6 kamera + jimmy jib"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D11. Multimedia Produksi",
+      "item_name": "Switcher",
+      "unit": "unit",
+      "unit_cost": 5000000.0,
+      "unit_sell": 7000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D11. Multimedia Produksi",
+      "item_name": "System 4K & Relay",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 7000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D11. Multimedia Produksi",
+      "item_name": "TV Prompter 55 inch",
+      "unit": "set",
+      "unit_cost": 750000.0,
+      "unit_sell": 1000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D11. Multimedia Produksi",
+      "item_name": "Internet Dedicated 50Mbps Main+Backup",
+      "unit": "pckg",
+      "unit_cost": 15000000.0,
+      "unit_sell": 20000000.0,
+      "remarks": "one time charge"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Booth Sponsor Standar (Sarnafil 3x3)",
+      "unit": "unit",
+      "unit_cost": 900000.0,
+      "unit_sell": 1400000.0,
+      "remarks": "incl. fascia + flooring + lighting"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Booth Sponsor Medium (Sarnafil 5x5)",
+      "unit": "unit",
+      "unit_cost": 1300000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "incl. fascia + flooring + lighting"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Booth Sponsor Custom",
+      "unit": "m2",
+      "unit_cost": 350000.0,
+      "unit_sell": 550000.0,
+      "remarks": "rangka multiplek, full branding \u2014 Dihitung per m2"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Fascia Booth",
+      "unit": "unit",
+      "unit_cost": 600000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "print flexy, per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Booth UMKM / Tenant F&B",
+      "unit": "unit",
+      "unit_cost": 750000.0,
+      "unit_sell": 1100000.0,
+      "remarks": "sarnafil 3x3 tanpa fascia, incl. listrik \u2014 Outdoor festival"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Totem Signage Booth Partner",
+      "unit": "unit",
+      "unit_cost": 700000.0,
+      "unit_sell": 1200000.0,
+      "remarks": "multiplek fin. duco per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Level / Podium Booth",
+      "unit": "m2",
+      "unit_cost": 180000.0,
+      "unit_sell": 280000.0,
+      "remarks": "multiplek fin. carpet, per m2"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Electrical Instalasi Booth",
+      "unit": "titik",
+      "unit_cost": 150000.0,
+      "unit_sell": 250000.0,
+      "remarks": "per titik 2A"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Photo Spot Custom Booth",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10350000.0,
+      "remarks": "rangka + backdrop branding \u2014 Dari data PGN Bogor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Backdrop AI Photobooth",
+      "unit": "pckg",
+      "unit_cost": 14650000.0,
+      "unit_sell": 37500000.0,
+      "remarks": "system + backdrop + level \u2014 Termasuk hardware"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Glambot Machine",
+      "unit": "unit",
+      "unit_cost": 12000000.0,
+      "unit_sell": 28000000.0,
+      "remarks": "sewa per hari, incl. backdrop + level"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "TV Monitor 55\" untuk Booth",
+      "unit": "unit",
+      "unit_cost": 750000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "CCTV & FOH, sewa per unit per hari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Paket Photobooth (output 4R)",
+      "unit": "set",
+      "unit_cost": 4000000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "per hari incl. operator & printer"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Gamification System Setup",
+      "unit": "pckg",
+      "unit_cost": 60000000.0,
+      "unit_sell": 120000000.0,
+      "remarks": "software + hardware + operator \u2014 Motion tracking, barcode, dll"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Barcode / QR Scanner untuk Poin",
+      "unit": "unit",
+      "unit_cost": 250000.0,
+      "unit_sell": 400000.0,
+      "remarks": "per unit per hari, Carribe type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Redemption Counter / Helpdesk",
+      "unit": "pckg",
+      "unit_cost": 800000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "meja + fascia + petugas \u2014 per titik"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Reward / Merchandise Stock Management",
+      "unit": "pckg",
+      "unit_cost": 500000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "jasa pengelolaan reward harian"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Motion Tracking Game (NLE PC + TV 65\")",
+      "unit": "pckg",
+      "unit_cost": 6000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "software + hardware"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Inflatable Games / Kingdom Castle",
+      "unit": "unit",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5500000.0,
+      "remarks": "per unit per hari \u2014 Outdoor activation"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Face Painting",
+      "unit": "set",
+      "unit_cost": 2000000.0,
+      "unit_sell": 4000000.0,
+      "remarks": "per orang / per paket"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "SPG Coordinator / Supervisor",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 750000.0,
+      "remarks": ""
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Seragam SPG (full branding)",
+      "unit": "pcs",
+      "unit_cost": 80000.0,
+      "unit_sell": 150000.0,
+      "remarks": "per pcs, incl. printing brand"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Cooling Box / Display Produk",
+      "unit": "unit",
+      "unit_cost": 150000.0,
+      "unit_sell": 250000.0,
+      "remarks": "sewa per unit per hari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Mobile Sampling Cart / Trolley",
+      "unit": "unit",
+      "unit_cost": 300000.0,
+      "unit_sell": 500000.0,
+      "remarks": "sewa per unit per hari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Kasir / Cashier System",
+      "unit": "unit",
+      "unit_cost": 300000.0,
+      "unit_sell": 500000.0,
+      "remarks": "tablet + printer struk per hari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Sitting Area / Lounge Booth (Garden Set)",
+      "unit": "set",
+      "unit_cost": 300000.0,
+      "unit_sell": 500000.0,
+      "remarks": "per set per hari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Umbul-umbul / Flag Pole Area",
+      "unit": "unit",
+      "unit_cost": 150000.0,
+      "unit_sell": 250000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D12. Booth Sponsor & Activation",
+      "item_name": "Baso Chair Set",
+      "unit": "unit",
+      "unit_cost": 20000.0,
+      "unit_sell": 35000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Container / Toolbox Truck",
+      "unit": "unit",
+      "unit_cost": 70000000.0,
+      "unit_sell": 100000000.0,
+      "remarks": "sewa container 20ft untuk perlengkapan race \u2014 Event multi-kota"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Timing System + Sensor",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": "per paket per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Race Barrier / Jersey Barrier",
+      "unit": "unit",
+      "unit_cost": 750000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "per unit per event \u2014 Concrete type"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Barier dengan Branding",
+      "unit": "set",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "per set incl. branding"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Giant Cone Balloon",
+      "unit": "unit",
+      "unit_cost": 10000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": "per unit per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Drum Plastik dengan Branding",
+      "unit": "unit",
+      "unit_cost": 750000.0,
+      "unit_sell": 1200000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Starting Grid / Starting Gate",
+      "unit": "set",
+      "unit_cost": 3500000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "per set"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Rigging Set for Race Track",
+      "unit": "unit",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5500000.0,
+      "remarks": "per unit per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Decoration Rigging Circle Track",
+      "unit": "set",
+      "unit_cost": 80000000.0,
+      "unit_sell": 110000000.0,
+      "remarks": "per set per event \u2014 Custom build"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Race Track Lighting (HPIT + Tower)",
+      "unit": "titik",
+      "unit_cost": 750000.0,
+      "unit_sell": 1200000.0,
+      "remarks": "per titik track"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Tribun Portable",
+      "unit": "mtr",
+      "unit_cost": 40000.0,
+      "unit_sell": 65000.0,
+      "remarks": "per meter lari"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "A-Board / Standing A-Frame",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per unit per hari \u2014 Branding display"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Railing Banner",
+      "unit": "m2",
+      "unit_cost": 65000.0,
+      "unit_sell": 100000.0,
+      "remarks": "per unit per m2 \u2014 Indoor arena"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Hanging Banner Arena",
+      "unit": "m2",
+      "unit_cost": 130000.0,
+      "unit_sell": 200000.0,
+      "remarks": "per unit per m2"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Bantalan Ring / Padding",
+      "unit": "m2",
+      "unit_cost": 650000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "per unit per m2 \u2014 IBL/sport event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Backdrop Commentator / Press Conf",
+      "unit": "m2",
+      "unit_cost": 325000.0,
+      "unit_sell": 500000.0,
+      "remarks": "per unit per m2"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Cover Sound & Frame Screen",
+      "unit": "set",
+      "unit_cost": 7000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "kain mesh 9x9m"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Racing Suit",
+      "unit": "unit",
+      "unit_cost": 3500000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "sewa per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Helmet",
+      "unit": "unit",
+      "unit_cost": 1000000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "sewa per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Rompi / Bib Number Peserta",
+      "unit": "pcs",
+      "unit_cost": 100000.0,
+      "unit_sell": 200000.0,
+      "remarks": "per pcs"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Bendera Start / Marshal",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 400000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Air Horn / Peluit Starter",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Megaphone",
+      "unit": "unit",
+      "unit_cost": 500000.0,
+      "unit_sell": 800000.0,
+      "remarks": "sewa per unit per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Tempat Sampah Area (branded)",
+      "unit": "unit",
+      "unit_cost": 500000.0,
+      "unit_sell": 800000.0,
+      "remarks": "per unit per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Dapur Umum Setup",
+      "unit": "pckg",
+      "unit_cost": 3000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "peralatan masak area event \u2014 Camping/outdoor"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Mushola / Prayer Space Setup",
+      "unit": "pckg",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": "tenda + sajadah + perlengkapan"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Api Unggun",
+      "unit": "titik",
+      "unit_cost": 500000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "per titik per event \u2014 Camping event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Obor Dekorasi",
+      "unit": "unit",
+      "unit_cost": 500000.0,
+      "unit_sell": 800000.0,
+      "remarks": "per unit"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Lampu Dekorasi Karnaval",
+      "unit": "mtr",
+      "unit_cost": 45000.0,
+      "unit_sell": 80000.0,
+      "remarks": "per meter"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Info Board (100x180cm)",
+      "unit": "unit",
+      "unit_cost": 5000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "fabrication"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Registration Device (Tablet + SW)",
+      "unit": "unit",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "per unit per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "QR Card / Point Card",
+      "unit": "pcs",
+      "unit_cost": 3000.0,
+      "unit_sell": 5000.0,
+      "remarks": "per pcs cetak"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Score System / Point System App",
+      "unit": "pckg",
+      "unit_cost": 65000000.0,
+      "unit_sell": 100000000.0,
+      "remarks": "per event \u2014 Custom dev"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Ninebot / Gyroscooter",
+      "unit": "unit",
+      "unit_cost": 3000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "sewa per unit per event \u2014 Activation"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Gyimkhana / Motor Drift Show",
+      "unit": "pckg",
+      "unit_cost": 20000000.0,
+      "unit_sell": 50000000.0,
+      "remarks": "incl. talent & kendaraan"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "360 Photobooth Device",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 18000000.0,
+      "remarks": "incl. operator + transport"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Giant Puzzle",
+      "unit": "pckg",
+      "unit_cost": 50000000.0,
+      "unit_sell": 80000000.0,
+      "remarks": "per event \u2014 Custom"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Audience Games Equipment",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per paket per event"
+    },
+    {
+      "category": "D. VENUE SETUP & SYSTEM",
+      "sub_category": "D13. Race, Sport & Special Event Equipment",
+      "item_name": "Racing Simulator Games",
+      "unit": "unit",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per unit incl. setup"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E1. MC",
+      "item_name": "MC Nasional (Profesional)",
+      "unit": "prsn",
+      "unit_cost": 15000000.0,
+      "unit_sell": 30000000.0,
+      "remarks": "incl. riders & GR"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E1. MC",
+      "item_name": "MC Bobbi Teguh",
+      "unit": "prsn",
+      "unit_cost": 25000000.0,
+      "unit_sell": 30000000.0,
+      "remarks": "incl. riders"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E1. MC",
+      "item_name": "Moderator / Host",
+      "unit": "prsn",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "Isi sesuai kebutuhan"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E2. Band & Artis",
+      "item_name": "Band/Artis Besar (Eva Celia, Andien, dll)",
+      "unit": "prsn",
+      "unit_cost": 85000000.0,
+      "unit_sell": 145000000.0,
+      "remarks": "excl. riders"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E2. Band & Artis",
+      "item_name": "Female DJ incl. CDJ Turntable",
+      "unit": "prsn",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E4. Religi / Keagamaan",
+      "item_name": "Marawis Group",
+      "unit": "grup",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E4. Religi / Keagamaan",
+      "item_name": "Qori dan Saritilawah",
+      "unit": "prsn",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E5. Riders & Support Talent",
+      "item_name": "Uang Makan Talent Hari H",
+      "unit": "prsn",
+      "unit_cost": 300000.0,
+      "unit_sell": 500000.0,
+      "remarks": "per orang"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E5. Riders & Support Talent",
+      "item_name": "Car Production untuk Talent",
+      "unit": "unit",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "1 unit per event"
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E5. Riders & Support Talent",
+      "item_name": "Talent Coordinator",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "E. TALENTS",
+      "sub_category": "E5. Riders & Support Talent",
+      "item_name": "LO Talent",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 750000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "ID Card Art Carton",
+      "unit": "pcs",
+      "unit_cost": 3000000.0,
+      "unit_sell": 4000000.0,
+      "remarks": "per 1000 pcs"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "ID Card Art Carton + Mika",
+      "unit": "pcs",
+      "unit_cost": 3300.0,
+      "unit_sell": 5000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "ID Card PVC + Mika",
+      "unit": "pcs",
+      "unit_cost": 5500.0,
+      "unit_sell": 8500.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "ID Card + Lanyard (PVC)",
+      "unit": "pcs",
+      "unit_cost": 35000.0,
+      "unit_sell": 45000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "Lanyard Printing 2 Sisi",
+      "unit": "pcs",
+      "unit_cost": 8800.0,
+      "unit_sell": 12000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "Wristband RFID Peserta",
+      "unit": "pcs",
+      "unit_cost": 1300.0,
+      "unit_sell": 2500.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "Carpass (VIP/Panitia/Vendor)",
+      "unit": "pcs",
+      "unit_cost": 5000.0,
+      "unit_sell": 8000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F1. Accreditation & ID",
+      "item_name": "Sticker Bus",
+      "unit": "pcs",
+      "unit_cost": 13000.0,
+      "unit_sell": 20000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F2. Undangan & Cetak",
+      "item_name": "Cue Card Art Carton + Laminasi",
+      "unit": "pcs",
+      "unit_cost": 4000.0,
+      "unit_sell": 6000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F2. Undangan & Cetak",
+      "item_name": "Tent Card Art Carton + Laminasi",
+      "unit": "pcs",
+      "unit_cost": 3000.0,
+      "unit_sell": 5000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F2. Undangan & Cetak",
+      "item_name": "Sticker Seating Arrangement",
+      "unit": "pcs",
+      "unit_cost": 3500.0,
+      "unit_sell": 6000.0,
+      "remarks": "A6 doff"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F2. Undangan & Cetak",
+      "item_name": "Sticker Signage (A3 doff)",
+      "unit": "pcs",
+      "unit_cost": 25000.0,
+      "unit_sell": 35000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F4. Participant Management",
+      "item_name": "Head Kepesertaan",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 7500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F4. Participant Management",
+      "item_name": "Staff Kepesertaan",
+      "unit": "prsn",
+      "unit_cost": 2500000.0,
+      "unit_sell": 4000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F4. Participant Management",
+      "item_name": "Registration Crew",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 700000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F4. Participant Management",
+      "item_name": "Seating Arrangement Support",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 700000.0,
+      "remarks": ""
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F5. Competition & Award",
+      "item_name": "Sertifikat Peserta / Juara",
+      "unit": "pcs",
+      "unit_cost": 4000.0,
+      "unit_sell": 7000.0,
+      "remarks": "artcarton laminasi doff, per pcs"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F5. Competition & Award",
+      "item_name": "Sistem Penilaian Digital (Scoring)",
+      "unit": "pckg",
+      "unit_cost": 2000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "app + operator"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "F5. Competition & Award",
+      "item_name": "Reward Management Kompetisi",
+      "unit": "pckg",
+      "unit_cost": 1000000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "jasa pengelolaan hadiah & awarding"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "KOL / Key Opinion Leader",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 50000000.0,
+      "remarks": "per orang per event, excl. riders \u2014 Range lebar tergantung follower"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "Guest Builder / Komunitas Expert",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": "per orang per event \u2014 Kustom motor, dll"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "Drift Commentator",
+      "unit": "prsn",
+      "unit_cost": 15000000.0,
+      "unit_sell": 25000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "Auto Babes / CarWas Girl",
+      "unit": "prsn",
+      "unit_cost": 1500000.0,
+      "unit_sell": 3000000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "DJ Karaoke",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per event incl. setup"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "Sexy Dancer / Show Dancer",
+      "unit": "grup",
+      "unit_cost": 6000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": "3x perform per grup"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "Residence DJ",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per set per event"
+    },
+    {
+      "category": "F. PARTICIPANT & AUDIENCE",
+      "sub_category": "E6. Talent Festival & Sport",
+      "item_name": "Moderator / Talkshow Host",
+      "unit": "prsn",
+      "unit_cost": 1500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G1. Show Direction",
+      "item_name": "Stage Manager",
+      "unit": "prsn",
+      "unit_cost": 1200000.0,
+      "unit_sell": 2000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G1. Show Direction",
+      "item_name": "MC Briefer / Rundown Director",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G1. Show Direction",
+      "item_name": "Visual Jockey (VJ)",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G1. Show Direction",
+      "item_name": "Floor Manager",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G2. Usher & Floor",
+      "item_name": "Usher",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "jam 06.00-21.30"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G2. Usher & Floor",
+      "item_name": "Floor Staff / Floor Crew",
+      "unit": "prsn",
+      "unit_cost": 300000.0,
+      "unit_sell": 400000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G2. Usher & Floor",
+      "item_name": "Runner",
+      "unit": "prsn",
+      "unit_cost": 400000.0,
+      "unit_sell": 500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G2. Usher & Floor",
+      "item_name": "Cosplayer / Badut",
+      "unit": "prsn",
+      "unit_cost": 2500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G2. Usher & Floor",
+      "item_name": "Games Master + Asisten",
+      "unit": "set",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": "2 orang"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G3. VIP & VVIP Handling",
+      "item_name": "VIP Escort",
+      "unit": "prsn",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G3. VIP & VVIP Handling",
+      "item_name": "VVIP Escort",
+      "unit": "prsn",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G3. VIP & VVIP Handling",
+      "item_name": "Paspampres Deteksi Liaison",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G3. VIP & VVIP Handling",
+      "item_name": "Liaison Officer (LO)",
+      "unit": "prsn",
+      "unit_cost": 600000.0,
+      "unit_sell": 750000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G3. VIP & VVIP Handling",
+      "item_name": "Traffic (lalu lintas/protokol)",
+      "unit": "prsn",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G3. VIP & VVIP Handling",
+      "item_name": "Pembaca Doa",
+      "unit": "prsn",
+      "unit_cost": 1200000.0,
+      "unit_sell": 2000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Judges / Juri",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 3000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Host Floor Activity / Announcer",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Pro Rider / Pro Skater",
+      "unit": "prsn",
+      "unit_cost": 3000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per orang per event \u2014 Extreme sport"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Saweran Prize (uang pecahan)",
+      "unit": "pckg",
+      "unit_cost": 1000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "per event, total prize pool \u2014 Biasanya 2-3 jt/sesi"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Komunitas Extreme Sport (BMX/Skate)",
+      "unit": "pckg",
+      "unit_cost": 3000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "hire komunitas incl. ramp & media \u2014 Outdoor festival"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Parade / Nyetreet Coordinator",
+      "unit": "pckg",
+      "unit_cost": 1500000.0,
+      "unit_sell": 3000000.0,
+      "remarks": "koordinator + armada \u2014 Mobile publicity"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G4. Floor Activity & Competition",
+      "item_name": "Mural Competition Area",
+      "unit": "pckg",
+      "unit_cost": 2000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "space + spray cat + juri \u2014 Media 244x244 per team"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Race Director",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": "per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Marshal / Flagman",
+      "unit": "prsn",
+      "unit_cost": 2500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Booth Officer / Tenant Coordinator",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Racing Simulator Games Crew",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 800000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Audience Games Crew",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 750000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Community Coordinator",
+      "unit": "prsn",
+      "unit_cost": 3000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "RC Team (Race Committee)",
+      "unit": "pckg",
+      "unit_cost": 30000000.0,
+      "unit_sell": 50000000.0,
+      "remarks": "per event \u2014 Motorsport"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "OC Team (Organizing Committee)",
+      "unit": "pckg",
+      "unit_cost": 10000000.0,
+      "unit_sell": 20000000.0,
+      "remarks": "per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Technician / Mechanic on duty",
+      "unit": "prsn",
+      "unit_cost": 750000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "PIC Court / Area",
+      "unit": "prsn",
+      "unit_cost": 420000.0,
+      "unit_sell": 650000.0,
+      "remarks": "per orang per hari \u2014 IBL/indoor sport"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Ball Boy / Court Cleaner",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Petugas Locker Room",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Petugas Gate / Screening Gate",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Petugas Akreditasi",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Lounge Crew",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "F&B Area Crew",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "LO Tim / LO Pemain",
+      "unit": "prsn",
+      "unit_cost": 280000.0,
+      "unit_sell": 450000.0,
+      "remarks": "per orang per hari (LO atlet/tim) \u2014 Sport event"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "LO Wasit / Driver Wasit",
+      "unit": "prsn",
+      "unit_cost": 280000.0,
+      "unit_sell": 450000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "LO Media / Wartawan",
+      "unit": "prsn",
+      "unit_cost": 280000.0,
+      "unit_sell": 450000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Petugas Information Desk",
+      "unit": "prsn",
+      "unit_cost": 280000.0,
+      "unit_sell": 450000.0,
+      "remarks": "per orang per hari \u2014 Hotel/venue"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Cleaning Service",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Petugas Prokes / Health Protocol",
+      "unit": "prsn",
+      "unit_cost": 210000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Gather Staff / Check-in Crew",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 700000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "G. SHOW MANAGEMENT",
+      "sub_category": "G5. Race, Sport & Court Management",
+      "item_name": "Operator Sound System",
+      "unit": "prsn",
+      "unit_cost": 200000.0,
+      "unit_sell": 350000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H1. Project Team",
+      "item_name": "Project Director / Managing Dir",
+      "unit": "prsn",
+      "unit_cost": 8000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H1. Project Team",
+      "item_name": "Project Manager",
+      "unit": "prsn",
+      "unit_cost": 8000000.0,
+      "unit_sell": 12000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H1. Project Team",
+      "item_name": "Project Officer",
+      "unit": "prsn",
+      "unit_cost": 8000000.0,
+      "unit_sell": 15000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H1. Project Team",
+      "item_name": "Traffic & Administrator",
+      "unit": "prsn",
+      "unit_cost": 3500000.0,
+      "unit_sell": 6000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H1. Project Team",
+      "item_name": "Safety Security Officer (SSO)",
+      "unit": "prsn",
+      "unit_cost": 3500000.0,
+      "unit_sell": 8000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H2. Production & Logistics",
+      "item_name": "Production Manager",
+      "unit": "prsn",
+      "unit_cost": 4000000.0,
+      "unit_sell": 6000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H2. Production & Logistics",
+      "item_name": "Production Staff",
+      "unit": "prsn",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H2. Production & Logistics",
+      "item_name": "Production Crew",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 700000.0,
+      "remarks": "loading in & out"
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H2. Production & Logistics",
+      "item_name": "Logistic Manager / PIC",
+      "unit": "prsn",
+      "unit_cost": 3500000.0,
+      "unit_sell": 5000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H2. Production & Logistics",
+      "item_name": "Logistic Staff",
+      "unit": "prsn",
+      "unit_cost": 2000000.0,
+      "unit_sell": 3000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H3. Crowd Control & Security",
+      "item_name": "Safety & Security Officer",
+      "unit": "prsn",
+      "unit_cost": 5000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H3. Crowd Control & Security",
+      "item_name": "Coordinator Internal Guard",
+      "unit": "prsn",
+      "unit_cost": 700000.0,
+      "unit_sell": 1000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H3. Crowd Control & Security",
+      "item_name": "Head Crowd Control",
+      "unit": "prsn",
+      "unit_cost": 750000.0,
+      "unit_sell": 1200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H3. Crowd Control & Security",
+      "item_name": "Crowd Control",
+      "unit": "prsn",
+      "unit_cost": 500000.0,
+      "unit_sell": 700000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H4. Dokumentasi",
+      "item_name": "Fotografer",
+      "unit": "prsn",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H4. Dokumentasi",
+      "item_name": "Videografer",
+      "unit": "prsn",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H4. Dokumentasi",
+      "item_name": "Foto & Video (Drone)",
+      "unit": "pckg",
+      "unit_cost": 2500000.0,
+      "unit_sell": 3500000.0,
+      "remarks": "matt / drone"
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H4. Dokumentasi",
+      "item_name": "Highlight Video",
+      "unit": "pckg",
+      "unit_cost": 4000000.0,
+      "unit_sell": 6000000.0,
+      "remarks": "editing setelah event"
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H5. Sport Operations Support",
+      "item_name": "Tenant & Food Truck Coordinator",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "per orang per event"
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H5. Sport Operations Support",
+      "item_name": "Ass. Project Officer",
+      "unit": "prsn",
+      "unit_cost": 3000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "H. COMMITTEE & MANPOWER",
+      "sub_category": "H5. Sport Operations Support",
+      "item_name": "Program / Content / Activity Lead",
+      "unit": "prsn",
+      "unit_cost": 2000000.0,
+      "unit_sell": 4000000.0,
+      "remarks": ""
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I1. Kendaraan Operasional",
+      "item_name": "Innova + Driver (Talent)",
+      "unit": "unit",
+      "unit_cost": 700000.0,
+      "unit_sell": 1000000.0,
+      "remarks": "all in"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I1. Kendaraan Operasional",
+      "item_name": "Hi-Ace (incl. driver, meals, overtime)",
+      "unit": "unit",
+      "unit_cost": 1800000.0,
+      "unit_sell": 2400000.0,
+      "remarks": ""
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I1. Kendaraan Operasional",
+      "item_name": "Hiace Premio 14 Seat (12 jam + 6 OT)",
+      "unit": "unit",
+      "unit_cost": 3200000.0,
+      "unit_sell": 4200000.0,
+      "remarks": "incl. overtime 6 jam"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I1. Kendaraan Operasional",
+      "item_name": "Bus 30-seat (12 jam)",
+      "unit": "unit",
+      "unit_cost": 8000000.0,
+      "unit_sell": 11000000.0,
+      "remarks": "incl. driver"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I1. Kendaraan Operasional",
+      "item_name": "Colt Diesel (Toolbox area)",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2200000.0,
+      "remarks": "incl. install & cabling"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I1. Kendaraan Operasional",
+      "item_name": "Blind Van",
+      "unit": "unit",
+      "unit_cost": 650000.0,
+      "unit_sell": 900000.0,
+      "remarks": "1 unit per hari"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I2. Akomodasi Tim",
+      "item_name": "Hotel Bintang 4 (Talent/Nasional)",
+      "unit": "room",
+      "unit_cost": 750000.0,
+      "unit_sell": 1200000.0,
+      "remarks": ""
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I3. Komunikasi",
+      "item_name": "HT / Handy Talkie",
+      "unit": "unit",
+      "unit_cost": 40000.0,
+      "unit_sell": 75000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I3. Komunikasi",
+      "item_name": "HT Satelit",
+      "unit": "unit",
+      "unit_cost": 95000.0,
+      "unit_sell": 130000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I3. Komunikasi",
+      "item_name": "Clearcomm / Intercom",
+      "unit": "unit",
+      "unit_cost": 200000.0,
+      "unit_sell": 300000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Mini Bus (incl. driver)",
+      "unit": "unit",
+      "unit_cost": 850000.0,
+      "unit_sell": 1500000.0,
+      "remarks": "per unit per hari \u2014 Artis/tim regional"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Motor Rent (operasional KOL/LO)",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Logistic Transport (pickup/truk)",
+      "unit": "trip",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per trip"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Storing / Pengiriman Properti",
+      "unit": "trip",
+      "unit_cost": 5000000.0,
+      "unit_sell": 20000000.0,
+      "remarks": "per event multi-kota \u2014 Tergantung jarak"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Penyeberangan Kapal (Merak-Bkuheni)",
+      "unit": "unit",
+      "unit_cost": 1250000.0,
+      "unit_sell": 2000000.0,
+      "remarks": "per unit per crossing"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Penyeberangan Jawa-Kalimantan",
+      "unit": "unit",
+      "unit_cost": 16500000.0,
+      "unit_sell": 25000000.0,
+      "remarks": "per unit per crossing"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Tiket Pesawat PP",
+      "unit": "prsn",
+      "unit_cost": 1000000.0,
+      "unit_sell": 3000000.0,
+      "remarks": "per orang, estimasi domestik \u2014 Tergantung rute"
+    },
+    {
+      "category": "I. TRANSPORT & AKOMODASI",
+      "sub_category": "I4. Transport Khusus & Logistik Multi-kota",
+      "item_name": "Ground Transport (incl. BBM, Tol, Parkir)",
+      "unit": "unit",
+      "unit_cost": 750000.0,
+      "unit_sell": 1200000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "Makan Siang/Malam Crew",
+      "unit": "prsn",
+      "unit_cost": 28000.0,
+      "unit_sell": 45000.0,
+      "remarks": "per pax"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "Nasi Box Standard Pegawai",
+      "unit": "prsn",
+      "unit_cost": 65000.0,
+      "unit_sell": 85000.0,
+      "remarks": "per pax"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "Meals Box / Nasi Box Team",
+      "unit": "prsn",
+      "unit_cost": 30000.0,
+      "unit_sell": 50000.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "Coffee Break",
+      "unit": "prsn",
+      "unit_cost": 65000.0,
+      "unit_sell": 80000.0,
+      "remarks": "coffee, tea, snack"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "Snack Box / Coffee Break",
+      "unit": "prsn",
+      "unit_cost": 50000.0,
+      "unit_sell": 80000.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "AMDK (Air Mineral)",
+      "unit": "krtn",
+      "unit_cost": 40000.0,
+      "unit_sell": 55000.0,
+      "remarks": "per karton / dus"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J1. Meals Tim",
+      "item_name": "AMDK Gelas",
+      "unit": "dus",
+      "unit_cost": 50000.0,
+      "unit_sell": 65000.0,
+      "remarks": "per dus"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J2. Catering Peserta / VIP",
+      "item_name": "Buffet Dinner (Hotel)",
+      "unit": "prsn",
+      "unit_cost": 250000.0,
+      "unit_sell": 350000.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J2. Catering Peserta / VIP",
+      "item_name": "Buffet VIP",
+      "unit": "prsn",
+      "unit_cost": 200000.0,
+      "unit_sell": 300000.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J2. Catering Peserta / VIP",
+      "item_name": "Buffet VVIP",
+      "unit": "prsn",
+      "unit_cost": 250000.0,
+      "unit_sell": 400000.0,
+      "remarks": "min. 50 pax"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J2. Catering Peserta / VIP",
+      "item_name": "Makan Malam Peserta",
+      "unit": "prsn",
+      "unit_cost": 85000.0,
+      "unit_sell": 120000.0,
+      "remarks": "per pax"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J2. Catering Peserta / VIP",
+      "item_name": "Paket Buffet per pax (Additional)",
+      "unit": "prsn",
+      "unit_cost": 198000.0,
+      "unit_sell": 250000.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J2. Catering Peserta / VIP",
+      "item_name": "Lunch Box / Nasi Box",
+      "unit": "prsn",
+      "unit_cost": 30000.0,
+      "unit_sell": 50000.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J3. Amenities & Supplies",
+      "item_name": "Amenities (paket)",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J3. Amenities & Supplies",
+      "item_name": "Tissue Kering / Basah",
+      "unit": "pcs",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J3. Amenities & Supplies",
+      "item_name": "Sabun Cuci Tangan",
+      "unit": "pcs",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": ""
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J3. Amenities & Supplies",
+      "item_name": "Jas Hujan",
+      "unit": "pcs",
+      "unit_cost": 12000.0,
+      "unit_sell": 20000.0,
+      "remarks": "Outdoor"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J3. Amenities & Supplies",
+      "item_name": "Trashbag",
+      "unit": "krtn",
+      "unit_cost": 85000.0,
+      "unit_sell": 120000.0,
+      "remarks": "per karton"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J4. F&B Khusus & Catering Event",
+      "item_name": "Barbeque / Bakar-bakaran",
+      "unit": "prsn",
+      "unit_cost": 50000.0,
+      "unit_sell": 85000.0,
+      "remarks": "per pax \u2014 Camping/outdoor event"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J4. F&B Khusus & Catering Event",
+      "item_name": "Breakfast",
+      "unit": "prsn",
+      "unit_cost": 35000.0,
+      "unit_sell": 65000.0,
+      "remarks": "per pax"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J4. F&B Khusus & Catering Event",
+      "item_name": "Dinner (full)",
+      "unit": "prsn",
+      "unit_cost": 40000.0,
+      "unit_sell": 75000.0,
+      "remarks": "per pax"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J4. F&B Khusus & Catering Event",
+      "item_name": "Bensin / BBM Operasional",
+      "unit": "ltr",
+      "unit_cost": 9650.0,
+      "unit_sell": 12000.0,
+      "remarks": "per liter \u2014 Race/motor event"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J4. F&B Khusus & Catering Event",
+      "item_name": "Food Truck Sewa",
+      "unit": "unit",
+      "unit_cost": 3000000.0,
+      "unit_sell": 5000000.0,
+      "remarks": "per unit per hari, incl. operator"
+    },
+    {
+      "category": "J. F&B & KONSUMSI",
+      "sub_category": "J4. F&B Khusus & Catering Event",
+      "item_name": "Tenant F&B External",
+      "unit": "unit",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": "per booth per hari, revenue share/flat"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K1. ATK & Operasional",
+      "item_name": "ATK & Stationeries",
+      "unit": "pckg",
+      "unit_cost": 1500000.0,
+      "unit_sell": 2500000.0,
+      "remarks": "paket"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K1. ATK & Operasional",
+      "item_name": "Laptop",
+      "unit": "unit",
+      "unit_cost": 550000.0,
+      "unit_sell": 700000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K1. ATK & Operasional",
+      "item_name": "Printer",
+      "unit": "unit",
+      "unit_cost": 650000.0,
+      "unit_sell": 800000.0,
+      "remarks": "per unit per hari"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K1. ATK & Operasional",
+      "item_name": "Per Diem Tim",
+      "unit": "prsn",
+      "unit_cost": 150000.0,
+      "unit_sell": 250000.0,
+      "remarks": "per orang per hari"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K1. ATK & Operasional",
+      "item_name": "Cover Cue Card",
+      "unit": "pcs",
+      "unit_cost": 27000.0,
+      "unit_sell": 35000.0,
+      "remarks": ""
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K1. ATK & Operasional",
+      "item_name": "Standing Signage A3",
+      "unit": "unit",
+      "unit_cost": 350000.0,
+      "unit_sell": 500000.0,
+      "remarks": "rental"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K2. ASF & Fee Manajemen",
+      "item_name": "Agency Service Fee (ASF) EO",
+      "unit": "%",
+      "unit_cost": 10.0,
+      "unit_sell": 10.0,
+      "remarks": "10% dari subtotal"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K2. ASF & Fee Manajemen",
+      "item_name": "Agency Service Fee (ASF) AFM",
+      "unit": "%",
+      "unit_cost": 5.0,
+      "unit_sell": 5.0,
+      "remarks": "5% dari subtotal"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K2. ASF & Fee Manajemen",
+      "item_name": "Management Fee Vendor",
+      "unit": "%",
+      "unit_cost": 10.0,
+      "unit_sell": 10.0,
+      "remarks": "10% dari sub total vendor"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K2. ASF & Fee Manajemen",
+      "item_name": "PPN 12%",
+      "unit": "% ",
+      "unit_cost": 12.0,
+      "unit_sell": 12.0,
+      "remarks": "tarif berlaku Apr 2022+"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K3. Festival & Activation Ops",
+      "item_name": "Sampling Produk",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "per paket, isi sesuai brief klien \u2014 By client/sponsor"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K3. Festival & Activation Ops",
+      "item_name": "POSM / Props Activation",
+      "unit": "pckg",
+      "unit_cost": 0.0,
+      "unit_sell": 0.0,
+      "remarks": "per paket, isi sesuai brief klien \u2014 By client/sponsor"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K3. Festival & Activation Ops",
+      "item_name": "Goodie Bag Sponsor",
+      "unit": "pcs",
+      "unit_cost": 40000.0,
+      "unit_sell": 80000.0,
+      "remarks": "per pcs, isi oleh sponsor"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K3. Festival & Activation Ops",
+      "item_name": "Kantong Plastik Branding",
+      "unit": "pack",
+      "unit_cost": 17500.0,
+      "unit_sell": 30000.0,
+      "remarks": "per pack isi \u00b1100pcs"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K3. Festival & Activation Ops",
+      "item_name": "Stiker / Voucher Event",
+      "unit": "pack",
+      "unit_cost": 50000.0,
+      "unit_sell": 100000.0,
+      "remarks": "per pack cetak"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "Certificate of Honour",
+      "unit": "pcs",
+      "unit_cost": 15000.0,
+      "unit_sell": 25000.0,
+      "remarks": "artcarton laminasi, per pcs"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "Golden Ticket / Special Pass",
+      "unit": "pcs",
+      "unit_cost": 250000.0,
+      "unit_sell": 500000.0,
+      "remarks": "per pcs cetak premium"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "Ijin IMI / Federasi Olahraga",
+      "unit": "pckg",
+      "unit_cost": 25000000.0,
+      "unit_sell": 40000000.0,
+      "remarks": "per event \u2014 Motorsport/extreme sport"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "Ijin Konvoi / Parade Jalan",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 8000000.0,
+      "remarks": "per event per kota"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "Survei Venue Multi-kota",
+      "unit": "pckg",
+      "unit_cost": 5000000.0,
+      "unit_sell": 10000000.0,
+      "remarks": "per paket, incl. transport + meals"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "Video After Movie",
+      "unit": "pckg",
+      "unit_cost": 12500000.0,
+      "unit_sell": 25000000.0,
+      "remarks": "editing + distribusi"
+    },
+    {
+      "category": "K. OPERATIONAL & MISCELLANEOUS",
+      "sub_category": "K4. Event Olahraga & Multi-kota Ops",
+      "item_name": "After Movie / Highlight Reel",
+      "unit": "pckg",
+      "unit_cost": 12500000.0,
+      "unit_sell": 25000000.0,
+      "remarks": "per event \u2014 Sama dengan above, alias"
+    }
+  ]
+}

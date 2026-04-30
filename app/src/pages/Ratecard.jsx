@@ -589,7 +589,9 @@ function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
   return (
     <tr className="item-row" style={{ borderBottom: '1px solid var(--border)', background: hasPrice ? 'transparent' : 'rgba(234,179,8,0.03)' }}>
       <td style={{ padding: '8px 14px', width: colWidths.sec }}>
-        <CellInput value={local.category} onChange={v => handleChange('category', v)} onBlur={() => commit('category')} width={30} style={{textAlign:'center', fontWeight: 'bold'}} />
+        <div style={{ fontWeight: 800, fontSize: 10, color: 'var(--text-3)', textAlign: 'center' }}>
+          {(local.category || '').split(' ')[0]}
+        </div>
       </td>
       <td style={{ padding: '8px 14px', color: 'var(--text-2)', width: colWidths.cat }}>
         <CellInput value={local.sub_category} onChange={v => handleChange('sub_category', v)} onBlur={() => commit('sub_category')} placeholder="Kategori" />
