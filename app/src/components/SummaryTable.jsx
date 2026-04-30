@@ -152,7 +152,7 @@ export default function SummaryTable({ items: _items, quotation, eventData, onEv
             </div>
           </div>
           
-          {items.some(i => !i.unit_sell && !i.unit_price && !i.is_complimentary) && (
+          {items.some(i => !i.unit_sell && !i.is_complimentary) && (
             <div className="card-sm" style={{ background: 'rgba(245,166,35,0.05)', borderColor: 'rgba(245,166,35,0.2)', color: 'var(--yellow)', fontSize: 12, marginTop: 24, display: 'flex', gap: 12 }}>
               <span style={{ fontSize: 16 }}>⚠</span>
               <div>

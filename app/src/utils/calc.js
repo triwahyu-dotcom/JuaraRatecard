@@ -38,7 +38,7 @@ export function calcLineCost(item) {
 export function calcLineSell(item) {
   if (item.is_complimentary || item.provided_by) return 0;
   
-  const priceInput = item.unit_price ?? item.unit_sell;
+  const priceInput = item.unit_sell;
   if (!isValNumeric(priceInput)) return 0;
 
   const price    = Number(priceInput);

@@ -272,29 +272,25 @@ export default function Builder() {
   const handleAdd = (ratecardItem) => {
     const key = `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
-    const mCost = ratecardItem.unit_cost || (ratecardItem.unit_price ? Math.round(ratecardItem.unit_price / 1.25) : 0)
-    const mSell = ratecardItem.unit_sell || ratecardItem.unit_price || calcSellFromMargin(mCost, 20)
+    const sectionName = ratecardItem.category || 'A. SETUP & SYSTEM'
+    const sectionCode = sectionName.split('.')[0] || 'A'
 
     const newItem = {
       _ratecard_key: key,
       item_code: ratecardItem.item_code,
-      section_code: ratecardItem.section || 'A',
-      section_name: ratecardItem.section_name,
+      section_code: sectionCode,
+      section_name: sectionName,
       category: ratecardItem.category,
-      sub_category: '',
+      sub_category: ratecardItem.sub_category || '',
       item_name: ratecardItem.item_name,
-      spec: ratecardItem.description || '',
+      spec: ratecardItem.remarks || '',
       qty: 1,
-      qty_unit: ratecardItem.default_unit || 'unit',
-      duration_qty: 1,
-      duration_unit: 'day',
-      frequency_qty: 1,
-      frequency_unit: 'event',
-      unit_cost: mCost,
-      unit_sell: mSell,
+      qty_unit: ratecardItem.unit || 'unit',
+      freq: 1,
+      freq_unit: 'evt',
+      unit_cost: ratecardItem.unit_cost || 0,
+      unit_sell: ratecardItem.unit_sell || 0,
       is_complimentary: false,
-      variant_name: ratecardItem.variants?.length ? ratecardItem.variants[0].name : null,
-      zone_name: null,
     }
 
     if (activeIndex !== null && activeIndex >= 0) {
@@ -333,21 +329,22 @@ export default function Builder() {
           const mCost = rcItem.unit_cost ?? 0
           const mSell = rcItem.unit_sell ?? rcItem.unit_price ?? 0
           
+          const sectionName = rcItem.category || 'A. SETUP & SYSTEM'
+          const sectionCode = sectionName.split('.')[0] || 'A'
+          
           newItems.push({
             _ratecard_key: key,
             item_code: rcItem.item_code,
-            section_code: rcItem.section || 'A',
-            section_name: rcItem.section_name || rcItem.section || 'A',
+            section_code: sectionCode,
+            section_name: sectionName,
             category: rcItem.category || 'Standard',
-            sub_category: '',
+            sub_category: rcItem.sub_category || '',
             item_name: rcItem.item_name,
-            spec: rcItem.description || '',
-            qty: rcItem.qty_default || 1,
-            qty_unit: rcItem.qty_unit || 'unit',
-            duration_qty: rcItem.freq_default || 1,
-            duration_unit: rcItem.freq_unit || 'day',
-            frequency_qty: 1,
-            frequency_unit: 'event',
+            spec: rcItem.remarks || '',
+            qty: item.quantity || 1,
+            qty_unit: rcItem.unit || 'unit',
+            freq: 1,
+            freq_unit: 'evt',
             unit_cost: mCost,
             unit_sell: mSell,
             is_complimentary: false,
@@ -630,15 +627,18 @@ export default function Builder() {
         }
 
         if (match) {
+          const sectionName = match.category || item.section_name || 'A. SETUP & SYSTEM'
+          const sectionCode = sectionName.split('.')[0] || 'A'
+
           return {
             ...item,
             category: match.category || item.category,
-            section_code: match.section || item.section_code,
-            section_name: match.section_name || item.section_name,
+            section_code: sectionCode,
+            section_name: sectionName,
             unit_cost: match.unit_cost || 0,
-            qty_unit: match.default_unit || item.qty_unit,
-            unit_sell: item.unit_sell || match.unit_price || 0,
-            _matched_fuzzy: !ratecardData.includes(match) // flag if it was a fuzzy match
+            qty_unit: match.unit || item.qty_unit,
+            unit_sell: item.unit_sell || match.unit_sell || 0,
+            _matched_fuzzy: true // simplify flag
           };
         } else {
           // 3. Fallback: Smart Category Prediction

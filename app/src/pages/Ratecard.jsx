@@ -141,7 +141,7 @@ export default function Ratecard() {
   // Stats & Dynamic Sections
   const stats = useMemo(() => {
     const total = items.length
-    const priced = items.filter(i => i.sell_price != null && i.sell_price > 0).length
+    const priced = items.filter(i => i.unit_sell != null && i.unit_sell > 0).length
     const sections = [...new Set(items.map(i => i.category))].sort()
     return { total, priced, tbd: total - priced, sections }
   }, [items])
@@ -150,22 +150,22 @@ export default function Ratecard() {
   const filtered = useMemo(() => {
     let list = items
     if (filterSection !== 'ALL') list = list.filter(i => i.category === filterSection)
-    if (filterPriced === 'PRICED') list = list.filter(i => i.sell_price > 0)
-    if (filterPriced === 'TBD') list = list.filter(i => !i.sell_price)
+    if (filterPriced === 'PRICED') list = list.filter(i => i.unit_sell > 0)
+    if (filterPriced === 'TBD') list = list.filter(i => !i.unit_sell)
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(i =>
-        i.name?.toLowerCase().includes(q) ||
-        i.subcategory?.toLowerCase().includes(q) ||
-        i.description?.toLowerCase().includes(q)
+        i.item_name?.toLowerCase().includes(q) ||
+        i.sub_category?.toLowerCase().includes(q) ||
+        i.remarks?.toLowerCase().includes(q)
       )
     }
     // Sort
     list = [...list].sort((a, b) => {
-      if (sortBy === 'section') return (a.category || '').localeCompare(b.category || '') || (a.subcategory || '').localeCompare(b.subcategory || '')
-      if (sortBy === 'price_asc') return (a.sell_price || 0) - (b.sell_price || 0)
-      if (sortBy === 'price_desc') return (b.sell_price || 0) - (a.sell_price || 0)
-      if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '')
+      if (sortBy === 'section') return (a.category || '').localeCompare(b.category || '') || (a.sub_category || '').localeCompare(b.sub_category || '')
+      if (sortBy === 'price_asc') return (a.unit_sell || 0) - (b.unit_sell || 0)
+      if (sortBy === 'price_desc') return (b.unit_sell || 0) - (a.unit_sell || 0)
+      if (sortBy === 'name') return (a.item_name || '').localeCompare(b.item_name || '')
       return 0
     })
     return list
@@ -176,7 +176,7 @@ export default function Ratecard() {
     const g = {}
     filtered.forEach(item => {
       const sk = item.category || 'Uncategorized'
-      const ck = item.subcategory || 'General'
+      const ck = item.sub_category || 'General'
       if (!g[sk]) g[sk] = { section: item.category, section_name: item.category, categories: {} }
       if (!g[sk].categories[ck]) g[sk].categories[ck] = []
       g[sk].categories[ck].push(item)
@@ -235,11 +235,10 @@ export default function Ratecard() {
   const handleExportExcel = () => {
     const exportData = items.map(item => ({
       'SECTION': item.section,
-      'SUB CATEGORY': item.category,
+      'SUB CATEGORY': item.sub_category || 'General',
       'ITEM NAME': item.item_name,
-      'SPECIFICATION': item.description || '',
-      'QTY UNIT': item.qty_unit,
-      'FREQ UNIT': item.freq_unit,
+      'SPECIFICATION': item.remarks || '',
+      'QTY UNIT': item.unit,
       'PRICE': item.unit_sell || 0,
       'COA': item.coa_code || ''
     }));
@@ -269,15 +268,14 @@ export default function Ratecard() {
             const newItem = {
               section: row['SECTION'] || 'Other',
               section_name: row['SECTION'] || 'Other',
-              category: row['SUB CATEGORY'] || 'General',
+              category: row['SECTION'] || 'Other',
+              sub_category: row['SUB CATEGORY'] || 'General',
               item_name: row['ITEM NAME'],
-              description: row['SPECIFICATION'] || '',
-              qty_default: 1,
-              qty_unit: row['QTY UNIT'] || 'unit',
-              freq_default: 1,
-              freq_unit: row['FREQ UNIT'] || 'day',
+              remarks: row['SPECIFICATION'] || '',
+              unit: row['QTY UNIT'] || 'unit',
+              unit_cost: 0,
               unit_sell: row['PRICE'] || 0,
-              coa_code: row['COA'] || ''
+              updated_at: new Date().toISOString()
             };
             if (newItem.item_name) {
               await createRatecardItem(newItem);
@@ -307,11 +305,9 @@ export default function Ratecard() {
           'NAMA PAKET': bundle.name,
           'DESKRIPSI PAKET': bundle.description,
           'ITEM CODE': item.item_code,
-          'ITEM NAME': item.name || '',
+          'ITEM NAME': item.item_name || '',
           'QTY': item.quantity,
-          'DURATION': item.duration,
-          'UNIT': item.dur_unit,
-          'NOTE': item.note || ''
+          'NOTE': item.remarks || ''
         });
       });
     });
@@ -594,27 +590,27 @@ function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
         <CellInput value={local.category} onChange={v => handleChange('category', v)} onBlur={() => commit('category')} width={30} style={{textAlign:'center', fontWeight: 'bold'}} />
       </td>
       <td style={{ padding: '8px 14px', color: 'var(--text-2)', width: colWidths.cat }}>
-        <CellInput value={local.subcategory} onChange={v => handleChange('subcategory', v)} onBlur={() => commit('subcategory')} placeholder="Kategori" />
+        <CellInput value={local.sub_category} onChange={v => handleChange('sub_category', v)} onBlur={() => commit('sub_category')} placeholder="Kategori" />
       </td>
       
       {/* Item Name */}
       <td style={{ padding: '8px 14px', width: colWidths.item }}>
         <div style={{ fontWeight: 600 }}>
-          <CellInput value={local.name} onChange={v => handleChange('name', v)} onBlur={() => commit('name')} placeholder="Nama Barang/Jasa" />
+          <CellInput value={local.item_name} onChange={v => handleChange('item_name', v)} onBlur={() => commit('item_name')} placeholder="Nama Barang/Jasa" />
         </div>
       </td>
-
+      
       {/* Vendor */}
       <td style={{ padding: '8px 14px', width: colWidths.vendor }}>
-        <CellInput value={local.vendor} onChange={v => handleChange('vendor', v)} onBlur={() => commit('vendor')} placeholder="Vendor..." style={{fontSize: 12, color: 'var(--text-2)'}} />
+        <CellInput value={local.vendor_name} onChange={v => handleChange('vendor_name', v)} onBlur={() => commit('vendor_name')} placeholder="Vendor..." style={{fontSize: 12, color: 'var(--text-2)'}} />
       </td>
 
       {/* Description */}
       <td style={{ padding: '8px 14px', width: colWidths.desc }}>
         <textarea 
-          value={local.description || ''} 
-          onChange={e => handleChange('description', e.target.value)}
-          onBlur={() => commit('description')}
+          value={local.remarks || ''} 
+          onChange={e => handleChange('remarks', e.target.value)}
+          onBlur={() => commit('remarks')}
           placeholder="Spek teknis..."
           style={{ width: '100%', padding: '4px 0', background: 'transparent', border: 'none', color: 'var(--text-3)', fontSize: 11, resize: 'none', height: 32, lineHeight: '1.2' }}
         />
@@ -628,13 +624,16 @@ function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
       <td style={{ padding: '8px 14px', width: colWidths.hpp }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
-          <NumCellInput value={local.cost_price} onChange={v => handleChange('cost_price', v)} onBlur={() => commit('cost_price')} placeholder="Cost" style={{fontWeight: 600, color: 'var(--text-2)'}} />
+      <td style={{ padding: '8px 14px', width: colWidths.hpp }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
+          <NumCellInput value={local.unit_cost} onChange={v => handleChange('unit_cost', v)} onBlur={() => commit('unit_cost')} placeholder="Cost" style={{fontWeight: 600, color: 'var(--text-2)'}} />
         </div>
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.sell }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
-          <NumCellInput value={local.sell_price} onChange={v => handleChange('sell_price', v)} onBlur={() => commit('sell_price')} placeholder="Harga Jual" style={{fontWeight: 700, color: hasPrice ? 'var(--green)' : 'var(--yellow)', background: hasPrice ? 'transparent' : 'rgba(234,179,8,0.1)'}} />
+          <NumCellInput value={local.unit_sell} onChange={v => handleChange('unit_sell', v)} onBlur={() => commit('unit_sell')} placeholder="Harga Jual" style={{fontWeight: 700, color: hasPrice ? 'var(--green)' : 'var(--yellow)', background: hasPrice ? 'transparent' : 'rgba(234,179,8,0.1)'}} />
         </div>
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.coa }}>
@@ -652,23 +651,25 @@ function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
 
 /* ── Ghost Row (Add Item) ─────────────────────────────────────────── */
 function GhostRow({ onAdd, colWidths, existingItems }) {
-  const blank = { category: '', subcategory: '', name: '', description: '', unit: 'unit', cost_price: 0, sell_price: 0, coa_code: '' };
+  const blank = { item_code: '', item_name: '', category: '', sub_category: '', unit: 'unit', unit_cost: 0, unit_sell: 0, vendor_name: '', remarks: '', updated_at: '' };
   const [local, setLocal] = useState({ ...blank });
 
   const handleChange = (field, val) => {
-    if (field === 'cost_price' || field === 'sell_price') val = val === '' ? 0 : Number(val);
+    if (field === 'unit_cost' || field === 'unit_sell') val = val === '' ? 0 : Number(val);
     setLocal(prev => ({ ...prev, [field]: val }))
   }
 
   const commit = () => {
-    if (!local.name) return; // name is required
+    if (!local.item_name) return; // name is required
     
     onAdd({
       ...local,
+      item_code: local.item_code || `CUST-${Date.now()}`,
       category: local.category || 'General',
-      subcategory: local.subcategory || 'General',
+      sub_category: local.sub_category || 'General',
+      updated_at: new Date().toISOString()
     });
-    setLocal({ ...blank, category: local.category, subcategory: local.subcategory }); // keep input
+    setLocal({ ...blank, category: local.category, sub_category: local.sub_category }); // keep input
   }
 
   const handleKeyDown = (e) => {
@@ -681,12 +682,12 @@ function GhostRow({ onAdd, colWidths, existingItems }) {
         <CellInput value={local.category} onChange={v => handleChange('category', v)} placeholder="Sec" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.cat }}>
-        <CellInput value={local.subcategory} onChange={v => handleChange('subcategory', v)} placeholder="+ Kategori" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <CellInput value={local.sub_category} onChange={v => handleChange('sub_category', v)} placeholder="+ Kategori" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: 0, width: colWidths.item }}>
         <input 
-          value={local.name || ''} 
-          onChange={e => handleChange('name', e.target.value)}
+          value={local.item_name || ''} 
+          onChange={e => handleChange('item_name', e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="+ Item Baru"
           style={{ width: '100%', padding: '10px 14px', background: 'var(--surface)', border: 'none', color: 'var(--text)', fontWeight: 600 }}
@@ -694,8 +695,8 @@ function GhostRow({ onAdd, colWidths, existingItems }) {
       </td>
       <td style={{ padding: 0, width: colWidths.vendor }}>
         <input 
-          value={local.vendor || ''} 
-          onChange={e => handleChange('vendor', e.target.value)}
+          value={local.vendor_name || ''} 
+          onChange={e => handleChange('vendor_name', e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Vendor"
           style={{ width: '100%', padding: '10px 14px', background: 'var(--surface)', border: 'none', color: 'var(--text-2)', fontSize: 12 }}
@@ -703,8 +704,8 @@ function GhostRow({ onAdd, colWidths, existingItems }) {
       </td>
       <td style={{ padding: 0, width: colWidths.desc }}>
         <input 
-          value={local.description || ''} 
-          onChange={e => handleChange('description', e.target.value)}
+          value={local.remarks || ''} 
+          onChange={e => handleChange('remarks', e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Spek..."
           style={{ width: '100%', padding: '10px 14px', background: 'var(--surface)', border: 'none', color: 'var(--text-3)', fontSize: 12 }}
@@ -716,10 +717,10 @@ function GhostRow({ onAdd, colWidths, existingItems }) {
         </div>
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.hpp }}>
-        <NumCellInput value={local.cost_price} onChange={v => handleChange('cost_price', v)} placeholder="Cost" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <NumCellInput value={local.unit_cost} onChange={v => handleChange('unit_cost', v)} placeholder="Cost" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.sell }}>
-        <NumCellInput value={local.sell_price} onChange={v => handleChange('sell_price', v)} placeholder="Jual" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <NumCellInput value={local.unit_sell} onChange={v => handleChange('unit_sell', v)} placeholder="Jual" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.coa }}>
         <CellInput value={local.coa_code} onChange={v => handleChange('coa_code', v)} placeholder="COA" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />

@@ -17,9 +17,9 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
     const matchCategory = activeCategory === 'ALL' || item.category === activeCategory
     const q = search.toLowerCase()
     const matchSearch = !q ||
-      item.name?.toLowerCase().includes(q) ||
+      item.item_name?.toLowerCase().includes(q) ||
       item.category?.toLowerCase().includes(q) ||
-      item.description?.toLowerCase().includes(q)
+      item.remarks?.toLowerCase().includes(q)
     return matchCategory && matchSearch
   })
 
@@ -33,10 +33,10 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
   )
 
   const grouped = filtered.reduce((acc, item) => {
-    const key = `${item.category}||${item.subcategory}`
+    const key = `${item.category}||${item.sub_category || ''}`
     if (!acc[key]) acc[key] = { 
       category: item.category, 
-      subcategory: item.subcategory, 
+      subcategory: item.sub_category || '', 
       items: [] 
     }
     acc[key].items.push(item)
@@ -162,7 +162,7 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
                   <div style={{ display: 'flex', flexDirection: 'column', padding: '4px 0' }}>
                     {group.items.map((item, idx) => {
                       const selected = isSelected(item)
-                      const hasPrice = item.unit_price !== null && item.unit_price > 0
+                      const hasPrice = item.unit_sell !== null && item.unit_sell > 0
                       
                       return (
                         <div key={idx}
@@ -183,15 +183,15 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
 
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 12, fontWeight: 500, color: selected ? 'var(--text)' : 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                              {item.name}
+                              {item.item_name}
                             </div>
-                            {item.description && (
+                            {item.remarks && (
                               <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {item.description}
+                                {item.remarks}
                               </div>
                             )}
                             <div style={{ fontSize: 9, color: 'var(--text-3)', marginTop: 1 }}>
-                              {fmtRp(item.sell_price || 0)} per {item.unit || 'unit'}
+                              {fmtRp(item.unit_sell || 0)} per {item.unit || 'unit'}
                             </div>
                           </div>
                           {!hasPrice && <span className="badge badge-yellow" style={{ fontSize: 7, padding: '1px 4px' }}>TBD</span>}
