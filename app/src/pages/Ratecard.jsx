@@ -278,10 +278,9 @@ export default function Ratecard() {
               updated_at: new Date().toISOString()
             };
             if (newItem.item_name) {
-              await createRatecardItem(newItem);
+              await createItemMutation(newItem);
             }
           }
-          load();
           alert('Import selesai!');
         } catch (err) {
           console.error(err);

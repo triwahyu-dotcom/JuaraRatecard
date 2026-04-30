@@ -20,13 +20,14 @@ export const listCategories = query({
 // Create master item
 export const createItem = mutation({
   args: {
-    name: v.string(),
+    item_name: v.string(),
     category: v.string(),
-    subcategory: v.string(),
+    sub_category: v.string(),
     unit: v.string(),
-    cost_price: v.number(),
-    sell_price: v.number(),
-    description: v.optional(v.string()),
+    unit_cost: v.number(),
+    unit_sell: v.number(),
+    remarks: v.optional(v.string()),
+    vendor_name: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("master_items", args);

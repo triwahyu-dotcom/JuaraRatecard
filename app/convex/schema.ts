@@ -4,14 +4,14 @@ import { v } from "convex/values";
 export default defineSchema({
   // Master Data
   master_items: defineTable({
-    name: v.string(),
+    item_name: v.string(),
     category: v.string(),
-    subcategory: v.string(),
+    sub_category: v.string(),
     unit: v.string(),
-    cost_price: v.number(),
-    sell_price: v.number(),
-    vendor_id: v.optional(v.string()),
-    description: v.optional(v.string()),
+    unit_cost: v.number(),
+    unit_sell: v.number(),
+    vendor_name: v.optional(v.string()),
+    remarks: v.optional(v.string()),
   }).index("by_category", ["category"]),
 
   categories: defineTable({
