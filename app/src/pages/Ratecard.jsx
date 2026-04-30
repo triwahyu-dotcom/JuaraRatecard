@@ -624,9 +624,6 @@ function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
       <td style={{ padding: '8px 14px', width: colWidths.hpp }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
-      <td style={{ padding: '8px 14px', width: colWidths.hpp }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
           <NumCellInput value={local.unit_cost} onChange={v => handleChange('unit_cost', v)} onBlur={() => commit('unit_cost')} placeholder="Cost" style={{fontWeight: 600, color: 'var(--text-2)'}} />
         </div>
       </td>
@@ -726,7 +723,7 @@ function GhostRow({ onAdd, colWidths, existingItems }) {
         <CellInput value={local.coa_code} onChange={v => handleChange('coa_code', v)} placeholder="COA" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.actions }}>
-        <button className="btn btn-primary btn-sm" onClick={commit} disabled={!local.name}>Add</button>
+        <button className="btn btn-primary btn-sm" onClick={commit} disabled={!local.item_name}>Add</button>
       </td>
     </tr>
   )
