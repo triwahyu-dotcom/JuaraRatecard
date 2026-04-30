@@ -1,32 +1,29 @@
-import { useState, useEffect } from 'react'
-import { getAllRatecardItems } from '../lib/ratecardRepo'
+import { useState } from 'react'
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { fmtRp } from '../utils/fmt'
 import { MASTER_CATEGORIES, CATEGORY_COLORS } from '../utils/constants'
-import { ITEM_BUNDLES } from '../data/bundles'
 
-export default function RatecardBrowser({ selectedItems, onAdd, onRemove, onAddBulk, onAddBundle }) {
-  const [ratecard, setRatecard] = useState([])
+export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, onAddBulk, onAddBundle }) {
+  const ratecard = useQuery(api.masterData.listItems) || [];
+  const bundles = useQuery(api.masterData.listBundles) || [];
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('ALL')
   const [viewMode, setViewMode] = useState('ITEMS') // 'ITEMS' | 'PACKAGES'
 
-  useEffect(() => {
-    getAllRatecardItems().then(setRatecard)
-  }, [])
-
   const categoriesList = ['ALL', ...MASTER_CATEGORIES]
 
   const filtered = ratecard.filter(item => {
-    const matchCategory = activeCategory === 'ALL' || item.section_name === activeCategory
+    const matchCategory = activeCategory === 'ALL' || item.category === activeCategory
     const q = search.toLowerCase()
     const matchSearch = !q ||
-      item.item_name?.toLowerCase().includes(q) ||
+      item.name?.toLowerCase().includes(q) ||
       item.category?.toLowerCase().includes(q) ||
       item.description?.toLowerCase().includes(q)
     return matchCategory && matchSearch
   })
 
-  const filteredBundles = ITEM_BUNDLES.filter(b => {
+  const filteredBundles = bundles.filter(b => {
     const q = search.toLowerCase()
     return !q || b.name.toLowerCase().includes(q) || b.description.toLowerCase().includes(q)
   })
@@ -36,144 +33,176 @@ export default function RatecardBrowser({ selectedItems, onAdd, onRemove, onAddB
   )
 
   const grouped = filtered.reduce((acc, item) => {
-    const key = `${item.section_name}||${item.category}`
+    const key = `${item.category}||${item.subcategory}`
     if (!acc[key]) acc[key] = { 
-      section_name: item.section_name, 
       category: item.category, 
+      subcategory: item.subcategory, 
       items: [] 
     }
     acc[key].items.push(item)
     return acc
   }, {})
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, height: '100%' }}>
-      {/* View Mode Switcher */}
-      <div style={{ 
-        display: 'flex', background: 'var(--surface-2)', padding: 4, borderRadius: 10,
-        gap: 4
-      }}>
-        <button 
-          onClick={() => setViewMode('ITEMS')}
-          style={{
-            flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 12, fontWeight: 700,
-            background: viewMode === 'ITEMS' ? 'var(--bg)' : 'transparent',
-            color: viewMode === 'ITEMS' ? 'var(--text)' : 'var(--text-3)',
-            border: 'none', cursor: 'pointer', transition: 'all 0.2s'
-          }}>
-          All Items
-        </button>
-        <button 
-          onClick={() => setViewMode('PACKAGES')}
-          style={{
-            flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 12, fontWeight: 700,
-            background: viewMode === 'PACKAGES' ? 'var(--bg)' : 'transparent',
-            color: viewMode === 'PACKAGES' ? 'var(--text)' : 'var(--text-3)',
-            border: 'none', cursor: 'pointer', transition: 'all 0.2s'
-          }}>
-          Packages <span style={{ opacity: 0.5, marginLeft: 4 }}>📦</span>
-        </button>
-      </div>
+  const [collapsedGroups, setCollapsedGroups] = useState({})
 
-      {/* Search + Section Filter */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ position: 'relative' }}>
-          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
-          <input
-            className="form-input"
-            style={{ width: '100%', paddingLeft: 40, height: 42 }}
-            placeholder={viewMode === 'ITEMS' ? "Search items..." : "Search packages..."}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+  const toggleGroup = (key) => {
+    setCollapsedGroups(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Sticky Header Section */}
+      <div style={{ 
+        display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0,
+        background: 'var(--bg)', paddingBottom: 16, zIndex: 5,
+        position: 'sticky', top: 0
+      }}>
+        {/* View Mode Switcher */}
+        <div style={{ 
+          display: 'flex', background: 'var(--surface-2)', padding: 4, borderRadius: 10,
+          gap: 4
+        }}>
+          <button 
+            onClick={() => setViewMode('ITEMS')}
+            style={{
+              flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 11, fontWeight: 700,
+              background: viewMode === 'ITEMS' ? 'var(--bg)' : 'transparent',
+              color: viewMode === 'ITEMS' ? 'var(--text)' : 'var(--text-3)',
+              border: 'none', cursor: 'pointer', transition: 'all 0.2s'
+            }}>
+            Items
+          </button>
+          <button 
+            onClick={() => setViewMode('PACKAGES')}
+            style={{
+              flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 11, fontWeight: 700,
+              background: viewMode === 'PACKAGES' ? 'var(--bg)' : 'transparent',
+              color: viewMode === 'PACKAGES' ? 'var(--text)' : 'var(--text-3)',
+              border: 'none', cursor: 'pointer', transition: 'all 0.2s'
+            }}>
+            Packages 📦
+          </button>
         </div>
-        
-        {viewMode === 'ITEMS' && (
-          <div style={{ 
-            display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 8,
-            scrollbarWidth: 'none', msOverflowStyle: 'none'
-          }} className="no-scrollbar">
-            {categoriesList.map(c => (
-              <button key={c} onClick={() => setActiveCategory(c)}
-                style={{
-                  padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600,
-                  border: '1px solid transparent',
-                  whiteSpace: 'nowrap',
-                  background: activeCategory === c ? 'var(--text)' : 'transparent',
-                  color: activeCategory === c ? 'var(--bg)' : 'var(--text-3)',
-                  cursor: 'pointer', transition: 'all 0.15s',
-                }}>
-                {c}
-              </button>
-            ))}
+
+        {/* Search + Section Filter */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+            <input
+              className="form-input"
+              style={{ width: '100%', paddingLeft: 36, height: 36, fontSize: 13 }}
+              placeholder={viewMode === 'ITEMS' ? "Search items..." : "Search packages..."}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
-        )}
+          
+          {viewMode === 'ITEMS' && (
+            <div style={{ 
+              display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 4,
+              scrollbarWidth: 'none'
+            }}>
+              {categoriesList.map(c => (
+                <button key={c} onClick={() => setActiveCategory(c)}
+                  style={{
+                    padding: '4px 10px', borderRadius: 6, fontSize: 10, fontWeight: 600,
+                    border: '1px solid transparent',
+                    whiteSpace: 'nowrap',
+                    background: activeCategory === c ? 'var(--text)' : 'var(--surface)',
+                    color: activeCategory === c ? 'var(--bg)' : 'var(--text-2)',
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Content Area */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, flex: 1, overflowY: 'auto', paddingRight: 4 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, overflowY: 'auto', paddingRight: 4 }}>
         {viewMode === 'ITEMS' ? (
-          Object.values(grouped).map(group => (
-            <div key={`${group.section_name}-${group.category}`}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 12
+          Object.entries(grouped).map(([key, group]) => {
+            const isCollapsed = collapsedGroups[key]
+            return (
+              <div key={key} style={{ 
+                background: 'rgba(255,255,255,0.02)', 
+                borderRadius: 12, 
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
               }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  {group.section_name} <span style={{ opacity: 0.3 }}>/</span> {group.category}
-                </span>
-                <div style={{ flex: 1 }} />
-                {onAddBulk && (
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onAddBulk(group.items) }}
-                    className="btn btn-surface" 
-                    style={{ 
-                      padding: '2px 8px', height: 20, fontSize: 9, 
-                      fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4,
-                      color: 'var(--vercel-blue)'
-                    }}>
-                    <span>+</span> Add Category
-                  </button>
+                <div 
+                  onClick={() => toggleGroup(key)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '10px 12px', background: 'var(--surface)',
+                    cursor: 'pointer', borderBottom: isCollapsed ? 'none' : '1px solid var(--border)'
+                  }}>
+                  <span style={{ fontSize: 10, opacity: 0.5 }}>{isCollapsed ? '▶' : '▼'}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {group.subcategory}
+                  </span>
+                  <span style={{ fontSize: 9, color: 'var(--text-3)' }}>({group.items.length})</span>
+                  <div style={{ flex: 1 }} />
+                  {onAddBulk && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onAddBulk(group.items) }}
+                      className="btn btn-ghost" 
+                      style={{ 
+                        padding: '2px 6px', height: 18, fontSize: 8, 
+                        fontWeight: 700, borderRadius: 4, background: 'rgba(255,255,255,0.05)'
+                      }}>
+                      + Add All
+                    </button>
+                  )}
+                </div>
+
+                {!isCollapsed && (
+                  <div style={{ display: 'flex', flexDirection: 'column', padding: '4px 0' }}>
+                    {group.items.map((item, idx) => {
+                      const selected = isSelected(item)
+                      const hasPrice = item.unit_price !== null && item.unit_price > 0
+                      
+                      return (
+                        <div key={idx}
+                          onClick={() => onAdd(item)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            padding: '8px 12px', cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }} className="rc-item">
+                          <div style={{
+                            width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                            border: '1px solid var(--border-2)',
+                            background: 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 12, color: 'var(--text-3)',
+                            fontWeight: 800,
+                          }}>+</div>
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 12, fontWeight: 500, color: selected ? 'var(--text)' : 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {item.name}
+                            </div>
+                            {item.description && (
+                              <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {item.description}
+                              </div>
+                            )}
+                            <div style={{ fontSize: 9, color: 'var(--text-3)', marginTop: 1 }}>
+                              {fmtRp(item.sell_price || 0)} per {item.unit || 'unit'}
+                            </div>
+                          </div>
+                          {!hasPrice && <span className="badge badge-yellow" style={{ fontSize: 7, padding: '1px 4px' }}>TBD</span>}
+                        </div>
+                      )
+                    })}
+                  </div>
                 )}
               </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {group.items.map((item, idx) => {
-                  const selected = isSelected(item)
-                  const hasPrice = item.unit_price !== null && item.unit_price > 0
-                  
-                  return (
-                    <div key={idx}
-                      onClick={() => selected ? onRemove(item.item_code) : onAdd(item)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 12,
-                        padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
-                        background: selected ? 'var(--surface)' : 'transparent',
-                        transition: 'all 0.15s',
-                      }} className="rc-item">
-                      <div style={{
-                        width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                        border: `1px solid ${selected ? 'var(--text)' : 'var(--border-2)'}`,
-                        background: selected ? 'var(--text)' : 'transparent',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 10, color: 'var(--bg)',
-                      }}>{selected ? '✓' : ''}</div>
-
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: selected ? 'var(--text)' : 'var(--text-2)' }}>
-                          {item.item_name}
-                        </div>
-                        <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 2 }}>
-                          {fmtRp(item.unit_price || 0)} per {item.default_unit}
-                        </div>
-                      </div>
-                      {!hasPrice && <span className="badge badge-yellow" style={{ fontSize: 8 }}>TBD</span>}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ))
+            )
+          })
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {filteredBundles.map(bundle => (

@@ -56,18 +56,21 @@ export function predictCategory(name) {
   const n = String(name || '').toLowerCase();
   
   const rules = [
-    { cat: 'Operational / Permit', keys: ['permit', 'izin', 'polisi', 'polda', 'medis', 'ambulance', 'damkar', 'security', 'keamanan', 'safety'] },
-    { cat: 'Talent & Artist', keys: ['band', 'guest', 'star', 'singer', 'penyanyi', 'mc', 'host', 'moderator', 'dancer'] },
-    { cat: 'Production / System', keys: ['genset', 'listrik', 'sound', 'system', 'lighting', 'led', 'screen', 'rigging', 'stage', 'cable', 'kabel', 'mixer', 'switcher'] },
-    { cat: 'Creative & Planning', keys: ['design', 'visual', 'content', 'concept', 'creative', 'registration', 'multimedia', 'animation'] },
-    { cat: 'Branding & Decoration', keys: ['branding', 'cetak', 'pasang', 'backdrop', 'booth', 'dekor', 'furniture', 'sofa', 'table', 'carpet', 'karpet', 'banner', 'baliho', 't-banner'] },
-    { cat: 'Logistic & Transport', keys: ['rent', 'mobil', 'transport', 'loading', 'mobilization', 'truck', 'hiace', 'alphard', 'inova', 'avanza'] },
-    { cat: 'Documentation', keys: ['documentation', 'photo', 'video', 'highlight', 'shoot', 'film', 'drone'] }
+    { cat: 'Planning & Development', keys: ['design', 'concept', 'creative', 'registration', 'animation', 'visual', 'content'] },
+    { cat: 'Permit & Retribusi', keys: ['permit', 'izin', 'polisi', 'polda', 'safety', 'security', 'keamanan'] },
+    { cat: 'Venue / Setup / System', keys: ['genset', 'listrik', 'sound', 'system', 'lighting', 'led', 'screen', 'rigging', 'stage', 'cable', 'kabel', 'mixer', 'switcher', 'ht', 'icom', 'repeater', 'satellite', 'laptop', 'printer', 'atk'] },
+    { cat: 'Multimedia / Creative', keys: ['multimedia', 'creative', 'graphics', 'editor', 'streaming', 'broadcast'] },
+    { cat: 'Production / Fabrication', keys: ['branding', 'cetak', 'pasang', 'backdrop', 'booth', 'dekor', 'furniture', 'sofa', 'table', 'carpet', 'karpet', 'banner', 'baliho', 't-banner', 'lem', 'tape'] },
+    { cat: 'Manpower / Crew', keys: ['crew', 'manpower', 'person', 'helper', 'runner', 'liaison', 'per diem', 'daily'] },
+    { cat: 'Talent / Entertainment', keys: ['band', 'guest', 'star', 'singer', 'penyanyi', 'mc', 'host', 'moderator', 'dancer'] },
+    { cat: 'Transportation / Logistics', keys: ['rent', 'mobil', 'transport', 'loading', 'mobilization', 'truck', 'hiace', 'alphard', 'inova', 'avanza', 'ongkir', 'shipping'] },
+    { cat: 'Accommodation / Consumption', keys: ['pax', 'makan', 'lunch', 'dinner', 'snack', 'hotel', 'stay', 'penginapan', 'konsumsi'] },
+    { cat: 'Documentation / Reporting', keys: ['documentation', 'photo', 'video', 'highlight', 'shoot', 'film', 'drone', 'report'] }
   ];
 
   for (const rule of rules) {
     if (rule.keys.some(k => n.includes(k))) return rule.cat;
   }
   
-  return 'General Items';
+  return 'Planning & Development'; // Default to first category instead of Miscellaneous
 }

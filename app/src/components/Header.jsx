@@ -1,15 +1,40 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { useState } from 'react'
 
 const NAV_LINKS = [
-  { to: '/', label: 'Dashboard' },
   { to: '/ratecard', label: 'Ratecard' },
+  { to: '/', label: 'Dashboard' },
 ]
 
 export default function Header() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const createQuotation = useMutation(api.quotations.create)
+  const [isCreating, setIsCreating] = useState(false)
 
   const isBuilder = pathname.startsWith('/new') || pathname.startsWith('/edit')
   const isPreview = pathname.startsWith('/preview')
+
+  const handleNew = async () => {
+    if (isCreating) return
+    setIsCreating(true)
+    try {
+      const timestamp = new Date().getTime().toString().slice(-6)
+      const newId = await createQuotation({
+        title: 'Untitled Quotation',
+        quot_number: `QUOT-${new Date().getFullYear()}-${timestamp}`,
+        client_name: 'New Client',
+      })
+      localStorage.removeItem('juara_quotation_draft')
+      navigate(`/edit/${newId}`)
+    } catch (err) {
+      console.error('Header creation failed:', err)
+    } finally {
+      setIsCreating(false)
+    }
+  }
 
   return (
     <header style={{
@@ -23,16 +48,15 @@ export default function Header() {
         {/* Logo Section */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Vercel-like Triangle Logo (Simplified) */}
-            <svg width="24" height="24" viewBox="0 0 75 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M37.5 0L75 65H0L37.5 0Z" fill="white"/>
-            </svg>
-            <span style={{
-              fontWeight: 700, fontSize: 18,
-              letterSpacing: '-.02em', color: 'var(--text)',
-            }}>
-              JUARA
-            </span>
+            <img 
+              src="/Logo_Juara_Handover-04.png" 
+              alt="JUARA" 
+              style={{ 
+                height: 32, 
+                width: 'auto',
+                display: 'block'
+              }} 
+            />
           </Link>
           <div style={{ width: 1, height: 24, background: 'var(--border)', margin: '0 4px' }} />
           <span style={{
@@ -91,9 +115,14 @@ export default function Header() {
           )}
           {!isBuilder && !isPreview && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Link to="/new" className="btn btn-primary btn-sm" style={{ fontWeight: 600 }}>
-                Create New
-              </Link>
+              <button 
+                onClick={handleNew}
+                disabled={isCreating}
+                className="btn btn-primary btn-sm" 
+                style={{ fontWeight: 600 }}
+              >
+                {isCreating ? 'Creating...' : 'Create New'}
+              </button>
             </div>
           )}
         </div>

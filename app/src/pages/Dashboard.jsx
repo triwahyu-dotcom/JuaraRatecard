@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getAllQuotations, deleteQuotation, duplicateQuotation } from '../lib/quotationRepo'
 import { calcSummary } from '../utils/calc'
 import { fmtRp, fmtDate } from '../utils/fmt'
 import { importFromExcelSync } from '../utils/excelSync'
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { suggestBundles } from '../lib/aiEstimator'
 
 export default function Dashboard() {
-  const [quotations, setQuotations] = useState([])
-  const [loading, setLoading] = useState(true)
+  const quotations = useQuery(api.quotations.list) || []
+  const createQuotationMutation = useMutation(api.quotations.create)
+  const removeQuotationMutation = useMutation(api.quotations.remove)
+  const updateQuotationMutation = useMutation(api.quotations.update)
+
+  const [loading, setLoading] = useState(false)
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
-  const [confirmState, setConfirmState] = useState(null) // { title, message, onConfirm, onCancel, confirmLabel, cancelLabel, type }
-
-  const load = () => {
-    getAllQuotations().then(data => { setQuotations(data); setLoading(false) })
-  }
-
-  useEffect(() => { load() }, [])
+  const [confirmState, setConfirmState] = useState(null)
+  const [aiTitle, setAiTitle] = useState('')
+  const [suggestions, setSuggestions] = useState([])
 
   const handleDelete = async (id, name) => {
     setConfirmState({
@@ -28,43 +30,85 @@ export default function Dashboard() {
       cancelLabel: 'Batal',
       type: 'danger',
       onConfirm: async () => {
-        await deleteQuotation(id)
+        await removeQuotationMutation({ id })
         setConfirmState(null)
-        load()
       },
       onCancel: () => setConfirmState(null)
     })
   }
 
-  const handleNewQuotation = () => {
-    const draft = localStorage.getItem('juara_quotation_draft')
-    if (draft) {
-      const { eventData } = JSON.parse(draft)
-      const draftName = eventData?.event_title || 'Untitled'
-      setConfirmState({
-        title: 'Draft Belum Tersimpan',
-        message: `Anda memiliki draft "${draftName}" yang belum disimpan ke daftar resmi. Ingin membuang draft tersebut dan membuat yang baru?`,
-        confirmLabel: 'Buat Baru (Hapus Draft)',
-        cancelLabel: 'Lanjutkan Draft Tadi',
-        type: 'warning',
-        onConfirm: () => {
-          localStorage.removeItem('juara_quotation_draft')
-          setConfirmState(null)
-          navigate('/new')
-        },
-        onCancel: () => {
-          setConfirmState(null)
-          navigate('/new') // The Builder will then show the Restore prompt
-        }
+  const handleNewQuotation = async () => {
+    setLoading(true)
+    try {
+      const id = await createQuotationMutation({
+        title: 'Untitled Quotation',
+        quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
+        client_name: 'New Client'
       })
-    } else {
-      navigate('/new')
+      navigate(`/edit/${id}`)
+    } catch (err) {
+      console.error('Failed to create new quotation:', err)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleDuplicate = async (id) => {
-    await duplicateQuotation(id)
-    load()
+  const handleAiTitleChange = (e) => {
+    const val = e.target.value
+    setAiTitle(val)
+    setSuggestions(suggestBundles(val))
+  }
+
+  const handleCreateWithBundles = async () => {
+    setLoading(true)
+    try {
+      const allItems = []
+      suggestions.forEach(bundle => {
+        bundle.items.forEach(item => {
+          allItems.push({
+            ...item,
+            section_name: bundle.name,
+            category: 'Package Item',
+            unit_sell: 0, // Should link to ratecard in real app
+          })
+        })
+      })
+
+      const newId = await createQuotationMutation({
+        title: aiTitle || 'New Smart Quotation',
+        quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
+        client_name: 'New Client',
+      })
+
+      await updateQuotationMutation({
+        id: newId,
+        updates: { items: allItems }
+      })
+      navigate(`/edit/${newId}`)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDuplicate = async (quot) => {
+    setLoading(true)
+    try {
+      const id = await createQuotationMutation({
+        title: `${quot.title} (Copy)`,
+        quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
+        client_name: quot.client_name
+      })
+      await updateQuotationMutation({
+        id,
+        updates: { items: quot.items }
+      })
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleDirectImport = async (e) => {
@@ -72,38 +116,38 @@ export default function Dashboard() {
     if (!file) return
     setLoading(true)
     try {
-      let items = []
+      let importResult = { items: [], metadata: {} }
       if (file.name.toLowerCase().endsWith('.pdf')) {
         const { importFromPDFSync } = await import('../utils/pdfSync')
-        items = await importFromPDFSync(file)
+        importResult = await importFromPDFSync(file)
       } else {
-        items = await importFromExcelSync(file)
+        importResult = await importFromExcelSync(file)
       }
       
-      if (items.length === 0) throw new Error('No items found in file')
+      const { items, metadata } = importResult
+      if (!items || items.length === 0) throw new Error('No items found in file')
       
-      // Auto-extract metadata if possible (first item's section/category name as title)
-      const eventTitle = items[0].section_name || items[0].category || 'Imported Quotation'
+      // Use extracted metadata with fallbacks
+      const eventTitle = metadata.event_name || items[0].section_name || items[0].category || 'Imported Quotation'
+      const clientName = metadata.client_name || 'Imported'
+      const eventDate  = metadata.event_date  || null
+      const eventVenue = metadata.event_venue || ''
       
-      // Create new quotation record
-      const newQ = await createQuotation({
-        event_title: eventTitle,
-        client_name: 'Imported',
-        status: 'draft',
-        quotation_items: items
+      // Create new quotation record in Convex
+      const id = await createQuotationMutation({
+        title: eventTitle,
+        quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
+        client_name: clientName,
+        event_date: eventDate,
+        venue: eventVenue
       })
       
-      // Clear any leftover local drafts and set skip-restore flag
-      localStorage.removeItem('juara_quotation_draft')
-      sessionStorage.setItem('juara_skip_draft_restore', 'true')
-      
-      navigate(`/edit/${newQ.id}`, { 
-        state: { 
-          importSuccess: true, 
-          itemCount: items.length,
-          sections: [...new Set(items.map(i => i.section_name))].length
-        } 
+      await updateQuotationMutation({
+        id,
+        updates: { items }
       })
+      
+      navigate(`/edit/${id}`)
     } catch (err) {
       setConfirmState({
         title: 'Import Gagal',
@@ -161,6 +205,42 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <div className="page-wrap" style={{ marginTop: -30, position: 'relative', zIndex: 10 }}>
+        <div className="card" style={{ padding: 24, boxShadow: '0 10px 30px rgba(0,0,0,0.2)', border: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, display: 'block', color: 'var(--vercel-blue)' }}>✨ AI SMART ESTIMATOR (PROTOTYPE)</label>
+              <input 
+                type="text" 
+                placeholder="Ketik jenis event (misal: 'Gala Dinner LED' atau 'Event Medical')..." 
+                className="input" 
+                value={aiTitle}
+                onChange={handleAiTitleChange}
+                style={{ height: 48, fontSize: 16 }}
+              />
+            </div>
+            <button 
+              className="btn btn-primary btn-lg" 
+              style={{ height: 48, padding: '0 32px' }}
+              disabled={loading || !aiTitle}
+              onClick={handleCreateWithBundles}
+            >
+              {suggestions.length > 0 ? `Create with ${suggestions.length} Bundles` : 'Create Empty Project'}
+            </button>
+          </div>
+          
+          {suggestions.length > 0 && (
+            <div className="fade-in" style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 13, color: 'var(--text-3)', alignSelf: 'center', marginRight: 8 }}>Suggested:</span>
+              {suggestions.map(s => (
+                <span key={s.id} className="badge badge-surface" style={{ padding: '6px 12px', borderRadius: 20, fontSize: 12 }}>
+                  📦 {s.name}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <div className="page-wrap" style={{ marginTop: 40 }}>
         {/* Stats Row — Vercel Metrics Style */}
         {quotations.length > 0 && (
@@ -217,7 +297,7 @@ export default function Dashboard() {
                 const quotNo      = q.quotation_no || q.quot_number  || ''
                 
                 const opts = {
-                  discount_type:  q.discount_type  || 'pct',
+                  discount_type:  q.discount_type  || 'amt',
                   discount_value: q.discount_value ?? 0,
                   mgmt_type:      'pct',
                   mgmt_value:     q.management_fee_value ?? Math.round((q.mgmt_fee_rate || 0.10) * 100),
@@ -227,7 +307,7 @@ export default function Dashboard() {
                 const isDraft = q.status !== 'final'
                 
                 return (
-                  <div key={q.id} style={{
+                  <div key={q._id} style={{
                     display: 'flex', alignItems: 'center', gap: 24, padding: '24px 32px',
                     background: 'var(--bg)',
                     marginBottom: 1, // Visual separator
@@ -238,7 +318,7 @@ export default function Dashboard() {
                     {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                        <Link to={`/edit/${q.id}`} style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>
+                        <Link to={`/edit/${q._id}`} style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>
                           {eventName}
                         </Link>
                         <span className={`badge ${isDraft ? 'badge-yellow' : 'badge-green'}`} style={{ fontSize: 10, padding: '2px 8px' }}>
@@ -270,11 +350,11 @@ export default function Dashboard() {
 
                     {/* Actions */}
                     <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                      <Link to={`/preview/${q.id}`} className="btn btn-ghost btn-sm">Preview</Link>
-                      <Link to={`/edit/${q.id}`}    className="btn btn-surface btn-sm">Edit</Link>
+                      <Link to={`/preview/${q._id}`} className="btn btn-ghost btn-sm">Preview</Link>
+                      <Link to={`/edit/${q._id}`}    className="btn btn-surface btn-sm">Edit</Link>
                       <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
-                      <button className="btn btn-ghost btn-sm" onClick={() => handleDuplicate(q.id)} title="Duplicate">⧉</button>
-                      <button className="btn btn-danger btn-sm" style={{ border: 'none' }} onClick={() => handleDelete(q.id, eventName)}>Delete</button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => handleDuplicate(q)} title="Duplicate">⧉</button>
+                      <button className="btn btn-danger btn-sm" style={{ border: 'none' }} onClick={() => handleDelete(q._id, eventName)}>Delete</button>
                     </div>
                   </div>
                 )

@@ -135,7 +135,7 @@ export function getQuotationLines(quotation) {
 
 export function calcSummary(items, opts = {}) {
   let {
-    discount_type  = 'pct',
+    discount_type  = 'amt',
     discount_value = 0,
     mgmt_type      = 'pct',
     mgmt_value     = 10,
@@ -143,17 +143,17 @@ export function calcSummary(items, opts = {}) {
   } = opts;
 
   // Normalize rates: Ensure we use decimals (0.12) for calculations
-  // but handle if they are passed as percentages (12)
+  // If > 1, assume it's a percentage (12) and convert to decimal (0.12)
   const ppnDecimal = ppn_rate > 1 ? ppn_rate / 100 : ppn_rate;
   const mgmtDecimal = mgmt_value > 1 ? mgmt_value / 100 : mgmt_value;
 
   // 1. Subtotal: hanya non-optional lines
-  const subtotal  = items
+  const subtotal  = (items || [])
     .filter(i => !i.is_optional)
     .reduce((sum, i) => sum + calcLineSell(i), 0);
 
   // 2. Total HPP (internal CE)
-  const totalHPP  = items
+  const totalHPP  = (items || [])
     .filter(i => !i.is_optional)
     .reduce((sum, i) => sum + calcLineCost(i), 0);
 
@@ -186,7 +186,7 @@ export function calcSummary(items, opts = {}) {
   const grandTotal = taxBase + ppnAmount;
 
   // 9. Vendor Taxes (PPh)
-  const vendorTaxTotal = items
+  const vendorTaxTotal = (items || [])
     .filter(i => !i.is_optional)
     .reduce((sum, i) => sum + calcVendorTax(calcLineCost(i), i.vendor_tax_type), 0);
 
@@ -224,7 +224,8 @@ export function getUniqueSections(items) {
   const sections = [];
   items.forEach(item => {
     const code = item.section_code || item.section || '_';
-    const name = item.section_name || '';
+    let name = item.section_name || '';
+    if (name.toLowerCase().includes('miscellaneous')) name = 'Other';
     if (!seen.has(code)) {
       seen.add(code);
       sections.push({ code, name });

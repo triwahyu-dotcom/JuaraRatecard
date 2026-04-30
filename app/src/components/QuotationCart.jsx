@@ -8,37 +8,65 @@ import {
   useSortable, arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { calcLineCost, calcLineSell, calcAllSectionSellTotals, calcVendorTax, getUniqueSections } from '../utils/calc'
 import { fmtRp } from '../utils/fmt'
-import { getMasterZones, getAllRatecardItems } from '../lib/ratecardRepo'
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
-function InlineText({ value, onChange, placeholder = '', bold = false, style = {}, onKeyDown, onBlur, row, col }) {
-  const [focused, setFocused] = useState(false)
+function RemoteCursorIndicator({ cursor }) {
+  if (!cursor) return null
   return (
-    <input
-      value={value || ''}
-      placeholder={placeholder}
-      onChange={e => onChange(e.target.value)}
-      onFocus={() => setFocused(true)}
-      onBlur={() => { setFocused(false); onBlur?.() }}
-      onKeyDown={onKeyDown}
-      data-row={row}
-      data-col={col}
-      className="cell-input"
-      style={{
-        width: '100%', background: 'transparent',
-        border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
-        borderRadius: 4, padding: focused ? '2px 6px' : '2px 0',
-        fontSize: bold ? 13 : 11, fontWeight: bold ? 600 : 400,
-        color: 'var(--text)', outline: 'none',
-        transition: 'all 0.12s',
-        ...style,
-      }}
-    />
+    <div style={{
+      position: 'absolute', top: -1, left: -1, right: -1, bottom: -1,
+      border: `2px solid ${cursor.userColor}`,
+      pointerEvents: 'none', borderRadius: 4, zIndex: 10,
+      boxShadow: `0 0 4px ${cursor.userColor}`
+    }}>
+      <div style={{
+        position: 'absolute', top: -18, left: -2, 
+        background: cursor.userColor, color: 'white',
+        fontSize: 8, fontWeight: 800, padding: '1px 4px',
+        borderRadius: '3px 3px 3px 0', whiteSpace: 'nowrap'
+      }}>
+        {cursor.userName}
+      </div>
+    </div>
   )
 }
 
-function InlineArea({ value, onChange, placeholder = '', style = {}, onKeyDown, onBlur, row, col }) {
+function InlineText({ value, onChange, placeholder = '', bold = false, style = {}, onKeyDown, onBlur, onFocus, row, col, remoteCursor }) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <RemoteCursorIndicator cursor={remoteCursor} />
+      <input
+        value={value || ''}
+        placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => { setFocused(true); onFocus?.() }}
+        onBlur={() => { setFocused(false); onBlur?.() }}
+        onKeyDown={onKeyDown}
+        data-row={row}
+        data-col={col}
+        className="cell-input"
+        style={{
+          width: '100%', background: 'transparent',
+          border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
+          borderRadius: 4, padding: focused ? '2px 6px' : '2px 0',
+          fontSize: bold ? 12 : 11, fontWeight: bold ? 700 : 500,
+          color: 'var(--text)', outline: 'none',
+          transition: 'all 0.12s',
+          whiteSpace: 'normal',
+          wordBreak: 'break-word',
+          ...style,
+        }}
+      />
+    </div>
+  )
+}
+
+function InlineArea({ value, onChange, placeholder = '', style = {}, onKeyDown, onBlur, onFocus, row, col, remoteCursor }) {
   const [focused, setFocused] = useState(false)
   const textareaRef = useRef(null)
 
@@ -51,32 +79,35 @@ function InlineArea({ value, onChange, placeholder = '', style = {}, onKeyDown, 
   }, [value])
 
   return (
-    <textarea
-      ref={textareaRef}
-      value={value || ''}
-      placeholder={placeholder}
-      onChange={e => onChange(e.target.value)}
-      onFocus={() => setFocused(true)}
-      onBlur={() => { setFocused(false); onBlur?.() }}
-      onKeyDown={onKeyDown}
-      data-row={row}
-      data-col={col}
-      className="cell-input cell-area"
-      rows={1}
-      style={{
-        width: '100%', background: 'transparent',
-        border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
-        borderRadius: 4, padding: focused ? '2px 6px' : '2px 0',
-        fontSize: 10, fontWeight: 400,
-        color: 'var(--text)', outline: 'none',
-        transition: 'border 0.12s',
-        resize: 'none',
-        overflow: 'hidden',
-        lineHeight: '1.4',
-        display: 'block',
-        ...style,
-      }}
-    />
+    <div style={{ position: 'relative', width: '100%' }}>
+      <RemoteCursorIndicator cursor={remoteCursor} />
+      <textarea
+        ref={textareaRef}
+        value={value || ''}
+        placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => { setFocused(true); onFocus?.() }}
+        onBlur={() => { setFocused(false); onBlur?.() }}
+        onKeyDown={onKeyDown}
+        data-row={row}
+        data-col={col}
+        className="cell-input cell-area"
+        rows={1}
+        style={{
+          width: '100%', background: 'transparent',
+          border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
+          borderRadius: 4, padding: focused ? '2px 6px' : '2px 0',
+          fontSize: 9, fontWeight: 400,
+          color: 'var(--text)', outline: 'none',
+          transition: 'border 0.12s',
+          resize: 'none',
+          overflow: 'hidden',
+          lineHeight: '1.4',
+          display: 'block',
+          ...style,
+        }}
+      />
+    </div>
   )
 }
 
@@ -91,50 +122,86 @@ function InlineUnit({ value, onChange, row, col, onKeyDown, onBlur }) {
       data-col={col}
       className="cell-input"
       style={{
-        width: 46, fontSize: 9, fontWeight: 700, textAlign: 'center',
+        width: 34, fontSize: 8, fontWeight: 700, textAlign: 'center',
         textTransform: 'uppercase',
         color: focused ? 'var(--text)' : 'var(--text-3)',
         background: 'transparent',
         border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
         borderRadius: 4, padding: '1px 3px', outline: 'none',
         cursor: 'text', transition: 'border 0.12s',
+        whiteSpace: 'nowrap'
       }} />
   )
 }
 
-function NumInput({ value, onChange, step = 1, w = 50, highlight = false, row, col, onKeyDown, onBlur }) {
+const fmt = (v) => {
+  if (v === null || v === undefined || v === '') return '';
+  const num = Number(v);
+  if (isNaN(num)) return v;
+  return new Intl.NumberFormat('id-ID').format(num);
+}
+
+function NumInput({ value, onChange, w = '100%', highlight = false, row, col, onKeyDown, onBlur, onFocus, remoteCursor }) {
   return (
-    <input type="number" min="0" step={step} value={value || ''}
-      onChange={e => onChange(Number(e.target.value))}
-      onKeyDown={onKeyDown}
-      onBlur={onBlur}
-      data-row={row}
-      data-col={col}
-      className="cell-input"
-      style={{
-        width: w, background: 'var(--bg)', textAlign: 'center',
-        border: `1px solid ${highlight ? 'var(--text-3)' : 'var(--border)'}`,
-        borderRadius: 6, padding: '5px 3px', fontSize: 13,
-        color: 'var(--text)', fontWeight: 600,
-        fontFamily: 'var(--font-mono)',
-        outline: 'none',
-        transition: 'all 0.15s'
-      }} />
+    <div style={{ position: 'relative', width: w }}>
+      <RemoteCursorIndicator cursor={remoteCursor} />
+      <input type="text" value={fmt(value)}
+        onChange={e => {
+          const raw = e.target.value.replace(/\./g, '');
+          onChange(raw === '' ? null : (isNaN(Number(raw)) ? raw : Number(raw)));
+        }}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        data-row={row}
+        data-col={col}
+        className="cell-input"
+        style={{
+          width: '100%', background: 'transparent', textAlign: 'center',
+          border: '1px solid transparent',
+          borderBottom: highlight ? '1px solid var(--border)' : '1px solid transparent',
+          borderRadius: 4, padding: '3px 2px', fontSize: 11,
+          color: 'var(--text)', fontWeight: 700,
+          fontFamily: 'var(--font-mono)',
+          outline: 'none',
+          transition: 'all 0.15s',
+          cursor: 'pointer'
+        }}
+        onMouseEnter={e => e.target.style.borderColor = 'var(--border)'}
+        onMouseLeave={e => { if (document.activeElement !== e.target) e.target.style.borderColor = 'transparent' }}
+        onFocus={e => { e.target.style.borderColor = 'var(--vercel-blue)'; e.target.style.background = 'var(--surface)'; onFocus?.() }}
+      />
+    </div>
   )
 }
 
 /* ── Sortable row wrapper ── */
-function SortableRow({ id, item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, colWidths, masterZones, masterItems, onKeyDown, items }) {
+function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, colWidths, masterZones, masterItems, onKeyDown, items, remoteCursors, onFocusCell, comments, onComment }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const isActive = activeIndex === rowIndex
+
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: CSS.Translate.toString(transform),
+    transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.3 : 1,
-    background: isDragging ? 'var(--surface)' : 'transparent'
+    background: isDragging ? 'var(--surface)' : isActive ? 'rgba(0, 112, 243, 0.25)' : 'transparent',
+    boxShadow: isActive 
+      ? 'inset 4px 0 0 #0070f3, inset -1px 0 0 #0070f3, inset 0 1px 0 #0070f3, inset 0 -1px 0 #0070f3' 
+      : 'none',
+    zIndex: isDragging ? 999 : (isActive ? 2 : 1),
+    position: 'relative'
   }
 
   return (
-    <tr ref={setNodeRef} style={style}>
+    <tr 
+      ref={setNodeRef} 
+      style={style} 
+      onClick={(e) => {
+        // Toggle behavior: if already active, set to null
+        if (isActive) onSetActive(null)
+        else onSetActive(rowIndex)
+      }}
+    >
       <ItemRowCells
         item={item}
         rowIndex={rowIndex}
@@ -150,14 +217,22 @@ function SortableRow({ id, item, rowIndex, onUpdate, onCommit, onRemove, onDupli
         masterItems={masterItems}
         onKeyDown={onKeyDown}
         items={items}
+        remoteCursors={remoteCursors}
+        onFocusCell={onFocusCell}
+        comments={comments}
+        onComment={onComment}
       />
     </tr>
   )
 }
 
 /* ── The actual cell content ── */
-function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, dragHandleProps, colWidths, masterItems = [], onKeyDown, items = [] }) {
+function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, dragHandleProps, colWidths, masterItems = [], onKeyDown, items = [], remoteCursors = {}, onFocusCell, comments = [], onComment }) {
   const key = item._ratecard_key
+  
+  const getCursor = (colId) => {
+    return Object.values(remoteCursors).find(c => c.rowId === key && c.colId === colId)
+  }
   const lineCost = calcLineCost(item)
   const lineSell = calcLineSell(item)
   const marginPct =
@@ -170,115 +245,84 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
   const taxRates = { pph23_2: 0.02, pph21_25: 0.025, pph21_3: 0.03, pph42_10: 0.1 }
   const taxAmt = item.vendor_tax_type ? lineCost * (taxRates[item.vendor_tax_type] || 0) : 0
 
-  const mItem = masterItems.find(mi => mi.item_code === item.item_code)
-  const variants = mItem?.variants || []
+  const rowComments = comments.filter(c => c.row_key === key)
 
   return (
     <>
-      <td style={{ ...TD, width: 22, color: 'var(--text-3)' }} {...dragHandleProps}>
+      <td style={{ ...TD, width: 22, color: 'var(--text-3)', verticalAlign: 'middle' }} {...dragHandleProps}>
         <div style={{ cursor: 'grab', userSelect: 'none', padding: '4px' }}>⠿</div>
       </td>
 
-      {/* ── ITEM NAME & HIERARCHY ── */}
-      <td style={{ ...TD, width: colWidths.item }}>
-        {/* LINE 1: Name & Category Grouping */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-          <div style={{ 
-            flex: 1, 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 8,
-            paddingLeft: item.sub_category ? 16 : item.category && item.category !== 'custom' ? 8 : 0,
-            transition: 'padding 0.2s'
-          }}>
-             <InlineText value={item.item_name} placeholder="Service or Item Name..."
+      {/* ── ITEM NAME & SPECS (SINGLE LINE) ── */}
+      <td style={{ ...TD, width: colWidths.item, verticalAlign: 'middle' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Hierarchy Indent */}
+          <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
+            {item.parent_id && <span style={{ color: 'var(--text-3)', fontSize: 12, marginRight: 4 }}>↳</span>}
+            <button onClick={() => onUpdate(key, { parent_id: null })} className="row-action-btn" style={{ opacity: item.parent_id ? 1 : 0.2 }}>←</button>
+            <button onClick={() => {
+              const prev = items[rowIndex - 1];
+              if (prev) onUpdate(key, { parent_id: prev._ratecard_key })
+            }} className="row-action-btn" style={{ opacity: rowIndex > 0 ? 1 : 0.2 }}>→</button>
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <InlineText value={item.item_name} placeholder="Item Name..."
               onChange={v => upd('item_name', v)}
               onBlur={onCommit} row={rowIndex} col="name" onKeyDown={onKeyDown}
-              style={{ fontWeight: 800, fontSize: 13 }}
+              onFocus={() => onFocusCell?.(key, 'name')}
+              remoteCursor={getCursor('name')}
+              style={{ fontWeight: 700, fontSize: 12 }}
             />
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'var(--surface)', padding: '1px 3px', borderRadius: 6, border: '1px solid var(--border)' }}>
-            <InlineText value={item.category} placeholder="Cat..."
-              onChange={v => upd('category', v)}
-              onBlur={onCommit} row={rowIndex} col="cat" onKeyDown={onKeyDown}
-              style={{ 
-                width: 70, fontSize: 9, padding: '1px 4px', border: 'none', 
-                opacity: (rowIndex > 0 && items[rowIndex-1].category === item.category) ? 0.3 : 1 
-              }}
-            />
-            <span style={{ fontSize: 9, color: 'var(--text-3)' }}>›</span>
-            <InlineText value={item.sub_category} placeholder="Sub..."
-              onChange={v => upd('sub_category', v)}
-              onBlur={onCommit} row={rowIndex} col="sub" onKeyDown={onKeyDown}
-              style={{ 
-                width: 70, fontSize: 9, padding: '1px 4px', border: 'none',
-                opacity: (rowIndex > 0 && items[rowIndex-1].sub_category === item.sub_category && items[rowIndex-1].category === item.category) ? 0.3 : 1
-              }}
-            />
-          </div>
-        </div>
-
-        {/* LINE 2: Specs & Complimentary */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ flex: 1 }}>
-            <InlineArea value={item.spec} placeholder="Technical specifications (Enter for newline...)"
+            
+            <InlineArea value={item.spec} placeholder="Specs..."
               onChange={v => upd('spec', v)}
               onBlur={onCommit} row={rowIndex} col="spec" onKeyDown={onKeyDown}
-              style={{ color: 'var(--text-3)' }}
+              onFocus={() => onFocusCell?.(key, 'spec')}
+              remoteCursor={getCursor('spec')}
+              style={{ color: 'var(--text-3)', fontSize: 10, fontStyle: 'italic' }}
             />
           </div>
-          
-          {/* Variant Selector (if any) */}
-          {variants.length > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span>{item.item_name || '—'}</span>
-              <select 
-                value={item.variant_name || ''}
-                onChange={e => onUpdate(key, { variant_name: e.target.value })}
-                className="minimal-select"
-                style={{ fontSize: 9, padding: '1px 3px' }}
-              >
-                <option value="">—</option>
-                {variants.map(v => <option key={v.name} value={v.name}>{v.name}</option>)}
-              </select>
-            </div>
-          )}
-        </div>
 
-        <style>{`
-          .minimal-select {
-            font-size: 10px; padding: 2px 4px; background: transparent; 
-            border: 1px solid var(--border); borderRadius: 4px; color: var(--text-2);
-            outline: none; cursor: pointer; transition: all 0.15s;
-          }
-          .minimal-select:hover { border-color: var(--text-3); }
-          .minimal-select option { background: var(--surface); color: var(--text); }
-        `}</style>
+          {/* Category Mini Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, opacity: 0.5, flexShrink: 0 }}>
+            <span style={{ fontSize: 9, color: 'var(--text-3)' }}>#</span>
+            <InlineText value={item.category} placeholder="Cat"
+              onChange={v => upd('category', v)}
+              onBlur={onCommit} row={rowIndex} col="cat" onKeyDown={onKeyDown}
+              onFocus={() => onFocusCell?.(key, 'cat')}
+              remoteCursor={getCursor('cat')}
+              style={{ width: 60, fontSize: 9, textAlign: 'right' }}
+            />
+          </div>
+        </div>
       </td>
 
-      {/* ── QTY ── */}
-      <td style={{ ...TD, textAlign: 'center', width: colWidths.qty }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-          <NumInput value={item.qty} onChange={v => onUpdate(key, { qty: v })} step={0.5} 
-            row={rowIndex} col="qty" onKeyDown={onKeyDown} onBlur={onCommit} />
+      {/* ── QTY (SINGLE LINE) ── */}
+      <td style={{ ...TD, width: colWidths.qty, verticalAlign: 'middle' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+          <NumInput value={item.qty} onChange={v => onUpdate(key, { qty: v })} w={45}
+            row={rowIndex} col="qty" onKeyDown={onKeyDown} onBlur={onCommit} 
+            onFocus={() => onFocusCell?.(key, 'qty')}
+            remoteCursor={getCursor('qty')} />
           <InlineUnit value={item.qty_unit} onChange={v => upd('qty_unit', v)} 
             row={rowIndex} col="qty_u" onKeyDown={onKeyDown} onBlur={onCommit} />
         </div>
       </td>
 
-      {/* ── FREQ ── */}
-      <td style={{ ...TD, textAlign: 'center', width: colWidths.freq }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-          <NumInput value={item.freq} onChange={v => onUpdate(key, { freq: v })} step={0.5} 
-            row={rowIndex} col="freq" onKeyDown={onKeyDown} onBlur={onCommit}/>
+      {/* ── FREQ (SINGLE LINE) ── */}
+      <td style={{ ...TD, width: colWidths.freq, verticalAlign: 'middle' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+          <NumInput value={item.freq} onChange={v => onUpdate(key, { freq: v })} w={45}
+            row={rowIndex} col="freq" onKeyDown={onKeyDown} onBlur={onCommit}
+            onFocus={() => onFocusCell?.(key, 'freq')}
+            remoteCursor={getCursor('freq')} />
           <InlineUnit value={item.freq_unit} onChange={v => upd('freq_unit', v)} 
             row={rowIndex} col="freq_u" onKeyDown={onKeyDown} onBlur={onCommit} />
         </div>
       </td>
 
-      {/* ── HPP / MODAL ── */}
-      <td style={{ ...TD, width: colWidths.hpp }}>
+      <td style={{ ...TD, width: colWidths.hpp, verticalAlign: 'middle' }}>
         <NumInput w="100%"
           value={item.unit_cost || ''}
           onChange={v => {
@@ -288,93 +332,94 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
             onUpdate(key, updates)
           }}
           highlight={!!item.unit_cost}
-          step={1000}
           row={rowIndex} col="cost" onKeyDown={onKeyDown} onBlur={onCommit}
+          onFocus={() => onFocusCell?.(key, 'cost')}
+          remoteCursor={getCursor('cost')}
         />
-        <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 6, textAlign: 'right', fontFamily: 'var(--font-mono)' }}>
-          ∑ {fmtRp(lineCost)}
-        </div>
       </td>
 
-      {/* ── PAJAK POTONGAN ── */}
-      <td style={{ ...TD, width: colWidths.tax }}>
+      {/* ── TAX ── */}
+      <td style={{ ...TD, width: colWidths.tax, verticalAlign: 'middle' }}>
         <select value={item.vendor_tax_type || ''}
           onChange={e => onUpdate(key, { vendor_tax_type: e.target.value })}
+          onFocus={() => onFocusCell?.(key, 'tax')}
           className="form-input"
-          style={{ width: '100%', fontSize: 11, padding: '5px 8px' }}>
-          <option value="">WHT Exempt</option>
-          <option value="pph23_2">PPh 23 (2%)</option>
-          <option value="pph21_25">PPh 21 (2.5%)</option>
-          <option value="pph21_3">PPh 21 (3%)</option>
-          <option value="pph42_10">PPh 4(2) (10%)</option>
+          style={{ width: '100%', fontSize: 10, padding: '2px 4px', height: 26, position: 'relative' }}>
+          <option value="">No Tax</option>
+          <option value="pph23_2">PPH 23 (2%)</option>
+          <option value="pph21_25">PPH 21 (2.5%)</option>
+          <option value="pph21_3">PPH 21 (3%)</option>
+          <option value="pph42_10">PPH 4(2) (10%)</option>
         </select>
-        {item.vendor_tax_type && taxAmt > 0 && (
-          <div style={{ fontSize: 10, color: 'var(--red)', marginTop: 6, fontWeight: 700, textAlign: 'right', fontFamily: 'var(--font-mono)' }}>
-            -{fmtRp(taxAmt)}
-          </div>
-        )}
+        <RemoteCursorIndicator cursor={getCursor('tax')} />
       </td>
 
-      {/* ── MARGIN % ── */}
-      <td style={{ ...TD, textAlign: 'center', width: colWidths.margin }}>
-        <input type="number" min="0" max="99" value={marginPct}
-          disabled={!item.unit_cost}
-          onChange={e => {
-            const pct = Number(e.target.value)
-            if (item.unit_cost > 0 && pct < 100)
-              onUpdate(key, { unit_sell: Math.round(item.unit_cost / (1 - pct / 100)) })
-          }}
-          style={{
-            width: '100%', textAlign: 'center', borderRadius: 6, padding: '5px 3px',
-            fontSize: 13, fontWeight: 700, color: 'var(--accent)',
-            background: 'var(--bg)', border: '1px solid var(--border)',
-            fontFamily: 'var(--font-mono)', outline: 'none'
-          }} />
-        <div style={{ fontSize: 9, color: 'var(--vercel-green)', marginTop: 4, fontWeight: 700 }}>
-          +{fmtRp(lineSell - lineCost - taxAmt)}
+      {/* ── MARGIN ── */}
+      <td style={{ ...TD, width: colWidths.margin, verticalAlign: 'middle' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <input type="number" min="0" max="99" value={marginPct}
+            disabled={!item.unit_cost}
+            onChange={e => {
+              const pct = Number(e.target.value)
+              if (item.unit_cost > 0 && pct < 100)
+                onUpdate(key, { unit_sell: Math.round(item.unit_cost / (1 - pct / 100)) })
+            }}
+            style={{
+              width: '100%', textAlign: 'center', borderRadius: 4, padding: '2px 0',
+              fontSize: 12, fontWeight: 700, color: 'var(--accent)',
+              background: 'var(--bg)', border: '1px solid var(--border)',
+              fontFamily: 'var(--font-mono)', outline: 'none'
+            }} />
+          <span style={{ fontSize: 9, opacity: 0.5 }}>%</span>
         </div>
       </td>
 
-      {/* ── HARGA JUAL ── */}
-      <td style={{ ...TD, width: colWidths.sell }}>
-        <input 
+      {/* ── SELL ── */}
+      <td style={{ ...TD, width: colWidths.sell, verticalAlign: 'middle' }}>
+        <NumInput 
           value={item.unit_sell || ''} 
-          onChange={e => onUpdate(key, { unit_sell: e.target.value })}
+          onChange={v => onUpdate(key, { unit_sell: v })}
           onBlur={onCommit}
-          data-row={rowIndex} data-col="sell" onKeyDown={onKeyDown}
-          className="cell-input"
-          style={{
-            width: '100%', background: 'var(--bg)', textAlign: 'center',
-            border: `1px solid var(--border)`,
-            borderRadius: 6, padding: '5px 3px', fontSize: 13,
-            color: 'var(--text)', fontWeight: 600,
-            fontFamily: 'var(--font-mono)',
-            outline: 'none',
-            transition: 'all 0.15s'
-          }} 
+          onFocus={() => onFocusCell?.(key, 'sell')}
+          remoteCursor={getCursor('sell')}
+          row={rowIndex} col="sell" onKeyDown={onKeyDown}
         />
       </td>
 
       {/* ── SUBTOTAL ── */}
-      <td style={{ ...TD, textAlign: 'right', width: colWidths.subtotal, fontWeight: 700, fontSize: 13, fontFamily: 'var(--font-mono)' }}>
-        {lineSell > 0 ? (
-          fmtRp(lineSell)
-        ) : (item.unit_sell && isNaN(Number(item.unit_sell)) ? (
-          <span className="badge badge-yellow" style={{ fontSize: 9, textTransform: 'uppercase' }}>
-            {item.unit_sell}
-          </span>
-        ) : (
-          item.is_complimentary ? <span className="badge badge-yellow" style={{ fontSize: 9 }}>COMPLIMENTARY</span> : fmtRp(0)
-        ))}
+      <td style={{ ...TD, textAlign: 'right', width: colWidths.subtotal, fontWeight: 700, fontSize: 13, fontFamily: 'var(--font-mono)', verticalAlign: 'middle' }}>
+        {fmtRp(lineSell)}
       </td>
 
       {/* ── ACTIONS ── */}
-      <td style={{ ...TD, textAlign: 'center', width: colWidths.actions }}>
-        <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+      <td style={{ ...TD, textAlign: 'center', width: colWidths.actions, verticalAlign: 'middle' }}>
+        <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+          <div style={{ position: 'relative' }}>
+            <ActionBtn title="Comment" onClick={() => onComment(key)} icon="💬" />
+            {rowComments.length > 0 && (
+              <span style={{ 
+                position: 'absolute', top: -4, right: -4, 
+                background: 'var(--red)', color: 'white', 
+                fontSize: 7, padding: '1px 3px', borderRadius: 10,
+                fontWeight: 800, border: '1px solid var(--bg)'
+              }}>
+                {rowComments.length}
+              </span>
+            )}
+          </div>
           <ActionBtn title="Duplicate" onClick={() => onDuplicate(item)} icon="⧉" />
           <ActionBtn title="Delete" onClick={() => onRemove(key)} icon="✕" danger />
         </div>
       </td>
+      
+      <style>{`
+        .row-action-btn {
+          width: 18px; height: 18px; display: flex; alignItems: center; justifyContent: center;
+          background: transparent; border: 1px solid var(--border); border-radius: 4px;
+          font-size: 10px; cursor: pointer; color: var(--text-3); transition: all 0.2s;
+        }
+        .row-action-btn:hover { border-color: var(--text); color: var(--text); background: var(--surface); }
+      `}</style>
     </>
   )
 }
@@ -382,17 +427,14 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
 function ActionBtn({ icon, onClick, title, danger }) {
   return (
     <button title={title} onClick={onClick} style={{
-      fontSize: 12, background: 'transparent',
+      fontSize: 10, background: 'transparent',
       border: '1px solid var(--border)',
-      borderRadius: 6, width: 28, height: 28, cursor: 'pointer',
+      borderRadius: 4, width: 22, height: 22, cursor: 'pointer',
       color: danger ? 'var(--red)' : 'var(--text-2)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       transition: 'all 0.15s'
     }} className="action-btn">
       {icon}
-      <style>{`
-        .action-btn:hover { border-color: var(--text-3); background: var(--surface); color: var(--text); }
-      `}</style>
     </button>
   )
 }
@@ -414,27 +456,27 @@ function AddBar({ onAdd }) {
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 12, padding: '16px 32px',
+      display: 'flex', alignItems: 'center', gap: 12, padding: '8px 32px',
       borderTop: '1px solid var(--border)', background: 'var(--bg)', flexWrap: 'wrap',
     }}>
-      <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600, textTransform: 'uppercase' }}>Quick Add Section:</span>
+      <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, textTransform: 'uppercase' }}>Quick Add:</span>
       <div style={{ display: 'flex', gap: 4 }}>
         {standardSections.map(v => (
           <button key={v} onClick={() => onAdd(v, '')}
-            className="btn btn-ghost btn-sm" style={{ minWidth: 28, padding: 0 }}>
+            className="btn btn-ghost btn-sm" style={{ minWidth: 24, padding: 0, height: 24, fontSize: 10 }}>
             {v}
           </button>
         ))}
       </div>
-      <div style={{ height: 24, width: 1, background: 'var(--border)', margin: '0 8px' }} />
+      <div style={{ height: 20, width: 1, background: 'var(--border)', margin: '0 8px' }} />
       <input value={code} onChange={e => setCode(e.target.value.toUpperCase())}
         placeholder="SEC" maxLength={4} className="form-input"
-        style={{ width: 60, textAlign: 'center', fontWeight: 700 }} />
+        style={{ width: 50, textAlign: 'center', fontWeight: 700, height: 28, fontSize: 11 }} />
       <input value={name} onChange={e => setName(e.target.value)} placeholder="Custom Item Title..."
-        className="form-input" style={{ flex: 1, minWidth: 200 }} 
+        className="form-input" style={{ flex: 1, minWidth: 200, height: 28, fontSize: 11 }} 
         onKeyDown={e => e.key === 'Enter' && submit()}/>
-      <button onClick={submit} className="btn btn-primary btn-sm">
-        Add Custom Line
+      <button onClick={submit} className="btn btn-primary btn-sm" style={{ height: 28, fontSize: 11 }}>
+        Add Line
       </button>
     </div>
   )
@@ -445,8 +487,8 @@ const ColH = ({ children, w, center, right, onResize, noResize }) => {
   const [hover, setHover] = useState(false);
   return (
     <th style={{
-      padding: '6px 14px', textAlign: center ? 'center' : right ? 'right' : 'left',
-      fontSize: 10, fontWeight: 700, color: 'var(--text-2)',
+      padding: '4px 10px', textAlign: center ? 'center' : right ? 'right' : 'left',
+      fontSize: 9, fontWeight: 700, color: 'var(--text-3)',
       letterSpacing: '0.05em', textTransform: 'uppercase',
       width: w, position: 'relative',
       background: 'var(--bg)', borderBottom: '1px solid var(--border)', cursor: 'default'
@@ -477,14 +519,14 @@ function SectionHeaderRow({ sec, secTotal, onAddToSection, onRenameSection, sect
   
   return (
     <tr style={{ background: 'var(--bg-2)' }}>
-      <td style={{ padding: '12px 8px', borderBottom: '1px solid var(--border)' }}></td>
-      <td colSpan={7} style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)' }}>
+      <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--border)' }}></td>
+      <td colSpan={7} style={{ padding: '4px 12px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {sec !== sectionName && sec !== '_' && (
             <span style={{ 
-              color: 'var(--bg)', background: 'var(--text)', 
-              padding: '2px 8px', borderRadius: 4, 
-              fontSize: 11, fontWeight: 800, fontFamily: 'var(--font-mono)' 
+              color: 'var(--bg)', background: 'var(--text-3)', 
+              padding: '1px 6px', borderRadius: 3, 
+              fontSize: 9, fontWeight: 800, fontFamily: 'var(--font-mono)' 
             }}>
               {sec}
             </span>
@@ -493,20 +535,20 @@ function SectionHeaderRow({ sec, secTotal, onAddToSection, onRenameSection, sect
             <input autoFocus value={draft} onChange={e => setDraft(e.target.value)}
               onBlur={() => { onRenameSection(sec, draft); setEditing(false) }}
               onKeyDown={e => { if (e.key === 'Enter') { onRenameSection(sec, draft); setEditing(false) } }}
-              className="form-input" style={{ fontSize: 13, fontWeight: 700, minWidth: 240, padding: '4px 8px' }} />
+              className="form-input" style={{ fontSize: 11, fontWeight: 700, minWidth: 200, padding: '2px 6px', height: 24 }} />
           ) : (
             <span onClick={() => { setDraft(sectionName || ''); setEditing(true) }}
-              style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, cursor: 'text' }}>
+              style={{ fontSize: 13, color: 'var(--text)', fontWeight: 800, cursor: 'text', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
               {sectionName || sec || 'Unnamed Section ...'}
             </span>
           )}
         </div>
       </td>
-      <td style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontSize: 13, fontFamily: 'var(--font-mono)' }}>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 800, fontSize: 13, fontFamily: 'var(--font-mono)', color: 'var(--text)' }}>
         {fmtRp(secTotal)}
       </td>
-      <td style={{ padding: '8px 8px', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
-        <button onClick={() => onAddToSection(sec)} className="btn btn-ghost" style={{ width: 28, height: 28, padding: 0 }}>
+      <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
+        <button onClick={() => onAddToSection(sec)} className="btn btn-ghost" style={{ width: 22, height: 22, padding: 0, fontSize: 10 }}>
           +
         </button>
       </td>
@@ -514,18 +556,36 @@ function SectionHeaderRow({ sec, secTotal, onAddToSection, onRenameSection, sect
   )
 }
 
-const TD = { padding: '2px 8px', borderBottom: '1px solid var(--border)', verticalAlign: 'top' }
+function SubcategoryHeaderRow({ name }) {
+  return (
+    <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+      <td style={{ padding: '4px 8px' }}></td>
+      <td colSpan={8} style={{ padding: '6px 32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 4, height: 12, background: 'var(--accent)', borderRadius: 2 }}></div>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+            {name}
+          </span>
+        </div>
+      </td>
+      <td style={{ borderBottom: '1px solid var(--border)' }}></td>
+    </tr>
+  )
+}
 
-export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onDuplicate, onAddCustom, onReorder, onRenameSection }) {
+
+const TD = { padding: '4px 8px', borderBottom: '1px solid var(--border)', position: 'relative' }
+
+export default function QuotationCart({ items, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddCustom, onReorder, onRenameSection, remoteCursors = {}, onFocusCell, comments = [], onComment }) {
   const [activeId, setActiveId] = useState(null)
   const [colWidths, setColWidths] = useState(() => {
     try {
       const saved = localStorage.getItem('juara_quotation_col_widths')
       return saved ? JSON.parse(saved) : {
-        item: 320, qty: 72, freq: 72, hpp: 140, tax: 130, margin: 70, sell: 140, subtotal: 130, actions: 80
+        item: 420, qty: 80, freq: 80, hpp: 120, tax: 90, margin: 50, sell: 120, subtotal: 120, actions: 80
       }
     } catch {
-      return { item: 320, qty: 72, freq: 72, hpp: 140, tax: 130, margin: 70, sell: 140, subtotal: 130, actions: 80 }
+      return { item: 420, qty: 80, freq: 80, hpp: 120, tax: 90, margin: 50, sell: 120, subtotal: 120, actions: 80 }
     }
   })
 
@@ -553,14 +613,13 @@ export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onD
       const prev = items[row - 1]
       if (prev) {
         onUpdate(items[row]._ratecard_key, { 
-          category: prev.category, 
-          sub_category: prev.sub_category 
+          parent_id: prev._ratecard_key
         })
       }
     }
     if (e.altKey && e.key === 'ArrowLeft') {
       e.preventDefault()
-      onUpdate(items[row]._ratecard_key, { category: '', sub_category: '' })
+      onUpdate(items[row]._ratecard_key, { parent_id: null })
     }
 
     if (e.key === 'Enter') {
@@ -579,11 +638,7 @@ export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onD
       if (item) onDuplicate(item)
     }
   }
-  const [masterItems, setMasterItems] = useState([])
-
-  useEffect(() => {
-    getAllRatecardItems().then(setMasterItems)
-  }, [])
+  const masterItems = useQuery(api.masterData.listItems) || [];
 
   const resizingCol = useRef(null)
   const startX = useRef(0)
@@ -612,16 +667,32 @@ export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onD
     localStorage.setItem('juara_quotation_col_widths', JSON.stringify(colWidths))
   }, [colWidths])
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 10 } }))
   const uniqueSections = getUniqueSections(items)
   const sectionTotals = calcAllSectionSellTotals(items)
 
   const handleDragEnd = ({ active, over }) => {
     setActiveId(null)
     if (!over || active.id === over.id) return
+    
     const oldIdx = items.findIndex(i => i._ratecard_key === active.id)
     const newIdx = items.findIndex(i => i._ratecard_key === over.id)
-    onReorder(arrayMove(items, oldIdx, newIdx))
+    
+    const reordered = arrayMove(items, oldIdx, newIdx)
+    
+    // --- SMART ADAPTATION ---
+    // When moved to a new position, the item should adopt the section of its new neighbor
+    const movedItem = reordered[newIdx]
+    const neighbor = reordered[newIdx > 0 ? newIdx - 1 : newIdx + 1]
+    
+    if (neighbor && (movedItem.section_code !== neighbor.section_code || movedItem.section_name !== neighbor.section_name)) {
+      movedItem.section_code = neighbor.section_code
+      movedItem.section_name = neighbor.section_name
+      // Also adapt category if it's a cross-category move
+      movedItem.category = neighbor.category
+    }
+    
+    onReorder(reordered)
   }
 
   const handleAddBelow = (key) => {
@@ -650,24 +721,32 @@ export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onD
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter}
-      onDragStart={({ active }) => setActiveId(active.id)}
+    <DndContext 
+      sensors={sensors} 
+      collisionDetection={closestCenter} 
+      onDragStart={e => setActiveId(e.active.id)}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveId(null)}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+      modifiers={[restrictToVerticalAxis]}
+    >
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        background: 'var(--bg)', borderRadius: 12, border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow-sm)', margin: 0
+      }}>
         <CartHeader itemCount={items.length} />
-        <div style={{ overflowX: 'auto', flex: 1, overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
-          <table style={{ width: 'max-content', minWidth: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+        
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <thead>
               <tr>
-                <ColH w={22} noResize />
+                <ColH w={40} center noResize>#</ColH>
                 <ColH w={colWidths.item} onResize={(e) => handleResizeStart(e, 'item')}>Service / Item</ColH>
                 <ColH w={colWidths.qty} center onResize={(e) => handleResizeStart(e, 'qty')}>Qty</ColH>
                 <ColH w={colWidths.freq} center onResize={(e) => handleResizeStart(e, 'freq')}>Freq</ColH>
-                <ColH w={colWidths.hpp} onResize={(e) => handleResizeStart(e, 'hpp')}>Cost (HPP)</ColH>
-                <ColH w={colWidths.tax} onResize={(e) => handleResizeStart(e, 'tax')}>Tax WHT</ColH>
+                <ColH w={colWidths.hpp} right onResize={(e) => handleResizeStart(e, 'hpp')}>Cost (HPP)</ColH>
+                <ColH w={colWidths.tax} center onResize={(e) => handleResizeStart(e, 'tax')}>Tax WHT</ColH>
                 <ColH w={colWidths.margin} center onResize={(e) => handleResizeStart(e, 'margin')}>Margin</ColH>
-                <ColH w={colWidths.sell} onResize={(e) => handleResizeStart(e, 'sell')}>Unit Sell</ColH>
+                <ColH w={colWidths.sell} right onResize={(e) => handleResizeStart(e, 'sell')}>Unit Sell</ColH>
                 <ColH w={colWidths.subtotal} right onResize={(e) => handleResizeStart(e, 'subtotal')}>Subtotal</ColH>
                 <ColH w={colWidths.actions} center noResize />
               </tr>
@@ -675,25 +754,52 @@ export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onD
             <tbody>
               <SortableContext items={items.map(i => i._ratecard_key)} strategy={verticalListSortingStrategy}>
                 {uniqueSections.map(s => {
-                  const sec = s.code; const secItems = items.filter(i => (i.section_code || i.section || '_') === sec)
+                  const sec = s.code
+                  const secItems = items.filter(i => (i.section_code || i.section || '_') === sec)
+                  
+                  // Group by subcategory
+                  const subGroups = secItems.reduce((acc, item) => {
+                    const sub = item.subcategory || item.sub_category || ''
+                    if (!acc[sub]) acc[sub] = []
+                    acc[sub].push(item)
+                    return acc
+                  }, {})
+
                   return (
                     <Fragment key={sec}>
-                      <SectionHeaderRow sec={sec} secTotal={sectionTotals[sec] || 0} sectionName={s.name || secItems[0]?.section_name || ''} onAddToSection={() => onAddCustom(sec)} onRenameSection={onRenameSection} />
-                      {secItems.map(item => {
-                        const globalIdx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
-                        return (
-                          <SortableRow key={item._ratecard_key} id={item._ratecard_key} 
-                            item={item} rowIndex={globalIdx} 
-                            onUpdate={onUpdate} onCommit={onCommit} onRemove={onRemove} 
-                            onDuplicate={onDuplicate} 
-                            onAddBelow={() => handleAddBelow(item._ratecard_key)} 
-                            onEnterKey={() => handleAddBelow(item._ratecard_key)} 
-                            colWidths={colWidths} masterItems={masterItems}
-                            onKeyDown={handleKeyDown}
-                            items={items}
-                          />
-                        )
-                      })}
+                      <SectionHeaderRow 
+                        sec={sec} 
+                        secTotal={sectionTotals[sec] || 0} 
+                        sectionName={s.name || secItems[0]?.section_name || ''} 
+                        onAddToSection={() => onAddCustom(sec)} 
+                        onRenameSection={onRenameSection} 
+                      />
+                      {Object.entries(subGroups).map(([subName, subItems]) => (
+                        <Fragment key={`${sec}-${subName}`}>
+                          {subName && <SubcategoryHeaderRow name={subName} />}
+                          {subItems.map(item => {
+                            const globalIdx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
+                            return (
+                              <SortableRow key={item._ratecard_key} id={item._ratecard_key} 
+                                item={item} rowIndex={globalIdx} 
+                                activeIndex={activeIndex}
+                                onSetActive={onSetActive}
+                                onUpdate={onUpdate} onCommit={onCommit} onRemove={onRemove} 
+                                onDuplicate={onDuplicate} 
+                                onAddBelow={() => handleAddBelow(item._ratecard_key)} 
+                                onEnterKey={() => handleAddBelow(item._ratecard_key)} 
+                                colWidths={colWidths} masterItems={masterItems}
+                                onKeyDown={handleKeyDown}
+                                items={items}
+                                remoteCursors={remoteCursors}
+                                onFocusCell={onFocusCell}
+                                comments={comments}
+                                onComment={onComment}
+                              />
+                            )
+                          })}
+                        </Fragment>
+                      ))}
                     </Fragment>
                   )
                 })}
@@ -704,12 +810,43 @@ export default function QuotationCart({ items, onUpdate, onCommit, onRemove, onD
         <AddBar onAdd={onAddCustom} />
       </div>
 
-      <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.3' } } }) }}>
-        {activeId && (
-          <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', borderRadius: 8, padding: '16px 24px', minWidth: 400 }}>
-             <h4 style={{ fontSize: 14 }}>{items.find(i => i._ratecard_key === activeId)?.item_name}</h4>
+      <DragOverlay 
+        dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.3' } } }) }}
+        style={{ pointerEvents: 'none' }}
+      >
+        {activeId ? (
+          <div style={{ width: '100%', minWidth: 800 }}>
+            <table style={{ 
+              width: '100%', 
+              borderCollapse: 'collapse', 
+              tableLayout: 'fixed', 
+              background: 'var(--surface)', 
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)', 
+              border: '1px solid var(--vercel-blue)',
+              opacity: 0.9,
+              margin: 0
+            }}>
+              <tbody>
+                <ItemRowCells
+                  item={items.find(i => i._ratecard_key === activeId)}
+                  rowIndex={items.findIndex(i => i._ratecard_key === activeId)}
+                  dragHandleProps={{}}
+                  colWidths={colWidths}
+                  masterZones={[]}
+                  masterItems={masterItems}
+                  onUpdate={() => {}}
+                  onCommit={() => {}}
+                  onRemove={() => {}}
+                  onDuplicate={() => {}}
+                  onAddBelow={() => {}}
+                  onEnterKey={() => {}}
+                  onKeyDown={() => {}}
+                  items={items}
+                />
+              </tbody>
+            </table>
           </div>
-        )}
+        ) : null}
       </DragOverlay>
     </DndContext>
   )

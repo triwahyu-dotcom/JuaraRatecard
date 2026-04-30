@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import {
-  getAllRatecardItems, createRatecardItem,
-  updateRatecardItem, deleteRatecardItem, resetToDefault, exportRatecardJSON, renameSection
-} from '../lib/ratecardRepo'
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import * as XLSX from 'xlsx'
+import { ITEM_BUNDLES } from '../data/bundles'
 
 // Utility to generate consistent pastel colors for random section codes
 // Utility to generate vibrant, readable colors for dark mode (HSL 70-85% Lightness)
@@ -61,6 +61,47 @@ function CellInput({ value, onChange, onBlur, onKeyDown, type="text", placeholde
   )
 }
 
+function fmtNum(v) {
+  if (v === null || v === undefined || v === '') return '';
+  const num = Number(v);
+  if (isNaN(num)) return v;
+  return new Intl.NumberFormat('id-ID').format(num);
+}
+
+function NumCellInput({ value, onChange, onBlur, onKeyDown, placeholder="", style={} }) {
+  return (
+    <input 
+      type="text" 
+      value={fmtNum(value)} 
+      onChange={e => {
+        const raw = e.target.value.replace(/\./g, '');
+        onChange(raw === '' ? null : (isNaN(Number(raw)) ? raw : Number(raw)));
+      }}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+      placeholder={placeholder}
+      style={{
+        width: '100%',
+        background: 'transparent', border: '1px solid transparent',
+        padding: '6px 8px', margin: '-6px -8px', borderRadius: 6,
+        fontSize: 'inherit', color: 'inherit', fontWeight: 'inherit',
+        outline: 'none', transition: 'background 0.1s, border 0.1s',
+        ...style
+      }}
+      onFocus={e => {
+        e.target.style.background = 'var(--surface-2)';
+        e.target.style.border = '1px solid var(--border)';
+      }}
+      onMouseLeave={e => {
+        if (document.activeElement !== e.target) {
+          e.target.style.background = 'transparent';
+          e.target.style.border = '1px solid transparent';
+        }
+      }}
+    />
+  )
+}
+
 /* ── Column Header with Resizer ── */
 const ColH = ({ children, w, onResize, noResize }) => (
   <th style={{ 
@@ -86,50 +127,45 @@ const ColH = ({ children, w, onResize, noResize }) => (
 )
 
 export default function Ratecard() {
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
+  const items = useQuery(api.masterData.listItems) || []
+  const createItemMutation = useMutation(api.masterData.createItem)
+  const updateItemMutation = useMutation(api.masterData.updateItem)
+  const removeItemMutation = useMutation(api.masterData.removeItem)
+  
+  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [filterSection, setFilterSection] = useState('ALL')
-  const [filterPriced, setFilterPriced] = useState('ALL') // ALL | PRICED | TBD
+  const [filterPriced, setFilterPriced] = useState('ALL')
   const [sortBy, setSortBy] = useState('section')
-
-  const load = () => {
-    getAllRatecardItems().then(data => {
-      setItems(data)
-      setLoading(false)
-    })
-  }
-
-  useEffect(() => { load() }, [])
 
   // Stats & Dynamic Sections
   const stats = useMemo(() => {
     const total = items.length
-    const priced = items.filter(i => i.unit_sell != null && i.unit_sell > 0).length
-    const sections = [...new Set(items.map(i => i.section))].sort()
+    const priced = items.filter(i => i.sell_price != null && i.sell_price > 0).length
+    const sections = [...new Set(items.map(i => i.category))].sort()
     return { total, priced, tbd: total - priced, sections }
   }, [items])
 
   // Filtered + sorted items
   const filtered = useMemo(() => {
     let list = items
-    if (filterSection !== 'ALL') list = list.filter(i => i.section === filterSection)
-    if (filterPriced === 'PRICED') list = list.filter(i => i.unit_sell > 0)
-    if (filterPriced === 'TBD') list = list.filter(i => !i.unit_sell)
+    if (filterSection !== 'ALL') list = list.filter(i => i.category === filterSection)
+    if (filterPriced === 'PRICED') list = list.filter(i => i.sell_price > 0)
+    if (filterPriced === 'TBD') list = list.filter(i => !i.sell_price)
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(i =>
-        i.item_name?.toLowerCase().includes(q) ||
-        i.category?.toLowerCase().includes(q) ||
+        i.name?.toLowerCase().includes(q) ||
+        i.subcategory?.toLowerCase().includes(q) ||
         i.description?.toLowerCase().includes(q)
       )
     }
     // Sort
     list = [...list].sort((a, b) => {
-      if (sortBy === 'section') return (a.section || '').localeCompare(b.section || '') || (a.category || '').localeCompare(b.category || '') || (a.sort_order - b.sort_order)
-      if (sortBy === 'price_asc') return (a.unit_sell || 0) - (b.unit_sell || 0)
-      if (sortBy === 'price_desc') return (b.unit_sell || 0) - (a.unit_sell || 0)
-      if (sortBy === 'name') return (a.item_name || '').localeCompare(b.item_name || '')
+      if (sortBy === 'section') return (a.category || '').localeCompare(b.category || '') || (a.subcategory || '').localeCompare(b.subcategory || '')
+      if (sortBy === 'price_asc') return (a.sell_price || 0) - (b.sell_price || 0)
+      if (sortBy === 'price_desc') return (b.sell_price || 0) - (a.sell_price || 0)
+      if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '')
       return 0
     })
     return list
@@ -139,9 +175,9 @@ export default function Ratecard() {
   const grouped = useMemo(() => {
     const g = {}
     filtered.forEach(item => {
-      const sk = item.section || 'Uncategorized'
-      const ck = item.category || 'General'
-      if (!g[sk]) g[sk] = { section: item.section, section_name: item.section_name, categories: {} }
+      const sk = item.category || 'Uncategorized'
+      const ck = item.subcategory || 'General'
+      if (!g[sk]) g[sk] = { section: item.category, section_name: item.category, categories: {} }
       if (!g[sk].categories[ck]) g[sk].categories[ck] = []
       g[sk].categories[ck].push(item)
     })
@@ -150,19 +186,28 @@ export default function Ratecard() {
 
   // ── Database Actions ──
   const handleUpdate = async (id, field, value) => {
-    await updateRatecardItem(id, { [field]: value })
-    load()
+    await updateItemMutation({ id, updates: { [field]: value } })
   }
 
   const handleDelete = async (item) => {
     if (!confirm(`Hapus baris "${item.item_name}"?`)) return
-    await deleteRatecardItem(item.id)
-    load()
+    await removeItemMutation({ id: item._id })
   }
 
   const handleCreate = async (newItem) => {
-    await createRatecardItem(newItem)
-    load()
+    await createItemMutation(newItem)
+    setSearch('')
+    setFilterSection('ALL')
+    setFilterPriced('ALL')
+    alert(`Success! "${newItem.item_name}" has been added to catalog.`)
+  }
+
+  const handleDuplicate = async (item) => {
+    const { _id, _creationTime, ...rest } = item
+    await createItemMutation({
+      ...rest,
+      item_name: `${item.item_name} (Copy)`
+    })
   }
 
   const handleSectionRename = async (oldCode, newCode, newName) => {
@@ -187,10 +232,102 @@ export default function Ratecard() {
     a.click()
   }
 
+  const handleExportExcel = () => {
+    const exportData = items.map(item => ({
+      'SECTION': item.section,
+      'SUB CATEGORY': item.category,
+      'ITEM NAME': item.item_name,
+      'SPECIFICATION': item.description || '',
+      'QTY UNIT': item.qty_unit,
+      'FREQ UNIT': item.freq_unit,
+      'PRICE': item.unit_sell || 0,
+      'COA': item.coa_code || ''
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Ratecard");
+    XLSX.writeFile(wb, `Ratecard_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  const handleImportExcel = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws);
+
+      if (confirm(`Import ${data.length} items dari Excel? Data akan ditambahkan ke katalog saat ini.`)) {
+        setLoading(true);
+        try {
+          for (const row of data) {
+            const newItem = {
+              section: row['SECTION'] || 'Other',
+              section_name: row['SECTION'] || 'Other',
+              category: row['SUB CATEGORY'] || 'General',
+              item_name: row['ITEM NAME'],
+              description: row['SPECIFICATION'] || '',
+              qty_default: 1,
+              qty_unit: row['QTY UNIT'] || 'unit',
+              freq_default: 1,
+              freq_unit: row['FREQ UNIT'] || 'day',
+              unit_sell: row['PRICE'] || 0,
+              coa_code: row['COA'] || ''
+            };
+            if (newItem.item_name) {
+              await createRatecardItem(newItem);
+            }
+          }
+          load();
+          alert('Import selesai!');
+        } catch (err) {
+          console.error(err);
+          alert('Terjadi kesalahan saat import.');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    reader.readAsBinaryString(file);
+    // Reset input so same file can be picked again
+    e.target.value = '';
+  };
+
+  const handleExportBundles = () => {
+    const exportData = [];
+    ITEM_BUNDLES.forEach(bundle => {
+      bundle.items.forEach(item => {
+        exportData.push({
+          'PAKET ID': bundle.id,
+          'NAMA PAKET': bundle.name,
+          'DESKRIPSI PAKET': bundle.description,
+          'ITEM CODE': item.item_code,
+          'ITEM NAME': item.name || '',
+          'QTY': item.quantity,
+          'DURATION': item.duration,
+          'UNIT': item.dur_unit,
+          'NOTE': item.note || ''
+        });
+      });
+    });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Paket_Item");
+    XLSX.writeFile(wb, `Paket_Item_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
   const [colWidths, setColWidths] = useState({
     sec: 60,
     cat: 150,
-    item: 400,
+    item: 300,
+    vendor: 150,
+    desc: 300,
     vol: 120,
     hpp: 130,
     sell: 130,
@@ -248,6 +385,11 @@ export default function Ratecard() {
             <p className="text-muted text-sm">Kelola harga dan item layanan PT Juara dengan antarmuka Grid Spreadsheet</p>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn btn-primary btn-sm" onClick={() => document.getElementById('excel-import').click()}>⬆ Import Excel</button>
+            <input type="file" id="excel-import" hidden accept=".xlsx, .xls" onChange={handleImportExcel} />
+            
+            <button className="btn btn-surface btn-sm" onClick={handleExportExcel}>⬇ Export Excel</button>
+            <button className="btn btn-surface btn-sm" onClick={handleExportBundles}>📦 Export Paket</button>
             <button className="btn btn-ghost btn-sm" onClick={handleExport}>⬇ Export JSON</button>
             <button className="btn btn-ghost btn-sm" onClick={handleReset} style={{ color: 'var(--text-3)' }}>🔄 Reset Data Default</button>
           </div>
@@ -277,7 +419,7 @@ export default function Ratecard() {
             placeholder="🔍 Cari item, kategori, deskripsi..."
             value={search} onChange={e => setSearch(e.target.value)} />
 
-          <div style={{ display: 'flex', gap: 4 }}>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {['ALL', ...stats.sections].map(s => {
               const isActive = filterSection === s;
               const color = s !== 'ALL' ? getColorForSection(s?.charAt(0)) : 'var(--accent)';
@@ -340,7 +482,9 @@ export default function Ratecard() {
               <tr>
                 <ColH w={colWidths.sec} onResize={e => handleResizeStart(e, 'sec')}>Sec</ColH>
                 <ColH w={colWidths.cat} onResize={e => handleResizeStart(e, 'cat')}>Kategori</ColH>
-                <ColH w={colWidths.item} onResize={e => handleResizeStart(e, 'item')}>Item / Spesifikasi</ColH>
+                <ColH w={colWidths.item} onResize={e => handleResizeStart(e, 'item')}>Item Name</ColH>
+                <ColH w={colWidths.vendor} onResize={e => handleResizeStart(e, 'vendor')}>Vendor</ColH>
+                <ColH w={colWidths.desc} onResize={e => handleResizeStart(e, 'desc')}>Keterangan / Spek</ColH>
                 <ColH w={colWidths.vol} onResize={e => handleResizeStart(e, 'vol')}>Volume</ColH>
                 <ColH w={colWidths.hpp} onResize={e => handleResizeStart(e, 'hpp')}>HPP</ColH>
                 <ColH w={colWidths.sell} onResize={e => handleResizeStart(e, 'sell')}>Harga Jual</ColH>
@@ -361,21 +505,21 @@ export default function Ratecard() {
               {sortBy === 'section'
                 ? Object.entries(grouped).map(([sec, secData]) => (
                     <React.Fragment key={sec}>
-                      <SectionHeaderRow sec={sec} secData={secData} onRename={handleSectionRename} />
+                      <SectionHeaderRow sec={sec} secData={secData} onRename={() => {}} />
                       {Object.entries(secData.categories).map(([, catItems]) => (
                         catItems.map(item => (
-                          <ItemRow key={item.id} item={item} onUpdate={handleUpdate} onDelete={() => handleDelete(item)} colWidths={colWidths} />
+                          <ItemRow key={item._id} item={item} onUpdate={handleUpdate} onDelete={() => handleDelete(item)} onDuplicate={() => handleDuplicate(item)} colWidths={colWidths} />
                         ))
                       ))}
                     </React.Fragment>
                   ))
                 : filtered.map(item => (
-                    <ItemRow key={item.id} item={item} onUpdate={handleUpdate} onDelete={() => handleDelete(item)} colWidths={colWidths} />
+                    <ItemRow key={item._id} item={item} onUpdate={handleUpdate} onDelete={() => handleDelete(item)} onDuplicate={() => handleDuplicate(item)} colWidths={colWidths} />
                   ))
               }
 
               {/* Ghost Row Insert */}
-              <GhostRow onAdd={handleCreate} colWidths={colWidths} />
+              <GhostRow onAdd={handleCreate} colWidths={colWidths} existingItems={items} />
             </tbody>
           </table>
         </div>
@@ -424,14 +568,14 @@ function SectionHeaderRow({ sec, secData, onRename }) {
 }
 
 /* ── Editable Item Row ─────────────────────────────────────────────── */
-function ItemRow({ item, onUpdate, onDelete, colWidths }) {
+function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
   const [local, setLocal] = useState(item);
 
   useEffect(() => { setLocal(item) }, [item]);
 
   const commit = (field) => {
     if (local[field] !== item[field]) {
-      onUpdate(item.id, field, local[field]);
+      onUpdate(item._id, field, local[field]);
     }
   }
 
@@ -445,75 +589,86 @@ function ItemRow({ item, onUpdate, onDelete, colWidths }) {
   const hasPrice = local.unit_sell > 0;
 
   return (
-    <tr style={{ borderTop: '1px solid var(--border)', transition: 'background 0.1s' }}
-      onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-2)'}
-      onMouseLeave={e => e.currentTarget.style.background = ''}>
-      
+    <tr className="item-row" style={{ borderBottom: '1px solid var(--border)', background: hasPrice ? 'transparent' : 'rgba(234,179,8,0.03)' }}>
       <td style={{ padding: '8px 14px', width: colWidths.sec }}>
-        <CellInput value={local.section} onChange={v => handleChange('section', v)} onBlur={() => commit('section')} width={30} style={{textAlign:'center', fontWeight: 'bold'}} />
+        <CellInput value={local.category} onChange={v => handleChange('category', v)} onBlur={() => commit('category')} width={30} style={{textAlign:'center', fontWeight: 'bold'}} />
       </td>
       <td style={{ padding: '8px 14px', color: 'var(--text-2)', width: colWidths.cat }}>
-        <CellInput value={local.category} onChange={v => handleChange('category', v)} onBlur={() => commit('category')} placeholder="Kategori" />
+        <CellInput value={local.subcategory} onChange={v => handleChange('subcategory', v)} onBlur={() => commit('subcategory')} placeholder="Kategori" />
       </td>
+      
+      {/* Item Name */}
       <td style={{ padding: '8px 14px', width: colWidths.item }}>
         <div style={{ fontWeight: 600 }}>
-          <CellInput value={local.item_name} onChange={v => handleChange('item_name', v)} onBlur={() => commit('item_name')} placeholder="Nama Barang/Jasa" />
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
-          <CellInput value={local.description} onChange={v => handleChange('description', v)} onBlur={() => commit('description')} placeholder="Spesifikasi..." />
+          <CellInput value={local.name} onChange={v => handleChange('name', v)} onBlur={() => commit('name')} placeholder="Nama Barang/Jasa" />
         </div>
       </td>
+
+      {/* Vendor */}
+      <td style={{ padding: '8px 14px', width: colWidths.vendor }}>
+        <CellInput value={local.vendor} onChange={v => handleChange('vendor', v)} onBlur={() => commit('vendor')} placeholder="Vendor..." style={{fontSize: 12, color: 'var(--text-2)'}} />
+      </td>
+
+      {/* Description */}
+      <td style={{ padding: '8px 14px', width: colWidths.desc }}>
+        <textarea 
+          value={local.description || ''} 
+          onChange={e => handleChange('description', e.target.value)}
+          onBlur={() => commit('description')}
+          placeholder="Spek teknis..."
+          style={{ width: '100%', padding: '4px 0', background: 'transparent', border: 'none', color: 'var(--text-3)', fontSize: 11, resize: 'none', height: 32, lineHeight: '1.2' }}
+        />
+      </td>
+
       <td style={{ padding: '8px 14px', whiteSpace: 'nowrap', width: colWidths.vol }}>
         <div style={{ display: 'flex', gap: 4 }}>
-          <CellInput value={local.qty_default} onChange={v => handleChange('qty_default', v)} onBlur={() => commit('qty_default')} width={30} type="number" />
-          <CellInput value={local.qty_unit} onChange={v => handleChange('qty_unit', v)} onBlur={() => commit('qty_unit')} width={40} placeholder="unit" />
-        </div>
-        <div style={{ display: 'flex', gap: 4, marginTop: 2, fontSize: 11 }}>
-          <CellInput value={local.freq_default} onChange={v => handleChange('freq_default', v)} onBlur={() => commit('freq_default')} width={30} type="number" />
-          <CellInput value={local.freq_unit} onChange={v => handleChange('freq_unit', v)} onBlur={() => commit('freq_unit')} width={40} placeholder="day" />
+          <CellInput value={local.unit} onChange={v => handleChange('unit', v)} onBlur={() => commit('unit')} width={40} placeholder="unit" />
         </div>
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.hpp }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
-          <CellInput value={local.unit_cost} onChange={v => handleChange('unit_cost', v)} onBlur={() => commit('unit_cost')} type="number" placeholder="Cost" width={80} style={{fontWeight: 600, color: 'var(--text-2)'}} />
+          <NumCellInput value={local.cost_price} onChange={v => handleChange('cost_price', v)} onBlur={() => commit('cost_price')} placeholder="Cost" style={{fontWeight: 600, color: 'var(--text-2)'}} />
         </div>
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.sell }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 4 }}>Rp</span>
-          <CellInput value={local.unit_sell} onChange={v => handleChange('unit_sell', v)} onBlur={() => commit('unit_sell')} type="number" placeholder="Harga Jual" width={90} style={{fontWeight: 700, color: hasPrice ? 'var(--green)' : 'var(--yellow)', background: hasPrice ? 'transparent' : 'rgba(234,179,8,0.1)'}} />
+          <NumCellInput value={local.sell_price} onChange={v => handleChange('sell_price', v)} onBlur={() => commit('sell_price')} placeholder="Harga Jual" style={{fontWeight: 700, color: hasPrice ? 'var(--green)' : 'var(--yellow)', background: hasPrice ? 'transparent' : 'rgba(234,179,8,0.1)'}} />
         </div>
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.coa }}>
         <CellInput value={local.coa_code} onChange={v => handleChange('coa_code', v)} onBlur={() => commit('coa_code')} placeholder="COA" style={{fontSize: 11, color: 'var(--text-3)'}} width={60} />
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.actions }}>
-        <button className="btn btn-danger btn-sm" onClick={onDelete} style={{ padding: '4px 8px', fontSize: 12 }}>🗑</button>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <button className="btn btn-ghost btn-sm" onClick={onDuplicate} title="Duplicate Item" style={{ padding: '4px 6px', fontSize: 14 }}>⧉</button>
+          <button className="btn btn-danger btn-sm" onClick={onDelete} title="Delete Item" style={{ padding: '4px 8px', fontSize: 12 }}>🗑</button>
+        </div>
       </td>
     </tr>
   )
 }
 
 /* ── Ghost Row (Add Item) ─────────────────────────────────────────── */
-function GhostRow({ onAdd, colWidths }) {
-  const blank = { section: '', category: '', item_name: '', description: '', qty_default: 1, qty_unit: 'unit', freq_default: 1, freq_unit: 'day', unit_cost: '', unit_sell: '', coa_code: '' };
+function GhostRow({ onAdd, colWidths, existingItems }) {
+  const blank = { category: '', subcategory: '', name: '', description: '', unit: 'unit', cost_price: 0, sell_price: 0, coa_code: '' };
   const [local, setLocal] = useState({ ...blank });
 
   const handleChange = (field, val) => {
-    if (field === 'unit_cost' || field === 'unit_sell') val = val === '' ? null : Number(val);
+    if (field === 'cost_price' || field === 'sell_price') val = val === '' ? 0 : Number(val);
     setLocal(prev => ({ ...prev, [field]: val }))
   }
 
   const commit = () => {
-    if (!local.item_name) return; // name is required
+    if (!local.name) return; // name is required
+    
     onAdd({
       ...local,
-      section: local.section?.toUpperCase(),
-      section_name: `SECTION ${local.section?.toUpperCase()}`, // fallback
       category: local.category || 'General',
+      subcategory: local.subcategory || 'General',
     });
-    setLocal({ ...blank, section: local.section, category: local.category }); // keep section & cat to ease next input
+    setLocal({ ...blank, category: local.category, subcategory: local.subcategory }); // keep input
   }
 
   const handleKeyDown = (e) => {
@@ -523,35 +678,54 @@ function GhostRow({ onAdd, colWidths }) {
   return (
     <tr style={{ background: 'var(--bg)', borderTop: '2px solid var(--border)' }}>
       <td style={{ padding: '10px 14px', width: colWidths.sec }}>
-        <CellInput value={local.section} onChange={v => handleChange('section', v)} placeholder="Sec" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <CellInput value={local.category} onChange={v => handleChange('category', v)} placeholder="Sec" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.cat }}>
-        <CellInput value={local.category} onChange={v => handleChange('category', v)} placeholder="+ Kategori" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <CellInput value={local.subcategory} onChange={v => handleChange('subcategory', v)} placeholder="+ Kategori" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
-      <td style={{ padding: '10px 14px', width: colWidths.item }}>
-        <CellInput value={local.item_name} onChange={v => handleChange('item_name', v)} placeholder="+ Tambah Item Baru (Enter to save)" onKeyDown={handleKeyDown} style={{background: 'var(--surface)', fontWeight: 600}} />
+      <td style={{ padding: 0, width: colWidths.item }}>
+        <input 
+          value={local.name || ''} 
+          onChange={e => handleChange('name', e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="+ Item Baru"
+          style={{ width: '100%', padding: '10px 14px', background: 'var(--surface)', border: 'none', color: 'var(--text)', fontWeight: 600 }}
+        />
+      </td>
+      <td style={{ padding: 0, width: colWidths.vendor }}>
+        <input 
+          value={local.vendor || ''} 
+          onChange={e => handleChange('vendor', e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Vendor"
+          style={{ width: '100%', padding: '10px 14px', background: 'var(--surface)', border: 'none', color: 'var(--text-2)', fontSize: 12 }}
+        />
+      </td>
+      <td style={{ padding: 0, width: colWidths.desc }}>
+        <input 
+          value={local.description || ''} 
+          onChange={e => handleChange('description', e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Spek..."
+          style={{ width: '100%', padding: '10px 14px', background: 'var(--surface)', border: 'none', color: 'var(--text-3)', fontSize: 12 }}
+        />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.vol }}>
         <div style={{ display: 'flex', gap: 4 }}>
-          <CellInput value={local.qty_default} onChange={v => handleChange('qty_default', v)} type="number" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} width={30} />
-          <CellInput value={local.qty_unit} onChange={v => handleChange('qty_unit', v)} placeholder="unit" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} width={40} />
-        </div>
-        <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
-          <CellInput value={local.freq_default} onChange={v => handleChange('freq_default', v)} type="number" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} width={30} />
-          <CellInput value={local.freq_unit} onChange={v => handleChange('freq_unit', v)} placeholder="day/org" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} width={40} />
+          <CellInput value={local.unit} onChange={v => handleChange('unit', v)} placeholder="unit" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} width={40} />
         </div>
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.hpp }}>
-        <CellInput value={local.unit_cost} onChange={v => handleChange('unit_cost', v)} placeholder="Cost" type="number" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <NumCellInput value={local.cost_price} onChange={v => handleChange('cost_price', v)} placeholder="Cost" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.sell }}>
-        <CellInput value={local.unit_sell} onChange={v => handleChange('unit_sell', v)} placeholder="Jual" type="number" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
+        <NumCellInput value={local.sell_price} onChange={v => handleChange('sell_price', v)} placeholder="Jual" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.coa }}>
         <CellInput value={local.coa_code} onChange={v => handleChange('coa_code', v)} placeholder="COA" onKeyDown={handleKeyDown} style={{background: 'var(--surface)'}} />
       </td>
       <td style={{ padding: '10px 14px', width: colWidths.actions }}>
-        <button className="btn btn-primary btn-sm" onClick={commit} disabled={!local.item_name}>Add</button>
+        <button className="btn btn-primary btn-sm" onClick={commit} disabled={!local.name}>Add</button>
       </td>
     </tr>
   )

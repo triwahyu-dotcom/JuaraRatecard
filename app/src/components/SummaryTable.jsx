@@ -30,7 +30,7 @@ export default function SummaryTable({ items: _items, quotation, eventData, onEv
   const sectionTotals = calcAllSectionSellTotals(items)
 
   const opts = {
-    discount_type:  eventData.discount_type  ?? 'pct',
+    discount_type:  eventData.discount_type  || 'amt',
     discount_value: eventData.discount_value ?? 0,
     mgmt_type:      'pct',
     mgmt_value:     eventData.mgmt_fee_rate ?? 0.10,
@@ -43,8 +43,9 @@ export default function SummaryTable({ items: _items, quotation, eventData, onEv
     grossProfit, grossMarginPct, vendorTaxTotal, netProfit, netMarginPct
   } = calcSummary(items, opts)
 
-  const mgmtPct = Math.round((opts.mgmt_value > 1 ? opts.mgmt_value / 100 : opts.mgmt_value) * 100)
-  const ppnPct  = Math.round((opts.ppn_rate > 1 ? opts.ppn_rate / 100 : opts.ppn_rate) * 100)
+  // Use opts.mgmt_value/opts.ppn_rate directly if they are already decimals
+  const mgmtPct = Math.round((opts.mgmt_value > 1 ? opts.mgmt_value : opts.mgmt_value * 100))
+  const ppnPct  = Math.round((opts.ppn_rate > 1 ? opts.ppn_rate : opts.ppn_rate * 100))
 
   const upd = (field, val) => onEventDataChange?.({ ...eventData, [field]: val })
 
@@ -122,12 +123,18 @@ export default function SummaryTable({ items: _items, quotation, eventData, onEv
         <div style={{ flex: 1 }}>
           <h4 style={{ fontSize: 11, marginBottom: 20, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Offer Configuration</h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
-            <div className="form-group">
-              <label className="form-label">Discount (%)</label>
-              <input type="number" min="0" max="100" step="1"
-                value={eventData.discount_value ?? 0}
-                onChange={e => upd('discount_value', Number(e.target.value))}
-                className="form-input" style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }} />
+            <div className="form-group" style={{ gridColumn: 'span 2' }}>
+              <label className="form-label">Discount (Nominal)</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontWeight: 800, color: 'var(--text-3)', fontSize: 14 }}>Rp</span>
+                <input type="text"
+                  value={fmt(eventData.discount_value ?? 0)}
+                  onChange={e => {
+                    const raw = e.target.value.replace(/\D/g, '');
+                    upd('discount_value', Number(raw) || 0);
+                  }}
+                  className="form-input" style={{ paddingLeft: 40, fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 18, width: '100%' }} />
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Management Fee (%)</label>
@@ -162,7 +169,7 @@ export default function SummaryTable({ items: _items, quotation, eventData, onEv
               <tbody>
                 <Row label="Invoiced Items Subtotal"               value={subtotal}      bold />
                 {discountAmount > 0 && (
-                  <Row label={`Applied Discount (${opts.discount_value}%)`}    value={-discountAmount} sub textColor="var(--yellow)" />
+                  <Row label={opts.discount_type === 'pct' ? `Applied Discount (${opts.discount_value}%)` : 'Applied Discount (Nominal)'}    value={-discountAmount} sub textColor="var(--yellow)" />
                 )}
                 {discountAmount > 0 && (
                   <Row label="After Discount"                        value={afterDiscount} bold dimTop />

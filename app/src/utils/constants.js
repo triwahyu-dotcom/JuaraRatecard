@@ -1,35 +1,37 @@
 /**
  * Master Category definition and fixed sort order
+ * Updated for 2026 Ratecard Structure
  */
 export const MASTER_CATEGORIES = [
-  'Planning & Development',
-  'Permit & Retribusi',
-  'Venue / Setup / System',
-  'Multimedia / Creative',
-  'Production / Fabrication',
-  'Manpower / Crew',
-  'Talent / Entertainment',
-  'Transportation / Logistics',
-  'Accommodation / Consumption',
-  'Documentation / Reporting',
-  'Miscellaneous / Additional Cost'
+  'A. PLANNING & DEVELOPMENT',
+  'B. PERMIT & RETRIBUSI',
+  'C. HSE & SAFETY',
+  'D. VENUE SETUP & SYSTEM',
+  'E. TALENTS',
+  'F. PARTICIPANT & AUDIENCE',
+  'G. SHOW MANAGEMENT',
+  'H. COMMITTEE & MANPOWER',
+  'I. TRANSPORT & AKOMODASI',
+  'J. F&B & KONSUMSI',
+  'K. OPERATIONAL & MISCELLANEOUS'
 ];
 
 export const CATEGORY_COLORS = {
-  'Planning & Development': '#93c5fd', // Bright Blue
-  'Permit & Retribusi': '#fda4af',     // Soft Rose/Red
-  'Venue / Setup / System': '#86efac', // Bright Green
-  'Multimedia / Creative': '#d8b4fe',  // Bright Purple
-  'Production / Fabrication': '#fde047', // Sun Yellow
-  'Manpower / Crew': '#67e8f9',        // Bright Cyan
-  'Talent / Entertainment': '#f9a8d4', // Bright Pink
-  'Transportation / Logistics': '#c4b5fd', // Soft Violet
-  'Accommodation / Consumption': '#5eead4', // Soft Teal
-  'Documentation / Reporting': '#fdba74', // Bright Orange
-  'Miscellaneous / Additional Cost': '#cbd5e1' // Modern Slate/Light Gray
+  'A. PLANNING & DEVELOPMENT': '#93c5fd', 
+  'B. PERMIT & RETRIBUSI': '#fda4af',     
+  'C. HSE & SAFETY': '#fbbf24',           
+  'D. VENUE SETUP & SYSTEM': '#86efac',   
+  'E. TALENTS': '#f9a8d4',                
+  'F. PARTICIPANT & AUDIENCE': '#d8b4fe', 
+  'G. SHOW MANAGEMENT': '#67e8f9',        
+  'H. COMMITTEE & MANPOWER': '#c4b5fd',   
+  'I. TRANSPORT & AKOMODASI': '#5eead4',  
+  'J. F&B & KONSUMSI': '#fdba74',         
+  'K. OPERATIONAL & MISCELLANEOUS': '#94a3b8'
 };
 
 export function getCategoryOrder(categoryName) {
-  const index = MASTER_CATEGORIES.indexOf(categoryName);
+  if (!categoryName) return 999;
+  const index = MASTER_CATEGORIES.findIndex(c => categoryName.toUpperCase().includes(c.toUpperCase()));
   return index === -1 ? 999 : index;
 }

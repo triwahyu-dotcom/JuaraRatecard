@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import StepBar from '../components/StepBar'
 import EventForm from '../components/EventForm'
@@ -6,14 +6,15 @@ import RatecardBrowser from '../components/RatecardBrowser'
 import QuotationCart from '../components/QuotationCart'
 import SummaryTable from '../components/SummaryTable'
 import PrintDocument from '../components/PrintDocument'
-import { getQuotation, createQuotation, updateQuotation } from '../lib/quotationRepo'
 import { generateQuotNumber } from '../utils/fmt'
 import { calcLineSell, calcLineCost, calcSummary, calcSellFromMargin, getQuotationLines } from '../utils/calc'
 import { EVENT_TEMPLATES, findItemsInRatecard } from '../utils/templates'
-import { getAllRatecardItems, createMasterItem, getCategories, ensureCategoryExists } from '../lib/ratecardRepo'
+import { useQuery, useMutation, useConvex } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { exportToExcelSync, importFromExcelSync } from '../utils/excelSync'
 import { diceCoefficient, predictCategory } from '../utils/stringUtils'
 import { useRef } from 'react'
+
 
 const STEPS = [
   { label: 'Details', sub: 'Client & event info' },
@@ -24,7 +25,7 @@ const STEPS = [
 const defaultEvent = {
   client: '', event_title: '', event_date: '', venue: '', city: '',
   quot_number: '', signatory: 'Eka Marutha Yuswardana',
-  discount: 0, discount_type: 'pct', discount_value: 0,
+  discount: 0, discount_type: 'amt', discount_value: 0,
   ppn_rate: 0.12,
   mgmt_fee_rate: 0.10,
   notes: [
@@ -38,7 +39,16 @@ export default function Builder() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(() => {
+    const saved = localStorage.getItem('juara_builder_step')
+    return saved ? parseInt(saved, 10) : 0
+  })
+
+  // Persistence for Step
+  useEffect(() => {
+    localStorage.setItem('juara_builder_step', step.toString())
+  }, [step])
+
   const [eventData, setEventData] = useState(defaultEvent)
   const [items, setItems] = useState([])
   const [saving, setSaving] = useState(false)
@@ -47,6 +57,7 @@ export default function Builder() {
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [successMsg, setSuccessMsg] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [leftSidebarTab, setLeftSidebarTab] = useState('DB') // 'DB' | 'CONFIG'
   const [isDraggingFile, setIsDraggingFile] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [confirmState, setConfirmState] = useState(null) // { title, message, onConfirm, onCancel, confirmLabel, cancelLabel }
@@ -54,101 +65,155 @@ export default function Builder() {
   const [redoStack, setRedoStack] = useState([])
   const [lastSavedItems, setLastSavedItems] = useState(null)
   const [saveStatus, setSaveStatus] = useState('idle') // idle | saving | saved
+  const [activeIndex, setActiveIndex] = useState(null)
+  const [comments, setComments] = useState([])
+  const [commentTarget, setCommentTarget] = useState(null) // row_key
+  const [showHistory, setShowHistory] = useState(false)
+
+  const [historyLogs, setHistoryLogs] = useState([])
   const fileInputRef = useRef(null)
 
-  // Load ratecard for templates
+  // --- COLLABORATION STATE ---
+  const [currentUser] = useState(() => {
+    const saved = localStorage.getItem('juara_user')
+    if (saved) return JSON.parse(saved)
+    const newUser = {
+      id: crypto.randomUUID(),
+      name: 'User ' + Math.floor(Math.random() * 1000),
+      color: ['#0070f3', '#00e676', '#f50057', '#ff9100', '#7c4dff', '#00bcd4', '#ffeb3b'][Math.floor(Math.random() * 7)]
+    }
+    localStorage.setItem('juara_user', JSON.stringify(newUser))
+    return newUser
+  })
+
+  // --- CONVEX DATA FETCHING ---
+  // If id is present, fetch the quotation from Convex
+  const quotation = useQuery(api.quotations.get, id ? { id: id } : "skip");
+  const updateQuotationMutation = useMutation(api.quotations.update);
+  const createRevisionMutation = useMutation(api.revisions.create);
+  const createBundleMutation = useMutation(api.masterData.createBundle);
+  const addCommentMutation = useMutation(api.collaboration.addComment);
+  const createCategoryMutation = useMutation(api.masterData.createCategory);
+  const ratecardItems = useQuery(api.masterData.listItems) || [];
+  const fetchedComments = useQuery(api.collaboration.getComments, id ? { quotationId: id } : "skip") || [];
+  const fetchedRevisions = useQuery(api.revisions.list, id ? { quotationId: id } : "skip") || [];
+  const convex = useConvex();
+
   useEffect(() => {
-    getAllRatecardItems().then(setRatecardData)
-    
+    if (ratecardItems.length > 0) setRatecardData(ratecardItems);
+  }, [ratecardItems]);
+
+  useEffect(() => {
+    if (fetchedComments.length > 0) setComments(fetchedComments);
+  }, [fetchedComments]);
+
+  useEffect(() => {
+    if (fetchedRevisions.length > 0) setHistoryLogs(fetchedRevisions);
+  }, [fetchedRevisions]);
+  
+  useEffect(() => {
+    if (quotation) {
+      setItems(quotation.items || [])
+      setEventData(prev => ({
+        ...prev,
+        quot_number: quotation.quot_number,
+        title: quotation.title,
+        client_name: quotation.client_name || '',
+        event_date: quotation.event_date || '',
+        venue: quotation.venue || '',
+      }))
+      setLoading(false)
+    }
+  }, [quotation])
+
+  useEffect(() => {
     // Check for import success from Dashboard
     if (location.state?.importSuccess) {
       setSuccessMsg(`Imported ${location.state.itemCount} items across ${location.state.sections} sections successfully.`)
       // Clear location state so it doesn't show again on refresh
       window.history.replaceState({}, document.title)
     }
-  }, [])
-
-  // Load/Reset existing quotation
-  useEffect(() => {
-    if (!id) {
-      setEventData({...defaultEvent, quot_number: ''})
-      setItems([])
-      const draft = localStorage.getItem('juara_quotation_draft')
-      if (draft) {
-        try {
-          const { items: dItems, eventData: dEvent } = JSON.parse(draft)
-          // Use custom modal for Restoration
-          const skipRestore = sessionStorage.getItem('juara_skip_draft_restore')
-          if (dItems.length > 0 && !skipRestore) {
-            setConfirmState({
-              title: 'Restore Unsaved Draft?',
-              message: 'We found a draft from your previous session. Would you like to restore your items and event details?',
-              confirmLabel: 'Restore Data',
-              cancelLabel: 'Discard & Start New',
-              onConfirm: () => {
-                setItems(dItems)
-                setEventData(dEvent)
-                setConfirmState(null)
-              },
-              onCancel: () => {
-                localStorage.removeItem('juara_quotation_draft')
-                setConfirmState(null)
-              }
-            })
-          } else if (dItems.length === 0 || skipRestore) {
-            localStorage.removeItem('juara_quotation_draft')
-            sessionStorage.removeItem('juara_skip_draft_restore')
-          }
-        } catch (e) { localStorage.removeItem('juara_quotation_draft') }
-      }
-      setLoading(false)
-      return
-    }
-    
-    setLoading(true)
-    getQuotation(id).then(q => {
-      if (!q) {
-        console.warn(`Quotation with ID "${id}" not found.`);
-        return navigate('/')
-      }
-      
-      const qLines = getQuotationLines(q)
-      
-      // Data Normalization (Legacy field mapping)
-      const normalizedData = {
-        ...q,
-        client: q.client || q.client_name || '',
-        event_title: q.event_title || q.project_name || '',
-        event_date: q.event_date || q.event_date_start || '',
-        venue: q.venue || q.venue_name || '',
-        // Normalize rates to decimals if they come in as integers
-        ppn_rate: (q.ppn_rate > 1) ? q.ppn_rate / 100 : (q.ppn_rate || 0.12),
-        mgmt_fee_rate: (q.mgmt_fee_rate > 1) ? q.mgmt_fee_rate / 100 : (q.mgmt_fee_rate || 0.10),
-      }
-      
-      setEventData(normalizedData)
-      setItems(qLines.map(i => ({ 
-        ...i, 
-        _ratecard_key: i._ratecard_key || i.id || `${i.section_code || i.section}-${i.item_name}-${i.category}-${Math.random()}` 
-      })))
-      setLoading(false)
-    }).catch(err => {
-      console.error('Failed to load quotation:', err)
-      navigate('/')
-    })
-
   }, [id])
 
+  // --- REAL-TIME STATUS ---
+  // --- REAL-TIME STATUS ENGINE ---
+  const realtimeStatus = quotation === undefined ? 'connecting' : (quotation ? 'online' : 'error');
+  // Optional: check convex client status if needed for deeper info
+  // const isConvexConnected = convex.status === "connected";
+  
+  // --- BUNDLE MANAGEMENT ---
+  const handleSaveAsBundle = async (name, description) => {
+    if (items.length === 0) return
+    const bundle = {
+      name,
+      description,
+      items: items.map(it => ({
+        item_code: it.item_code,
+        item_name: it.item_name,
+        quantity: it.qty,
+        note: it.spec
+      }))
+    }
+    await createBundleMutation(bundle)
+    setSuccessMsg('Saved as Global Bundle!')
+  }
+
   // --- AUTO-SAVE & NAVIGATION GUARD ---
+  const handleCommitUpdate = async () => {
+    saveHistory(items)
+    if (!id) return
+    setSaveStatus('saving')
+    try {
+      console.log('[Builder] Committing update to Convex...')
+      await updateQuotationMutation({
+        id: id,
+        updates: {
+          items,
+          total_cost: summary.totalCost,
+          total_sell: summary.totalSell,
+          margin: summary.margin,
+          ...eventData
+        }
+      })
+      
+      addDebugLog('Saved to Convex')
+
+      // Create version snapshot
+      await createRevisionMutation({
+        quotationId: id,
+        versionNo: (quotation?.version_no || 0) + 1,
+        changeNote: 'Automatic Save',
+        snapshot: items,
+        changedBy: currentUser.name
+      })
+      
+      setSaveStatus('saved')
+      setSuccessMsg('Changes saved and synced')
+      setTimeout(() => setSaveStatus('idle'), 3000)
+    } catch (err) {
+      console.error('Save failed:', err)
+      setSaveStatus('idle')
+      addDebugLog('Save error: ' + err.message)
+    }
+  }
+
   useEffect(() => {
     if (items.length > 0) {
       setSaveStatus('saving')
       localStorage.setItem('juara_quotation_draft', JSON.stringify({ items, eventData }))
-      const timer = setTimeout(() => setSaveStatus('saved'), 500)
-      const timer2 = setTimeout(() => setSaveStatus('idle'), 6000) // Double the duration to 6s
+      const timer = setTimeout(() => setSaveStatus('saved'), 300)
+      // Keep "Saved" status visible longer for peace of mind
+      const timer2 = setTimeout(() => setSaveStatus('idle'), 10000) 
       return () => { clearTimeout(timer); clearTimeout(timer2); }
     }
   }, [items, eventData])
+
+  // --- AUTO-JUMP TO ITEMS IF DATA EXISTS ---
+  useEffect(() => {
+    if (items.length > 0 && step === 0) {
+      setStep(1) // Jump to Items Builder if we already have items
+    }
+  }, [items.length, step])
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -205,8 +270,7 @@ export default function Builder() {
 
   // Add item from ratecard
   const handleAdd = (ratecardItem) => {
-    const key = ratecardItem.item_code || `item-${Date.now()}-${Math.random()}`
-    if (items.some(i => i._ratecard_key === key)) return
+    const key = `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
     const mCost = ratecardItem.unit_cost || (ratecardItem.unit_price ? Math.round(ratecardItem.unit_price / 1.25) : 0)
     const mSell = ratecardItem.unit_sell || ratecardItem.unit_price || calcSellFromMargin(mCost, 20)
@@ -231,11 +295,18 @@ export default function Builder() {
       is_complimentary: false,
       variant_name: ratecardItem.variants?.length ? ratecardItem.variants[0].name : null,
       zone_name: null,
-      sort_order: items.length,
     }
 
-    saveHistory([...items, newItem])
-    setItems(prev => [...prev, newItem])
+    if (activeIndex !== null && activeIndex >= 0) {
+      const newItems = [...items]
+      newItems.splice(activeIndex + 1, 0, newItem)
+      saveHistory(newItems)
+      setItems(newItems)
+      setActiveIndex(activeIndex + 1) // Move selection to newly added item
+    } else {
+      saveHistory([...items, newItem])
+      setItems(prev => [...prev, newItem])
+    }
   }
 
   const handleApplyTemplate = (templateId) => {
@@ -316,24 +387,46 @@ export default function Builder() {
   }
 
   const handleAddBundle = (bundle) => {
+    const bundleParentKey = `bundle-parent-${bundle.id}-${Date.now()}`
     const newAddition = []
+    
+    // 1. Create a "Parent Heading" for the Bundle
+    const parentRow = {
+      _ratecard_key: bundleParentKey,
+      item_name: bundle.name,
+      spec: bundle.description || 'Package Bundle',
+      section_code: 'A', // Default, user can change
+      section_name: 'A. PREPARATIONS',
+      category: 'Package',
+      qty: 1,
+      qty_unit: 'pkg',
+      duration_qty: 1,
+      duration_unit: 'event',
+      unit_cost: 0,
+      unit_sell: 0,
+      is_bundle_parent: true,
+      sort_order: items.length
+    }
+    
+    newAddition.push(parentRow)
+
+    // 2. Add children items
     bundle.items.forEach((bi, idx) => {
       const rcItem = ratecardData.find(r => r.item_code === bi.item_code)
       if (rcItem) {
-        const key = `bundle-${bundle.id}-${bi.item_code}-${Date.now()}-${idx}`
-        // Calculate costs if missing (standard JUARA margin)
+        const key = `bundle-item-${bundle.id}-${bi.item_code}-${Date.now()}-${idx}`
         const mCost = rcItem.unit_cost || (rcItem.unit_price ? Math.round(rcItem.unit_price / 1.25) : 0)
         const mSell = rcItem.unit_sell || rcItem.unit_price || 0
 
         newAddition.push({
           _ratecard_key: key,
+          parent_id: bundleParentKey, // Link to parent
           item_code: rcItem.item_code,
-          section_code: rcItem.section || 'A',
-          section_name: rcItem.section_name || 'B. PRODUKSI',
-          category: rcItem.category || 'Standard',
-          sub_category: '',
+          section_code: parentRow.section_code,
+          section_name: parentRow.section_name,
+          category: rcItem.category || 'Component',
           item_name: rcItem.item_name,
-          spec: rcItem.description || '',
+          spec: rcItem.description || bi.note || '',
           qty: bi.quantity || 1,
           qty_unit: rcItem.default_unit || bi.qty_unit || 'unit',
           duration_qty: bi.duration || 1,
@@ -342,7 +435,6 @@ export default function Builder() {
           frequency_unit: 'event',
           unit_cost: mCost,
           unit_sell: mSell,
-          note: bi.note || '',
           is_complimentary: false,
           sort_order: items.length + newAddition.length,
         })
@@ -353,7 +445,7 @@ export default function Builder() {
       const updated = [...items, ...newAddition]
       saveHistory(updated)
       setItems(updated)
-      setSuccessMsg(`Berhasil menambahkan paket "${bundle.name}" (${newAddition.length} item)`)
+      setSuccessMsg(`Berhasil menambahkan paket "${bundle.name}" ke tabel.`)
     }
   }
 
@@ -374,10 +466,7 @@ export default function Builder() {
     setItems(updated)
   }
   
-  // Specific handler for "finalizing" a text edit to save history
-  const handleCommitUpdate = () => {
-    saveHistory(items)
-  }
+
 
   const handleAddCustomItem = (sectionCode = 'A', prefillName = '', insertAfterIdx = null, prefillCategory = 'custom', prefillSubCategory = '') => {
     const key = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -424,24 +513,47 @@ export default function Builder() {
     ))
   }
 
+  const handleSaveRevision = async () => {
+    if (!id || !quotation) return;
+    
+    const note = window.prompt('Enter a note for this revision:', 'Draft update');
+    if (note === null) return; 
+
+    setSaving(true);
+    try {
+      await createRevisionMutation({
+        quotationId: id,
+        note: note || 'Manual Revision',
+        snapshot: {
+          items: items,
+          eventData: eventData,
+        },
+        changedBy: currentUser.name
+      });
+      setSuccessMsg('Revision created successfully!');
+      setTimeout(() => setSuccessMsg(''), 3000);
+    } catch (err) {
+      console.error('Failed to create revision:', err);
+      alert('Error saving revision');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSave = async (status = 'draft') => {
+    if (!id) return;
     setSaving(true)
     try {
-      const payload = { ...eventData, status, quotation_items: items }
-      if (id) await updateQuotation(id, payload)
-      else {
-        const created = await createQuotation(payload)
-        navigate(`/edit/${created.id}`, { replace: true })
-      }
-      localStorage.removeItem('juara_quotation_draft') // Clear draft on successful remote save
-      if (status === 'final') navigate(`/preview/${id || 'new'}`)
-    } catch (e) {
-      setConfirmState({
-        title: 'Save Failed',
-        message: 'An error occurred while saving: ' + e.message,
-        confirmLabel: 'Understood',
-        onConfirm: () => setConfirmState(null)
+      await updateQuotationMutation({
+        id,
+        status,
+        items,
+        ...eventData
       })
+      setSuccessMsg('Changes saved')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    } catch (err) {
+      console.error(err)
     } finally {
       setSaving(false)
     }
@@ -539,26 +651,63 @@ export default function Builder() {
         }
       });
 
+      const migrationMap = {
+        'Per Diem': { category: 'Manpower / Crew', sub: 'Crew Welfare' },
+        'Transport': { category: 'Transportation / Logistics', sub: 'Logistics Support' },
+        'Konsumsi': { category: 'Accommodation / Consumption', sub: 'Catering' },
+        'ATK': { category: 'Venue / Setup / System', sub: 'Secretariat Support' },
+        'Laptop': { category: 'Venue / Setup / System', sub: 'Secretariat Support' },
+        'Printer': { category: 'Venue / Setup / System', sub: 'Secretariat Support' },
+        'HT': { category: 'Venue / Setup / System', sub: 'Communication System' },
+        'Ongkir': { category: 'Transportation / Logistics', sub: 'Shipping' },
+        'Ongkos Pasang': { category: 'Production / Fabrication', sub: 'Installation' },
+        'Lem dan Double Tape': { category: 'Production / Fabrication', sub: 'Consumables' }
+      };
+
+      const finalEnrichedItems = enrichedItems.map(i => {
+        const isLegacyCat = 
+          (i.section_name || '').toLowerCase().includes('misc') || 
+          (i.category || '').toLowerCase().includes('misc') || 
+          i.section_code === 'Misc';
+          
+        if (isLegacyCat) {
+          const match = migrationMap[i.item_name] || { category: 'Venue / Setup / System', sub: 'Additional Items' };
+          return {
+            ...i,
+            section_code: match.category.split(' ')[0].toUpperCase().slice(0, 3),
+            section_name: match.category,
+            category: match.category,
+            sub_category: match.sub || i.sub_category
+          };
+        }
+        return i;
+      });
+
       // Auto-Category Creation
-      const existingCats = await getCategories()
-      const newCats = [...new Set(enrichedItems.map(i => i.section_name || i.category).filter(Boolean))]
-      
+      const newCats = [...new Set(finalEnrichedItems.map(i => i.section_name || i.category).filter(Boolean))]
+      const categories = await convex.query(api.masterData.listCategories)
+      const existingCatsList = categories.map(c => c.name)
+
       for (const catName of newCats) {
-        await ensureCategoryExists(catName)
+        if (!existingCatsList.includes(catName)) {
+          await createCategoryMutation({ name: catName })
+        }
       }
 
-      saveHistory(enrichedItems)
-      setItems(enrichedItems)
+      if (id) {
+        await updateQuotationMutation({
+          id: id,
+          updates: { items: finalEnrichedItems }
+        })
+      }
+      setSaving(false)
+      
+      saveHistory(finalEnrichedItems)
+      setItems(finalEnrichedItems)
       
       const sections = [...new Set(enrichedItems.map(i => i.section_name))].length
       setSuccessMsg(`Successfully imported ${enrichedItems.length} items across ${sections} sections. Matched ${enrichedItems.filter(i => i.unit_cost > 0).length} items with Ratecard database.`)
-      localStorage.removeItem('juara_quotation_draft') // Prevent 'Restore Draft' on next session
-
-      // Auto-save to remote if we have an ID
-      if (id) {
-        setSaving(true)
-        updateQuotation(id, { quotation_items: importedItems }).finally(() => setSaving(false))
-      }
+      localStorage.removeItem('juara_quotation_draft') 
     } catch (err) {
       setConfirmState({
         title: 'Import Failed',
@@ -596,10 +745,14 @@ export default function Builder() {
     try {
       const payload = { ...eventData, status: 'final', quotation_items: items }
       let targetId = id
-      if (id) await updateQuotation(id, payload)
-      else {
-        const created = await createQuotation(payload)
-        targetId = created.id
+      if (id) {
+        await updateQuotationMutation({
+          id: id,
+          updates: payload
+        })
+      } else {
+        const createdId = await convex.mutation(api.quotations.create, payload)
+        navigate(`/edit/${createdId}`)
       }
       navigate(`/preview/${targetId}`)
     } catch (e) {
@@ -626,28 +779,88 @@ export default function Builder() {
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }} className="fade-in">
+      {/* EMERGENCY CLEANUP BANNER */}
+      {(items || []).some(i => (i.section_name || '').toLowerCase().includes('misc') || (i.category || '').toLowerCase().includes('misc')) && (
+        <div style={{ 
+          background: '#fef3c7', padding: '12px 24px', borderBottom: '1px solid #fde68a',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 1000
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#92400e' }}>
+            ⚠️ Deteksi Kategori Lama: Beberapa item Anda masih menggunakan kategori "Miscellaneous".
+          </span>
+          <button 
+            onClick={() => {
+              const migrationMap = {
+                'Per Diem': { category: 'Manpower / Crew', sub: 'Crew Welfare' },
+                'Transport': { category: 'Transportation / Logistics', sub: 'Logistics Support' },
+                'Konsumsi': { category: 'Accommodation / Consumption', sub: 'Catering' },
+                'ATK': { category: 'Venue / Setup / System', sub: 'Secretariat Support' },
+                'Laptop': { category: 'Venue / Setup / System', sub: 'Secretariat Support' },
+                'Printer': { category: 'Venue / Setup / System', sub: 'Secretariat Support' },
+                'HT': { category: 'Venue / Setup / System', sub: 'Communication System' },
+                'Ongkir': { category: 'Transportation / Logistics', sub: 'Shipping' },
+                'Ongkos Pasang': { category: 'Production / Fabrication', sub: 'Installation' },
+                'Lem dan Double Tape': { category: 'Production / Fabrication', sub: 'Consumables' }
+              };
+              const cleaned = items.map(i => {
+                const isLegacy = (i.section_name || '').toLowerCase().includes('misc') || (i.category || '').toLowerCase().includes('misc');
+                if (isLegacy) {
+                  const match = migrationMap[i.item_name] || { category: 'Venue / Setup / System', sub: 'Additional Items' };
+                  return {
+                    ...i,
+                    section_code: match.category.split(' ')[0].toUpperCase().slice(0, 3),
+                    section_name: match.category,
+                    category: match.category,
+                    sub_category: match.sub || i.sub_category
+                  };
+                }
+                return i;
+              });
+              setItems(cleaned);
+              saveHistory(cleaned);
+              setSuccessMsg('Kategori lama berhasil dibersihkan!');
+            }}
+            className="btn btn-primary btn-sm" style={{ padding: '6px 16px', fontSize: 12, background: '#d97706', border: 'none' }}>
+            Klik untuk Bersihkan Sekarang
+          </button>
+        </div>
+      )}
       {/* ── BUILDER HEADER ── */}
       <header style={{ 
         padding: '32px 0 0 0', 
         borderBottom: '1px solid var(--border)',
         background: 'var(--bg)',
       }}>
-        <div className="page-fluid">
+        <div className="page-fluid" style={{ padding: '0 32px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                 <button 
                   onClick={() => navigate('/')} 
                   className="btn-ghost" 
-                  style={{ padding: '0 8px 0 0', display: 'flex', alignItems: 'center', color: 'var(--text-3)' }}
+                  style={{ padding: '0 8px 0 0', display: 'flex', alignItems: 'center', color: 'var(--text-3)', fontSize: 13 }}
                 >
                   ← Back
                 </button>
                 <span className="badge" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {id ? 'Project Editor' : 'New Project'}
                 </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 12 }}>
+                  <div style={{ 
+                    width: 7, height: 7, borderRadius: '50%', 
+                    background: realtimeStatus === 'online' ? '#00e676' : (realtimeStatus === 'connecting' ? '#ffab00' : '#ff3d00'),
+                    boxShadow: realtimeStatus === 'online' ? '0 0 8px rgba(0, 230, 118, 0.4)' : 'none',
+                    animation: realtimeStatus === 'connecting' ? 'pulse-sync 1.5s infinite' : 'none'
+                  }}></div>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    {realtimeStatus}
+                  </span>
+                </div>
                 <span style={{ fontSize: 13, color: 'var(--text-3)' }}>—</span>
                 <span style={{ fontSize: 13, color: 'var(--text-3)' }}>{eventData.quot_number || 'REF-PENDING'}</span>
+                <span className="badge badge-success" style={{ marginLeft: 12, fontSize: 9, background: 'rgba(0, 112, 243, 0.1)', color: 'var(--vercel-blue)', border: '1px solid rgba(0, 112, 243, 0.2)' }}>
+                  V2.4 COLLABORATIVE
+                </span>
               </div>
               <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: 4 }}>
                 {eventData.event_title || 'Untitled Project'}
@@ -712,83 +925,107 @@ export default function Builder() {
               background: 'var(--bg)', borderBottom: '1px solid var(--border)',
               position: 'sticky', top: 0, zIndex: 10
             }}>
-              <div className="page-fluid" style={{ display: 'flex', gap: 48, padding: '16px 0', alignItems: 'center', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', minWidth: 160 }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Grand Total</span>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
+              <div className="page-fluid" style={{ display: 'flex', gap: 24, padding: '12px 32px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 1 }}>Grand Total</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
                     {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.grandTotal)}
                   </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Modal (HPP)</span>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-2)', fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 1 }}>Modal (HPP)</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)', fontFamily: 'var(--font-mono)' }}>
                     {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.totalHPP)}
                   </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Net Profit</span>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--vercel-green)', fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 1 }}>Net Profit</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--vercel-green)', fontFamily: 'var(--font-mono)' }}>
                       {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.netProfit || 0)}
                     </span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--vercel-green)', opacity: 0.8 }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--vercel-green)', opacity: 0.8 }}>
                       {Math.round(summary.netMarginPct || 0)}%
                     </span>
                   </div>
                 </div>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {saveStatus === 'saving' && <span style={{ fontSize: 11, color: 'var(--text-3)', fontStyle: 'italic' }}>Saving draft...</span>}
-                  {saveStatus === 'saved' && (
-                    <span style={{ 
-                      fontSize: 11, 
-                      color: 'var(--vercel-green)', 
-                      fontWeight: 600,
-                      background: 'rgba(0, 223, 216, 0.1)',
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      border: '1px solid rgba(0, 223, 216, 0.2)'
-                    }}>
-                      ✓ Draft Saved
-                    </span>
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: 4, marginRight: 16 }}>
-                  <button className="btn-ghost" onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)" style={{ opacity: history.length === 0 ? 0.3 : 1 }}>↩️</button>
-                  <button className="btn-ghost" onClick={redo} disabled={redoStack.length === 0} title="Redo (Ctrl+Y)" style={{ opacity: redoStack.length === 0 ? 0.3 : 1 }}>↪️</button>
-                </div>
-                <button 
-                  className={`btn ${sidebarOpen ? 'btn-surface' : 'btn-primary'}`} 
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  style={{ marginRight: 8, display: 'flex', alignItems: 'center', gap: 8 }}
-                >
-                  {sidebarOpen ? '← Hide Database' : '📁 Open Database'}
-                </button>
-                <button 
-                  className="btn btn-surface" 
-                  onClick={() => setShowPreview(true)}
-                  style={{ marginRight: 12, display: 'flex', alignItems: 'center', gap: 8 }}
-                >
-                  👁️ Preview
-                </button>
-                
-                {/* Method 2: Excel Workflow */}
-                <div style={{ display: 'flex', gap: 4, marginRight: 16, borderLeft: '1px solid var(--border)', paddingLeft: 16 }}>
-                  <button className="btn btn-surface" onClick={handleExportExcel} title="Download Excel Sample/Draft">
-                    📥 Export
-                  </button>
-                  <button className="btn btn-surface" onClick={() => fileInputRef.current?.click()} title="Import from Excel/Sheets/PDF">
-                    📤 Import
-                  </button>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    style={{ display: 'none' }} 
-                    accept=".xlsx, .xls, .csv, .pdf" 
-                    onChange={handleImportExcel} 
-                  />
+
+                {/* Collaboration Avatars (Disabled for now) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div className="badge badge-surface" style={{ padding: '6px 12px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)' }} />
+                    <span>Real-time Sync Active</span>
+                  </div>
                 </div>
 
-                <button className="btn btn-primary" onClick={() => setStep(2)}>Review Invoice →</button>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                  {saveStatus === 'saving' && (
+                    <span style={{ fontSize: 9, color: 'var(--text-3)', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div className="saving-spinner" /> Saving...
+                    </span>
+                  )}
+                  {saveStatus === 'saved' && (
+                    <span style={{ 
+                      fontSize: 10, 
+                      color: '#00e676', 
+                      fontWeight: 600,
+                      background: 'rgba(0, 230, 118, 0.1)',
+                      padding: '1px 8px',
+                      borderRadius: 100,
+                      border: '1px solid rgba(0, 230, 118, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      animation: 'pulse-save 2s infinite'
+                    }}>
+                      <span style={{ fontSize: 12 }}>✓</span> Saved
+                    </span>
+                  )}
+                  
+                  <div style={{ display: 'flex', gap: 2, marginRight: 8, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
+                    <button className="btn-ghost" onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)" style={{ opacity: history.length === 0 ? 0.3 : 1, padding: '4px' }}>↩️</button>
+                    <button className="btn-ghost" onClick={redo} disabled={redoStack.length === 0} title="Redo (Ctrl+Y)" style={{ opacity: redoStack.length === 0 ? 0.3 : 1, padding: '4px' }}>↪️</button>
+                    <button className="btn-ghost" onClick={() => {
+                      setShowHistory(true)
+                    }} title="Version History" style={{ padding: '4px' }}>🕒</button>
+                  </div>
+
+                  <button 
+                    className={`btn btn-sm ${sidebarOpen ? 'btn-surface' : 'btn-primary'}`} 
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    style={{ fontSize: 11, padding: '4px 10px' }}
+                  >
+                    {sidebarOpen ? 'Hide DB' : '📁 DB'}
+                  </button>
+
+                  <button 
+                    className="btn btn-sm btn-surface" 
+                    onClick={() => setShowPreview(true)}
+                    style={{ fontSize: 11, padding: '4px 10px' }}
+                  >
+                    👁️ Preview
+                  </button>
+                  
+                  <div style={{ display: 'flex', gap: 4, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
+                    <button className="btn btn-sm btn-surface" onClick={handleExportExcel} style={{ fontSize: 11, padding: '4px 10px' }}>
+                      📥 Exp
+                    </button>
+                    <button className="btn btn-sm btn-surface" onClick={() => fileInputRef.current?.click()} style={{ fontSize: 11, padding: '4px 10px' }}>
+                      📤 Imp
+                    </button>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      style={{ display: 'none' }} 
+                      accept=".xlsx, .xls, .csv, .pdf" 
+                      onChange={handleImportExcel} 
+                    />
+                  </div>
+
+                  <button className="btn btn-sm btn-primary" onClick={() => setStep(2)} style={{ fontSize: 11, padding: '4px 12px', marginLeft: 8 }}>
+                    Invoice →
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -797,7 +1034,7 @@ export default function Builder() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}
+              style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative', padding: '0 32px 32px 32px' }}
             >
               {isDraggingFile && (
                 <div style={{
@@ -815,46 +1052,161 @@ export default function Builder() {
                 </div>
               )}
 
-              {/* Sidebar – Ratecard Browser */}
+              {/* Left Sidebar (Database & Config) */}
               {sidebarOpen && (
-                <div style={{
-                  width: 300, flexShrink: 0,
-                  borderRight: '1px solid var(--border)',
-                  display: 'flex', flexDirection: 'column',
-                  background: 'var(--bg)',
+                <div style={{ 
+                  width: 320, 
+                  borderRight: '1px solid var(--border)', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  background: 'var(--bg-2)',
+                  flexShrink: 0
                 }}>
-                  <div style={{ padding: '24px 24px 16px 0', flexShrink: 0 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: 0.8 }}>
-                      Ratecard Database
-                    </span>
-                  </div>
-                  <div style={{ flex: 1, overflow: 'hidden', paddingRight: 24 }}>
-                    <RatecardBrowser 
-                      selectedItems={items} 
-                      onAdd={handleAdd} 
-                      onRemove={handleRemove} 
-                      onAddBulk={(groupItems) => groupItems.forEach(handleAdd)}
-                      onAddBundle={handleAddBundle}
-                    />
-                  </div>
-                </div>
-              )}
+                    {/* Sidebar Tabs */}
+                    <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
+                      <button 
+                        onClick={() => setLeftSidebarTab('DB')}
+                        style={{ 
+                          flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700, 
+                          color: leftSidebarTab === 'DB' ? 'var(--text)' : 'var(--text-3)',
+                          border: 'none', borderBottom: leftSidebarTab === 'DB' ? '2px solid var(--text)' : '2px solid transparent',
+                          background: 'transparent', cursor: 'pointer'
+                        }}
+                      >
+                        DATABASE
+                      </button>
+                      <button 
+                        onClick={() => setLeftSidebarTab('CONFIG')}
+                        style={{ 
+                          flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700, 
+                          color: leftSidebarTab === 'CONFIG' ? 'var(--text)' : 'var(--text-3)',
+                          border: 'none', borderBottom: leftSidebarTab === 'CONFIG' ? '2px solid var(--text)' : '2px solid transparent',
+                          background: 'transparent', cursor: 'pointer'
+                        }}
+                      >
+                        PROJECT SETTINGS
+                      </button>
+                    </div>
 
-              {/* Main – Quotation Cart */}
-              <div style={{ flex: 1, overflow: 'auto', padding: sidebarOpen ? '0 0 0 32px' : '0' }}>
-                <QuotationCart
-                  items={items}
-                  onUpdate={handleUpdate}
-                  onCommit={handleCommitUpdate}
-                  onRemove={handleRemove}
-                  onDuplicate={handleDuplicate}
-                  onAddCustom={handleAddCustomItem}
-                  onReorder={handleReorder}
-                  onRenameSection={handleRenameSection}
-                />
+                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                      {leftSidebarTab === 'DB' ? (
+                        <RatecardBrowser selectedItems={items} onAdd={handleAdd} onAddBundle={handleAddBundle} />
+                      ) : (
+                        <div style={{ padding: '24px' }}>
+                          {/* Financial Config */}
+                          <div style={{ marginBottom: 32 }}>
+                            <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Financial Config</h3>
+                            
+                            <div className="form-group" style={{ marginBottom: 16 }}>
+                              <label className="form-label" style={{ fontSize: 10 }}>Management Fee (%)</label>
+                              <input type="number" 
+                                value={Math.round((eventData.mgmt_fee_rate ?? 0.10) * 100)}
+                                onChange={e => setEventData({ ...eventData, mgmt_fee_rate: Number(e.target.value) / 100 })}
+                                className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
+                            </div>
+
+                            <div className="form-group" style={{ marginBottom: 16 }}>
+                              <label className="form-label" style={{ fontSize: 10 }}>VAT / PPN (%)</label>
+                              <input type="number" 
+                                value={Math.round((eventData.ppn_rate ?? 0.12) * 100)}
+                                onChange={e => setEventData({ ...eventData, ppn_rate: Number(e.target.value) / 100 })}
+                                className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
+                            </div>
+
+                            <div className="form-group">
+                              <label className="form-label" style={{ fontSize: 10 }}>Discount (Nominal)</label>
+                              <input type="number" 
+                                value={eventData.discount_value ?? 0}
+                                onChange={e => setEventData({ ...eventData, discount_value: Number(e.target.value) })}
+                                className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
+                            </div>
+                          </div>
+
+                          {/* Project Header */}
+                          <div style={{ marginBottom: 32 }}>
+                            <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Project Header</h3>
+                            <div className="form-group" style={{ marginBottom: 12 }}>
+                               <label className="form-label" style={{ fontSize: 10 }}>Client</label>
+                               <input value={eventData.client || ''} 
+                                 onChange={e => setEventData({...eventData, client: e.target.value})}
+                                 className="form-input" style={{ fontSize: 12, height: 32 }} />
+                            </div>
+                            <div className="form-group" style={{ marginBottom: 12 }}>
+                               <label className="form-label" style={{ fontSize: 10 }}>Title</label>
+                               <input value={eventData.event_title || ''} 
+                                 onChange={e => setEventData({...eventData, event_title: e.target.value})}
+                                 className="form-input" style={{ fontSize: 12, height: 32 }} />
+                            </div>
+                            <div className="form-group">
+                               <label className="form-label" style={{ fontSize: 10 }}>Terms & Conditions</label>
+                               <textarea 
+                                 value={(eventData.notes || []).join('\n')}
+                                 onChange={e => setEventData({...eventData, notes: e.target.value.split('\n')})}
+                                 className="form-input" 
+                                 style={{ fontSize: 11, lineHeight: 1.4, resize: 'vertical', minHeight: 80 }}
+                                 placeholder="One term per line..."
+                               />
+                            </div>
+                          </div>
+
+                          {/* BUNDLE ACTIONS */}
+                          <div style={{ marginBottom: 32, padding: 16, background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                             <h3 style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>Save as Template</h3>
+                             <p style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 12 }}>Save all current items as a shared bundle for future use.</p>
+                             <button 
+                               onClick={() => {
+                                 const name = prompt('Enter Bundle Name:', eventData.event_title + ' Package')
+                                 if (name) handleSaveAsBundle(name, 'Shared from ' + (eventData.client || 'Project'))
+                               }}
+                               className="btn btn-ghost" style={{ width: '100%', fontSize: 11, border: '1px dashed var(--border)' }}>
+                               📦 Save as Global Bundle
+                             </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                  <QuotationCart 
+                    items={items} 
+                    activeIndex={activeIndex}
+                    onSetActive={setActiveIndex}
+                    onUpdate={handleUpdate} 
+                    onCommit={handleCommitUpdate}
+                    onRemove={handleRemove}
+                    onDuplicate={handleDuplicate}
+                    onAddCustom={handleAddCustomItem}
+                    onReorder={handleReorder}
+                    onRenameSection={handleRenameSection}
+                    remoteCursors={[]}
+                    onFocusCell={() => {}}
+                    comments={comments}
+                    onComment={(key) => setCommentTarget(key)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+        {/* COMMENT SIDEBAR */}
+        {commentTarget && (
+          <CommentSidebar 
+            rowKey={commentTarget}
+            itemName={items.find(i => i._ratecard_key === commentTarget)?.item_name}
+            comments={comments.filter(c => c.row_key === commentTarget)}
+            currentUser={currentUser}
+            onAdd={async (content) => {
+              await addCommentMutation({
+                quotationId: id,
+                rowKey: commentTarget,
+                userName: currentUser.name,
+                text: content
+              })
+            }}
+            onClose={() => setCommentTarget(null)}
+          />
         )}
 
         {/* Step 3 — Summary */}
@@ -887,7 +1239,7 @@ export default function Builder() {
           <div className="page-fluid" style={{ display: 'flex', justifyContent: 'space-between' }}>
             <button className="btn btn-ghost" onClick={() => setStep(0)}>← Event Details</button>
             <div style={{ display: 'flex', gap: 12 }}>
-               <button className="btn btn-ghost" onClick={() => handleSave('draft')}>Save Progress</button>
+               <button className="btn btn-ghost" onClick={handleSaveRevision} disabled={saving}>💾 Create Revision</button>
             </div>
           </div>
         </div>
@@ -975,6 +1327,157 @@ export default function Builder() {
           </div>
         </div>
       )}
+      {/* VERSION HISTORY MODAL (Vercel Style Activity) */}
+      {showHistory && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ background: 'var(--bg)', borderRadius: 20, border: '1px solid var(--border)', width: '100%', maxWidth: 520, maxHeight: '85vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 30px 100px rgba(0,0,0,0.7)' }}>
+            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-2)' }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>Activity & Versions</h2>
+                <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>Audit log of all changes to this quotation</p>
+              </div>
+              <button onClick={() => setShowHistory(false)} className="btn btn-ghost" style={{ fontSize: 20 }}>✕</button>
+            </div>
+            
+            <div style={{ flex: 1, overflowY: 'auto', padding: '32px', position: 'relative' }}>
+              {/* Vertical Line */}
+              <div style={{ position: 'absolute', left: 47, top: 40, bottom: 40, width: 2, background: 'var(--border)', opacity: 0.5 }}></div>
+
+              {historyLogs.length === 0 && <p style={{ textAlign: 'center', padding: 60, opacity: 0.5, fontSize: 13 }}>No history records found.</p>}
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+                {historyLogs.map((log, idx) => (
+                  <div key={log.id} style={{ display: 'flex', gap: 20, position: 'relative', zIndex: 1 }}>
+                    {/* User Avatar / Icon */}
+                    <div style={{ 
+                      width: 32, height: 32, borderRadius: '50%', 
+                      background: idx === 0 ? 'var(--vercel-blue)' : 'var(--surface)', 
+                      color: idx === 0 ? 'white' : 'var(--text-2)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, fontWeight: 900, border: '4px solid var(--bg)',
+                      flexShrink: 0, boxShadow: '0 0 0 1px var(--border)'
+                    }}>
+                      {idx === 0 ? '✨' : (log.changed_by?.charAt(0) || 'U')}
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                             <span style={{ fontSize: 13, fontWeight: 800 }}>{idx === 0 ? 'Current Snapshot' : `Version ${log.version_no}`}</span>
+                             {idx === 0 && <span className="badge" style={{ fontSize: 8, background: 'rgba(0, 230, 118, 0.1)', color: 'var(--vercel-green)', border: 'none' }}>LATEST</span>}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+                            {log.changed_by} • {new Date(log.changed_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                        {idx !== 0 && (
+                          <button className="btn btn-surface btn-sm" style={{ padding: '4px 12px', fontSize: 10, fontWeight: 700 }} onClick={() => {
+                            if (confirm('Restore this version? Current changes will be overwritten.')) {
+                              setItems(log.snapshot_data)
+                              setShowHistory(true) // keep it open to show success
+                              setSuccessMsg(`Restored to Version ${log.version_no}`)
+                            }
+                          }}>Restore</button>
+                        )}
+                      </div>
+                      
+                      <div style={{ 
+                        marginTop: 12, padding: '10px 14px', borderRadius: 10, 
+                        background: 'var(--bg-2)', border: '1px solid var(--border)',
+                        fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5
+                      }}>
+                        {log.change_note}
+                        <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, fontStyle: 'italic' }}>
+                          {Array.isArray(log.snapshot_data) ? `${log.snapshot_data.length} items captured` : 'Full state snapshot'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div style={{ padding: 24, borderTop: '1px solid var(--border)', background: 'var(--bg-2)', display: 'flex', justifyContent: 'center' }}>
+               <button className="btn btn-ghost" onClick={() => setShowHistory(false)} style={{ fontSize: 12, fontWeight: 600 }}>Close Activity Log</button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
+
+function CommentSidebar({ rowKey, itemName, comments, currentUser, onAdd, onClose }) {
+  const [text, setText] = useState('')
+  const scrollRef = useRef(null)
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+  }, [comments])
+
+  const submit = () => {
+    if (!text.trim()) return
+    onAdd(text)
+    setText('')
+  }
+
+  return (
+    <div style={{
+      position: 'fixed', right: 0, top: 0, bottom: 0, width: 320,
+      background: 'var(--bg)', borderLeft: '1px solid var(--border)',
+      boxShadow: '-10px 0 30px rgba(0,0,0,0.3)', zIndex: 1000,
+      display: 'flex', flexDirection: 'column'
+    }}>
+      <div style={{ padding: 20, borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h4 style={{ fontSize: 13, fontWeight: 700 }}>Item Comments</h4>
+          <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 4 }}>{itemName}</p>
+        </div>
+        <button onClick={onClose} className="btn btn-ghost" style={{ padding: 4 }}>✕</button>
+      </div>
+
+      <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {comments.length === 0 && (
+          <div style={{ textAlign: 'center', marginTop: 40, opacity: 0.3 }}>
+            <div style={{ fontSize: 32 }}>💬</div>
+            <p style={{ fontSize: 11 }}>No comments yet</p>
+          </div>
+        )}
+        {comments.map((c, i) => {
+          const isMe = c.user_id === currentUser.id
+          return (
+            <div key={i} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
+              <div style={{ fontSize: 9, color: 'var(--text-3)', marginBottom: 4, textAlign: isMe ? 'right' : 'left' }}>
+                {c.user_name} • {new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+              <div style={{
+                background: isMe ? 'var(--vercel-blue)' : 'var(--surface)',
+                color: isMe ? 'white' : 'var(--text)',
+                padding: '8px 12px', borderRadius: 12, fontSize: 11, lineHeight: 1.4,
+                boxShadow: 'var(--shadow-sm)'
+              }}>
+                {c.content}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div style={{ padding: 20, borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
+        <textarea 
+          value={text} 
+          onChange={e => setText(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), submit())}
+          placeholder="Write a comment..."
+          className="form-input"
+          style={{ width: '100%', fontSize: 12, minHeight: 60, padding: 10, marginBottom: 10, resize: 'none' }}
+        />
+        <button onClick={submit} className="btn btn-primary" style={{ width: '100%', height: 36, fontSize: 12 }}>
+          Send Message
+        </button>
+      </div>
+    </div>
+  )
+}
+

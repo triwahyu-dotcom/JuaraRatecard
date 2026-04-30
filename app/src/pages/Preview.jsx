@@ -1,30 +1,30 @@
-import { useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { getQuotation } from '../lib/quotationRepo'
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import PrintDocument from '../components/PrintDocument'
 import { exportQuotationToXls } from '../utils/exportXls'
 
 export default function Preview() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [quotation, setQuotation] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const quotation = useQuery(api.quotations.get, id ? { id: id } : "skip");
+  const loading = quotation === undefined;
   const [showSummary, setShowSummary] = useState(true)
   const [combinedMode, setCombinedMode] = useState(false)
-
-  useEffect(() => {
-    getQuotation(id).then(q => {
-      if (!q) return navigate('/')
-      setQuotation(q)
-      setLoading(false)
-    })
-  }, [id])
 
   const handlePrint = () => window.print()
 
   if (loading) return (
     <div className="empty-state" style={{ marginTop: 80 }}>
       <div className="empty-icon">⏳</div><p>Loading...</p>
+    </div>
+  )
+
+  if (!quotation) return (
+    <div className="empty-state" style={{ marginTop: 80 }}>
+      <div className="empty-icon">⚠️</div><p>Quotation not found.</p>
+      <Link to="/" className="btn btn-primary mt-4">Back to Dashboard</Link>
     </div>
   )
 

@@ -37,9 +37,11 @@ function PrintHeader({ eventData }) {
         </tbody>
       </table>
       <div style={{ textAlign: 'right' }}>
-        <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 40, fontWeight: 900, letterSpacing: 3, color: '#1a1a1a', lineHeight: 1 }}>
-          <span style={{ color: '#e53935' }}>J</span>UARA
-        </div>
+        <img 
+          src="/Logo_Juara_Handover-01 jpeg.png" 
+          alt="JUARA" 
+          style={{ height: 48, width: 'auto', display: 'block', marginLeft: 'auto' }} 
+        />
         <div style={{ fontSize: 8, marginTop: 4, color: '#666' }}>{COMPANY}</div>
       </div>
     </div>
@@ -130,10 +132,10 @@ function ItemRow({ item, num, depth = 0 }) {
         )}
       </td>
       <td style={{ ...TD, color: '#666', fontSize: 8, width: 180, maxWidth: 180, lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>{item.spec || item.specification || ''}</td>
-      <td style={{ ...TD, textAlign: 'right', width: 20 }}>{item.qty}</td>
-      <td style={{ ...TD, textAlign: 'center', color: '#777', fontSize: 8, width: 26, whiteSpace: 'nowrap' }}>{item.qty_unit}</td>
-      <td style={{ ...TD, textAlign: 'right', width: 20 }}>{durQty}</td>
-      <td style={{ ...TD, textAlign: 'center', color: '#777', fontSize: 8, width: 26, whiteSpace: 'nowrap' }}>{durUnit}</td>
+      <td style={{ ...TD, textAlign: 'right', width: 45, fontWeight: 600 }}>{item.qty}</td>
+      <td style={{ ...TD, textAlign: 'center', color: '#777', fontSize: 8, width: 40, whiteSpace: 'nowrap' }}>{item.qty_unit}</td>
+      <td style={{ ...TD, textAlign: 'right', width: 45 }}>{durQty}</td>
+      <td style={{ ...TD, textAlign: 'center', color: '#777', fontSize: 8, width: 40, whiteSpace: 'nowrap' }}>{durUnit}</td>
       <td style={{ ...TD, textAlign: 'right', width: 80, fontWeight: 500, whiteSpace: 'nowrap' }}>
         {item.provided_by 
           ? `provided by ${item.provided_by.toLowerCase()}` 
@@ -160,7 +162,7 @@ function SummaryPage({ eventData, items }) {
   const sectionTotals = calcAllSectionSellTotals(items)
 
   const opts = {
-    discount_type:  eventData.discount_type  || 'pct',
+    discount_type:  eventData.discount_type  || 'amt',
     discount_value: eventData.discount_value ?? (eventData.discount ? Math.round(eventData.discount / Math.max(1, items.reduce((s, i) => s + calcLineSell(i), 0)) * 100) : 0),
     mgmt_type:      'pct',
     mgmt_value:     Math.round((eventData.mgmt_fee_rate || 0.10) * 100),
@@ -179,8 +181,8 @@ function SummaryPage({ eventData, items }) {
           <tr>
             <th style={{ ...TH, width: 50 }}>NO</th>
             <th style={{ ...TH, minWidth: 168 }} colSpan={2}>ITEM / TASK</th>
-            <th style={{ ...TH, width: 56 }} colSpan={2}>QTY</th>
-            <th style={{ ...TH, width: 56 }} colSpan={2}>FREQ / DUR</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>QTY</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>FREQ / DUR</th>
             <th style={TH}>PRICE</th>
             <th style={TH}>AMOUNT</th>
           </tr>
@@ -217,7 +219,7 @@ function SummaryPage({ eventData, items }) {
         <tbody>
           {[
             ['Subtotal',       subtotal],
-            ...(discountAmount > 0 ? [['Diskon', -discountAmount]] : []),
+            ...(discountAmount > 0 ? [[opts.discount_type === 'pct' ? `Diskon (${opts.discount_value}%)` : 'Diskon (Nominal)', -discountAmount]] : []),
             ...(mgmtFeeAmount > 0  ? [[`Management Fee (${opts.mgmt_value}%)`, mgmtFeeAmount]] : []),
             ['Tax Base (DPP)', taxBase],
             [`PPN ${ppnPct}%`, ppnAmount],
@@ -333,8 +335,8 @@ function DetailPage({ eventData, section, items, index }) {
             <th style={{ ...TH, width: 50 }}>NO</th>
             <th style={{ ...TH, minWidth: 100 }}>ITEM / TASK</th>
             <th style={{ ...TH, width: 180 }}>SPECIFICATION</th>
-            <th style={{ ...TH, width: 46 }} colSpan={2}>QTY</th>
-            <th style={{ ...TH, width: 46 }} colSpan={2}>FREQ / DUR</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>QTY</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>FREQ / DUR</th>
             <th style={{ ...TH, width: 80 }}>PRICE</th>
             <th style={{ ...TH, width: 80 }}>AMOUNT</th>
           </tr>
@@ -344,7 +346,7 @@ function DetailPage({ eventData, section, items, index }) {
           <tr>
             <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, textAlign: 'right', paddingRight: 10, fontSize: 10 }}>{String.fromCharCode(65 + index)}</td>
             <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, borderBottom: '2px solid #ccc', letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={8}>
-              {section.name || `Section ${section.code}`}
+              {(section.name || `Section ${section.code}`).replace(/^Set \d+ - /i, '')}
             </td>
           </tr>
 
@@ -474,8 +476,8 @@ function CombinedPage({ eventData, items }) {
             <th style={{ ...TH, width: 50 }}>NO</th>
             <th style={{ ...TH, minWidth: 100 }}>ITEM / TASK</th>
             <th style={{ ...TH, width: 180 }}>SPECIFICATION</th>
-            <th style={{ ...TH, width: 46 }} colSpan={2}>QTY</th>
-            <th style={{ ...TH, width: 46 }} colSpan={2}>FREQ / DUR</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>QTY</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>FREQ / DUR</th>
             <th style={{ ...TH, width: 80 }}>PRICE</th>
             <th style={{ ...TH, width: 80 }}>AMOUNT</th>
           </tr>
@@ -487,7 +489,7 @@ function CombinedPage({ eventData, items }) {
                 <tr key={`sh-${i}`}>
                    <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, textAlign: 'right', paddingRight: 10, fontSize: 10 }}>{String.fromCharCode(65 + row.index)}</td>
                   <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, borderBottom: '2px solid #ccc', letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={8}>
-                    {row.sec.name || `Section ${row.sec.code}`}
+                    {(row.sec.name || `Section ${row.sec.code}`).replace(/^Set \d+ - /i, '')}
                   </td>
                 </tr>
               )
@@ -549,7 +551,11 @@ const titleStyle = {
 /* ── Root Export ─────────────────────────────────────────────────── */
 export default function PrintDocument({ quotation, showSummary = true, combinedMode = false }) {
   if (!quotation) return null
-  const items = getQuotationLines(quotation)
+  const items = getQuotationLines(quotation).filter(i => {
+    const name = (i.item_name || '').toLowerCase();
+    const isHeader = name.includes('item / task') || name.includes('item/task') || (name === 'item') || (name === 'task');
+    return !isHeader;
+  })
   const eventData = quotation
   const sections = getUniqueSections(items)
 
