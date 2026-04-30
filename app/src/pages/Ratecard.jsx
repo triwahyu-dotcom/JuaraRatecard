@@ -549,15 +549,18 @@ function SectionHeaderRow({ sec, secData, onRename }) {
       </td>
       <td colSpan={7} style={{ padding: '10px 14px', fontWeight: 700, fontSize: 13, color: getColorForSection(sec?.charAt(0)) }}>
         <input 
-      value={localName}
-      onChange={e => setLocalName(e.target.value)}
-      onBlur={handleCommit}
-      onKeyDown={e => e.key === 'Enter' && e.target.blur()}
-      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', padding: '4px', fontWeight: 'bold', color: 'inherit' }}
-      onFocus={e => { e.target.style.border = '1px dashed var(--border)'; e.target.style.color = 'var(--text)'; }}
-      onBlur={e => { e.target.style.border = '1px dashed transparent'; e.target.style.color = 'inherit'; handleCommit(); }}
-      title="Ubah Nama Section"
-    />
+          value={localName}
+          onChange={e => setLocalName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && e.target.blur()}
+          style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', padding: '4px', fontWeight: 'bold', color: 'inherit' }}
+          onFocus={e => { e.target.style.border = '1px dashed var(--border)'; e.target.style.color = 'var(--text)'; }}
+          onBlur={e => { 
+            e.target.style.border = '1px dashed transparent'; 
+            e.target.style.color = 'inherit'; 
+            handleCommit(); 
+          }}
+          title="Ubah Nama Section"
+        />
     </td>
     </tr>
   )
