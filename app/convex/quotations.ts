@@ -80,3 +80,84 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+// --- ZONE/ACTIVITY SYSTEM MUTATIONS ---
+
+// Update the entire zones array (for add, reorder, change color)
+export const updateZones = mutation({
+  args: {
+    id: v.id("quotations"),
+    zones: v.any(), // Array of { id, name, order, color, note }
+  },
+  handler: async (ctx, args) => {
+    const { id, zones } = args;
+    const now = new Date().toISOString();
+    await ctx.db.patch(id, {
+      zones,
+      updated_at: now,
+    });
+  },
+});
+
+// Rename a zone and cascade the update to all associated items
+export const renameZone = mutation({
+  args: {
+    id: v.id("quotations"),
+    oldName: v.string(),
+    newName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { id, oldName, newName } = args;
+    const quotation = await ctx.db.get(id);
+    if (!quotation) throw new Error("Quotation not found");
+
+    const now = new Date().toISOString();
+    const updates: any = { updated_at: now };
+
+    // 1. Update zone name in the zones array
+    if (quotation.zones && Array.isArray(quotation.zones)) {
+      updates.zones = quotation.zones.map((z: any) =>
+        z.name === oldName ? { ...z, name: newName } : z
+      );
+    }
+
+    // 2. Cascade update to all items
+    if (quotation.items && Array.isArray(quotation.items)) {
+      updates.items = quotation.items.map((item: any) =>
+        item.zone_name === oldName ? { ...item, zone_name: newName } : item
+      );
+    }
+
+    await ctx.db.patch(id, updates);
+  },
+});
+
+// Delete a zone and cascade update (orphan) all associated items
+export const deleteZone = mutation({
+  args: {
+    id: v.id("quotations"),
+    zoneName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { id, zoneName } = args;
+    const quotation = await ctx.db.get(id);
+    if (!quotation) throw new Error("Quotation not found");
+
+    const now = new Date().toISOString();
+    const updates: any = { updated_at: now };
+
+    // 1. Remove zone from the zones array
+    if (quotation.zones && Array.isArray(quotation.zones)) {
+      updates.zones = quotation.zones.filter((z: any) => z.name !== zoneName);
+    }
+
+    // 2. Cascade update to orphan items (set zone_name to null)
+    if (quotation.items && Array.isArray(quotation.items)) {
+      updates.items = quotation.items.map((item: any) =>
+        item.zone_name === zoneName ? { ...item, zone_name: null } : item
+      );
+    }
+
+    await ctx.db.patch(id, updates);
+  },
+});
