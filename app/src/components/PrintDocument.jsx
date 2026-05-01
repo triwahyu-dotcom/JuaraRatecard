@@ -14,6 +14,12 @@ const TD = {
   wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal'
 }
 
+const stripPrefix = (str) => {
+  if (!str) return ''
+  // Strips "A. ", "G5. ", "H10. " etc.
+  return str.replace(/^[A-Z]\d*\.\s*/i, '')
+}
+
 /* ── Print Header (every page) ──────────────────────────────────── */
 function PrintHeader({ eventData }) {
   return (
@@ -200,7 +206,7 @@ function SummaryPage({ eventData, items }) {
             return (
               <tr key={s.code}>
                 <td style={{ ...TD, textAlign: 'center', color: '#555' }}>{String.fromCharCode(65 + i)}</td>
-                <td style={{ ...TD, fontWeight: 600, paddingLeft: 12 }}>{s.name || `Section ${s.code}`}</td>
+                <td style={{ ...TD, fontWeight: 600, paddingLeft: 12 }}>{stripPrefix(s.name) || `Section ${s.code}`}</td>
                 <td style={TD}></td>
                 <td style={{ ...TD, textAlign: 'right' }}>1</td>
                 <td style={{ ...TD, textAlign: 'center', color: '#888', fontSize: 8, whiteSpace: 'nowrap' }}>pckg</td>
@@ -346,7 +352,7 @@ function DetailPage({ eventData, section, items, index }) {
           <tr>
             <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, textAlign: 'right', paddingRight: 10, fontSize: 10 }}>{String.fromCharCode(65 + index)}</td>
             <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, borderBottom: '2px solid #ccc', letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={8}>
-              {(section.name || `Section ${section.code}`).replace(/^Set \d+ - /i, '')}
+              {stripPrefix(section.name || `Section ${section.code}`).replace(/^Set \d+ - /i, '')}
             </td>
           </tr>
 
@@ -358,7 +364,7 @@ function DetailPage({ eventData, section, items, index }) {
                     {row.code}
                   </td>
                   <td style={{ ...TD, background: '#fafafa', fontWeight: 800, paddingLeft: 10, color: '#222', textTransform: 'uppercase', fontSize: 8.5, letterSpacing: 0.5 }} colSpan={8}>
-                    {row.cat}
+                    {stripPrefix(row.cat)}
                   </td>
                 </tr>
               )
@@ -489,7 +495,7 @@ function CombinedPage({ eventData, items }) {
                 <tr key={`sh-${i}`}>
                    <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, textAlign: 'right', paddingRight: 10, fontSize: 10 }}>{String.fromCharCode(65 + row.index)}</td>
                   <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, borderBottom: '2px solid #ccc', letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={8}>
-                    {(row.sec.name || `Section ${row.sec.code}`).replace(/^Set \d+ - /i, '')}
+                    {stripPrefix(row.sec.name || `Section ${row.sec.code}`).replace(/^Set \d+ - /i, '')}
                   </td>
                 </tr>
               )
@@ -501,7 +507,7 @@ function CombinedPage({ eventData, items }) {
                     {row.code}
                   </td>
                   <td style={{ ...TD, background: '#fafafa', fontWeight: 800, paddingLeft: 10, color: '#222', textTransform: 'uppercase', fontSize: 8.5, letterSpacing: 0.5 }} colSpan={7}>
-                    {row.cat}
+                    {stripPrefix(row.cat)}
                   </td>
                 </tr>
               )
