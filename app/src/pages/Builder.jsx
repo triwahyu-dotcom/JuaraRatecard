@@ -650,8 +650,7 @@ export default function Builder() {
   }
 
   const handleExportExcel = () => {
-    const fileName = `${eventData.quot_number || 'draft'}_${eventData.title || 'quotation'}.xlsx`.replace(/\s+/g, '_')
-    exportToExcelSync(items, fileName)
+    exportQuotationToXls({ ...eventData, items })
   }
 
   const handleImportExcel = async (e) => {
