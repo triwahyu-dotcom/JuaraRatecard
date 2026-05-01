@@ -130,7 +130,7 @@ export function calcAllSectionSellTotals(items) {
  */
 export function getQuotationLines(quotation) {
   if (!quotation) return [];
-  return quotation.quotation_items || quotation.quotation_line || quotation.lines || [];
+  return quotation.items || quotation.quotation_items || quotation.quotation_line || quotation.lines || [];
 }
 
 export function calcSummary(items, opts = {}) {
