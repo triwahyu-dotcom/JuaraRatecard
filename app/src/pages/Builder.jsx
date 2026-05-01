@@ -117,29 +117,39 @@ export default function Builder() {
   }, [fetchedRevisions]);
 
   useEffect(() => {
-    if (quotation) {
-      setItems(quotation.items || [])
-      setEventData({
-        title: quotation.title || '',
-        client_name: quotation.client_name || '',
-        event_date: quotation.event_date || '',
-        venue: quotation.venue || '',
-        city: quotation.city || '',
-        signatory: quotation.signatory || 'Eka Marutha Yuswardana',
-        quot_number: quotation.quot_number || '',
-        discount_type: quotation.discount_type || 'amt',
-        discount_value: quotation.discount_value || 0,
-        ppn_rate: quotation.ppn_rate ?? 0.12,
-        mgmt_fee_rate: quotation.mgmt_fee_rate ?? 0.10,
-        notes: quotation.notes || [
-          'The offer price above valid as long as the term specified',
-          'The Offer Price Included Rehearsal D-1',
-        ],
-        status: quotation.status || 'draft',
+    if (quotation && !saving) {
+      // SMART SYNC: Only update items that aren't being locally edited
+      // Or if the items length changed (rows added/deleted)
+      setItems(prev => {
+        if (prev.length === 0 || prev.length !== (quotation.items?.length || 0)) return quotation.items || []
+        
+        // Merge strategy: Keep local values for the item being edited (activeIndex)
+        return quotation.items.map((remoteItem, idx) => {
+          if (idx === activeIndex) return prev[idx] || remoteItem
+          return remoteItem
+        })
       })
+
+      setEventData(prev => ({
+        ...prev,
+        title: quotation.title || prev.title,
+        client_name: quotation.client_name || prev.client_name,
+        event_date: quotation.event_date || prev.event_date,
+        venue: quotation.venue || prev.venue,
+        city: quotation.city || prev.city,
+        signatory: quotation.signatory || prev.signatory,
+        quot_number: quotation.quot_number || prev.quot_number,
+        discount_type: quotation.discount_type || prev.discount_type,
+        discount_value: quotation.discount_value || prev.discount_value,
+        ppn_rate: quotation.ppn_rate ?? prev.ppn_rate,
+        mgmt_fee_rate: quotation.mgmt_fee_rate ?? prev.mgmt_fee_rate,
+        notes: quotation.notes || prev.notes,
+        status: quotation.status || prev.status,
+      }))
       setLoading(false)
+      setSaveStatus('saved')
     }
-  }, [quotation])
+  }, [quotation, activeIndex, saving])
 
   useEffect(() => {
     // Check for import success from Dashboard
@@ -203,8 +213,9 @@ export default function Builder() {
         id: id,
         updates: payload
       })
-
-      addDebugLog('Saved to Convex')
+      
+      setSaveStatus('saved')
+      addDebugLog('Synced to Cloud')
 
       // Create version snapshot
       await createRevisionMutation({
