@@ -7,7 +7,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { suggestBundles } from '../lib/aiEstimator'
+// import { suggestBundles } from '../lib/aiEstimator'
 
 export default function Dashboard() {
   const quotations = useQuery(api.quotations.list) || []
@@ -56,7 +56,7 @@ export default function Dashboard() {
   const handleAiTitleChange = (e) => {
     const val = e.target.value
     setAiTitle(val)
-    setSuggestions(suggestBundles(val))
+    // setSuggestions(suggestBundles(val))
   }
 
   const handleCreateWithBundles = async () => {
