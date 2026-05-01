@@ -234,24 +234,12 @@ export default function Builder() {
       
       setSaveStatus('saved')
       console.log('[Sync] Successfully saved to cloud')
-      setSuccessMsg('Changes saved and synced')
-      setTimeout(() => setSaveStatus('idle'), 3000)
+      setTimeout(() => setSaveStatus('idle'), 2000)
     } catch (err) {
       setSaveStatus('idle')
-      addDebugLog('Save error: ' + err.message)
+      console.error('[Sync] Save error:', err)
     }
   }
-
-  useEffect(() => {
-    if (items.length > 0) {
-      setSaveStatus('saving')
-      localStorage.setItem('juara_quotation_draft', JSON.stringify({ items, eventData }))
-      const timer = setTimeout(() => setSaveStatus('saved'), 300)
-      // Keep "Saved" status visible longer for peace of mind
-      const timer2 = setTimeout(() => setSaveStatus('idle'), 10000)
-      return () => { clearTimeout(timer); clearTimeout(timer2); }
-    }
-  }, [items, eventData])
 
   // --- AUTO-JUMP TO ITEMS IF DATA EXISTS ---
   useEffect(() => {
