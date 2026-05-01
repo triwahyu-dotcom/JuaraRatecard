@@ -25,16 +25,22 @@ export const create = mutation({
     client_name: v.optional(v.string()),
     event_date: v.optional(v.string()),
     venue: v.optional(v.string()),
+    status: v.optional(v.string()),
+    items: v.optional(v.any()),
+    total_cost: v.optional(v.number()),
+    total_sell: v.optional(v.number()),
+    margin: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const now = new Date().toISOString();
+    const { items, status, total_cost, total_sell, margin, ...baseArgs } = args;
     const id = await ctx.db.insert("quotations", {
-      ...args,
-      status: "draft",
-      total_cost: 0,
-      total_sell: 0,
-      margin: 0,
-      items: [],
+      ...baseArgs,
+      status: status || "draft",
+      total_cost: total_cost || 0,
+      total_sell: total_sell || 0,
+      margin: margin || 0,
+      items: items || [],
       created_at: now,
       updated_at: now,
     });

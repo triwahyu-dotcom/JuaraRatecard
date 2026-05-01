@@ -169,6 +169,7 @@ export default function Builder() {
         id: id,
         updates: {
           items,
+          title: eventData.event_title,
           total_cost: summary.totalCost,
           total_sell: summary.totalSell,
           margin: summary.margin,
@@ -545,6 +546,10 @@ export default function Builder() {
         updates: {
           status,
           items,
+          title: eventData.event_title,
+          total_cost: summary.totalCost,
+          total_sell: summary.totalSell,
+          margin: summary.margin,
           ...eventData
         }
       })
@@ -744,16 +749,32 @@ export default function Builder() {
   const handleFinalize = async () => {
     setSaving(true)
     try {
-      const payload = { ...eventData, status: 'final', quotation_items: items }
       let targetId = id
       if (id) {
         await updateQuotationMutation({
           id: id,
-          updates: payload
+          updates: {
+            ...eventData,
+            title: eventData.event_title,
+            status: 'final',
+            items: items,
+            total_cost: summary.totalCost,
+            total_sell: summary.totalSell,
+            margin: summary.margin
+          }
         })
       } else {
-        const createdId = await convex.mutation(api.quotations.create, payload)
+        const createdId = await convex.mutation(api.quotations.create, {
+          ...eventData,
+          title: eventData.event_title,
+          status: 'final',
+          items: items,
+          total_cost: summary.totalCost,
+          total_sell: summary.totalSell,
+          margin: summary.margin
+        })
         navigate(`/edit/${createdId}`)
+        targetId = createdId
       }
       navigate(`/preview/${targetId}`)
     } catch (e) {
