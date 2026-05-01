@@ -1059,24 +1059,6 @@ export default function Builder() {
                 </div>
 
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
-                  <div style={{ 
-                    display: 'flex', alignItems: 'center', gap: 6, 
-                    padding: '4px 10px', borderRadius: 6,
-                    background: 'var(--bg-2)', border: '1px solid var(--border)',
-                    opacity: saveStatus === 'idle' ? 0.5 : 1,
-                    transition: 'opacity 0.3s ease'
-                  }}>
-                    {saveStatus === 'saving' ? (
-                      <div className="saving-spinner" style={{ width: 10, height: 10, borderWeight: 1.5 }} />
-                    ) : (
-                      <span style={{ fontSize: 12, color: saveStatus === 'saved' ? 'var(--vercel-green)' : 'var(--text-3)' }}>
-                        {saveStatus === 'saved' ? '☁️' : '☁️'}
-                      </span>
-                    )}
-                    <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-2)' }}>
-                      {saveStatus === 'saving' ? 'Syncing...' : 'Synced'}
-                    </span>
-                  </div>
 
                   <div style={{ display: 'flex', gap: 2, marginRight: 8, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
                     <button className="btn-ghost" onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)" style={{ opacity: history.length === 0 ? 0.3 : 1, padding: '4px' }}>↩️</button>
