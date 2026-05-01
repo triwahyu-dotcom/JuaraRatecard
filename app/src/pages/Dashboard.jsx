@@ -290,11 +290,11 @@ export default function Dashboard() {
             {/* Using a border-collapse-like gap with 1px and background: border */}
             <div style={{ background: 'var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border)' }}>
               {quotations.map(q => {
-                const items = q.quotation_items || q.lines || []
-                const eventName   = q.event_name   || q.event_title || 'Untitled'
-                const clientName  = q.client_name  || q.client      || '—'
-                const eventDate   = q.event_date_start || q.event_date || null
-                const quotNo      = q.quotation_no || q.quot_number  || ''
+                const items = q.items || []
+                const eventName   = q.title || 'Untitled'
+                const clientName  = q.client_name  || '—'
+                const eventDate   = q.event_date || null
+                const quotNo      = q.quot_number  || ''
                 
                 const opts = {
                   discount_type:  q.discount_type  || 'amt',
