@@ -261,6 +261,7 @@ export async function exportQuotationToXls(quotation) {
 
     const secLetter = String.fromCharCode(65 + secIdx);
     const secName = stripPrefix(sec.name || `Section ${sec.code}`).replace(/^Set \d+ - /i, '');
+    const secNameNorm = secName.toLowerCase().trim();
 
     // Section header row
     detSheet.getCell(dr, 1).value = secLetter;
@@ -271,16 +272,60 @@ export async function exportQuotationToXls(quotation) {
     detSheet.getRow(dr).height = 16;
     dr++;
 
-    const itemRowsInSection = []; // track item row numbers for SUM
-
+    const itemRowsInSection = [];
     const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
 
-    if (categories.length > 0) {
+    // Detect redundant category: all categories have same stripped name as section
+    const isRedundant = categories.length > 0 &&
+      categories.every(c => stripPrefix(c).toLowerCase().trim() === secNameNorm);
+
+    if (isRedundant) {
+      // SKIP category level — use sub_categories as A.1/A.2, items as A.1.1
+      const allCatItems = secItems.filter(i => i.category); // all items under these cats
+      const subCategories = [...new Set(allCatItems.map(i => i.sub_category).filter(Boolean))];
+      const noSubItems = allCatItems.filter(i => !i.sub_category);
+      let l1 = 1;
+
+      subCategories.forEach(sub => {
+        const code = `${secLetter}.${l1}`;
+        const subItems = allCatItems.filter(i => i.sub_category === sub);
+
+        // Sub-category becomes the A.1 level header
+        detSheet.getCell(dr, 1).value = code;
+        detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+        detSheet.getCell(dr, 2).value = stripPrefix(sub).toUpperCase();
+        detSheet.mergeCells(dr, 2, dr, 9);
+        catRowStyle(detSheet, dr);
+        detSheet.getRow(dr).height = 15;
+        dr++;
+
+        subItems.forEach((item, idx) => {
+          writeItemRow(detSheet, dr, item, `${code}.${idx + 1}`, 1);
+          itemRowsInSection.push(dr);
+          dr++;
+        });
+        l1++;
+      });
+
+      noSubItems.forEach(item => {
+        writeItemRow(detSheet, dr, item, `${secLetter}.${l1++}`, 0);
+        itemRowsInSection.push(dr);
+        dr++;
+      });
+
+      // Items with no category at all
+      secItems.filter(i => !i.category).forEach((item, idx) => {
+        writeItemRow(detSheet, dr, item, `${secLetter}.${l1++}`, 0);
+        itemRowsInSection.push(dr);
+        dr++;
+      });
+
+    } else if (categories.length > 0) {
+      // Normal: Category → Sub-category → Items
       categories.forEach((cat, catIdx) => {
         const catCode = `${secLetter}.${catIdx + 1}`;
         const catItems = secItems.filter(i => i.category === cat);
 
-        // Category header
         detSheet.getCell(dr, 1).value = catCode;
         detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
         detSheet.getCell(dr, 2).value = stripPrefix(cat).toUpperCase();
@@ -291,13 +336,12 @@ export async function exportQuotationToXls(quotation) {
 
         const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))];
         const noSubItems = catItems.filter(i => !i.sub_category);
-        let level2Counter = 1;
+        let l2 = 1;
 
         subCategories.forEach(sub => {
-          const subCode = `${catCode}.${level2Counter++}`;
+          const subCode = `${catCode}.${l2++}`;
           const subItems = catItems.filter(i => i.sub_category === sub);
 
-          // Sub-category header
           detSheet.getCell(dr, 1).value = subCode;
           detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
           detSheet.getCell(dr, 2).value = stripPrefix(sub);
@@ -313,19 +357,18 @@ export async function exportQuotationToXls(quotation) {
         });
 
         noSubItems.forEach(item => {
-          writeItemRow(detSheet, dr, item, `${catCode}.${level2Counter++}`, 1);
+          writeItemRow(detSheet, dr, item, `${catCode}.${l2++}`, 1);
           itemRowsInSection.push(dr);
           dr++;
         });
       });
 
-      // Items with no category
-      const noCatItems = secItems.filter(i => !i.category);
-      noCatItems.forEach((item, idx) => {
+      secItems.filter(i => !i.category).forEach((item, idx) => {
         writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
         itemRowsInSection.push(dr);
         dr++;
       });
+
     } else {
       secItems.forEach((item, idx) => {
         writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
@@ -334,7 +377,7 @@ export async function exportQuotationToXls(quotation) {
       });
     }
 
-    // Section total row — SUM formula of all item AMOUNT cells
+    // Section total row — SUM formula
     detSheet.mergeCells(dr, 1, dr, 7);
     detSheet.getCell(dr, 8).value = 'Section Total';
     detSheet.getCell(dr, 8).font = { bold: true, size: 9 };
