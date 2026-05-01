@@ -13,7 +13,6 @@ import { useQuery, useMutation, useConvex } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { exportToExcelSync, importFromExcelSync } from '../utils/excelSync'
 import { diceCoefficient, predictCategory } from '../utils/stringUtils'
-import AIEstimatorPanel from '../components/AIEstimatorPanel'
 import { useRef } from 'react'
 
 
@@ -1074,17 +1073,6 @@ export default function Builder() {
                       }}
                     >
                       DATABASE
-                    </button>
-                    <button
-                      onClick={() => setLeftSidebarTab('AI')}
-                      style={{
-                        flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700,
-                        color: leftSidebarTab === 'AI' ? 'var(--vercel-blue)' : 'var(--text-3)',
-                        border: 'none', borderBottom: leftSidebarTab === 'AI' ? '2px solid var(--vercel-blue)' : '2px solid transparent',
-                        background: 'transparent', cursor: 'pointer'
-                      }}
-                    >
-                      🤖 AI
                     </button>
                     <button
                       onClick={() => setLeftSidebarTab('CONFIG')}

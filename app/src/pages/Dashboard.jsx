@@ -7,7 +7,6 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { suggestBundles } from '../lib/aiEstimator'
 
 export default function Dashboard() {
   const quotations = useQuery(api.quotations.list) || []
@@ -19,8 +18,6 @@ export default function Dashboard() {
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
   const [confirmState, setConfirmState] = useState(null)
-  const [aiTitle, setAiTitle] = useState('')
-  const [suggestions, setSuggestions] = useState([])
 
   const handleDelete = async (id, name) => {
     setConfirmState({
@@ -48,45 +45,6 @@ export default function Dashboard() {
       navigate(`/edit/${id}`)
     } catch (err) {
       console.error('Failed to create new quotation:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleAiTitleChange = (e) => {
-    const val = e.target.value
-    setAiTitle(val)
-    setSuggestions(suggestBundles(val))
-  }
-
-  const handleCreateWithBundles = async () => {
-    setLoading(true)
-    try {
-      const allItems = []
-      suggestions.forEach(bundle => {
-        bundle.items.forEach(item => {
-          allItems.push({
-            ...item,
-            section_name: bundle.name,
-            category: 'Package Item',
-            unit_sell: 0, // Should link to ratecard in real app
-          })
-        })
-      })
-
-      const newId = await createQuotationMutation({
-        title: aiTitle || 'New Smart Quotation',
-        quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
-        client_name: 'New Client',
-      })
-
-      await updateQuotationMutation({
-        id: newId,
-        updates: { items: allItems }
-      })
-      navigate(`/edit/${newId}`)
-    } catch (err) {
-      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -205,41 +163,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="page-wrap" style={{ marginTop: -30, position: 'relative', zIndex: 10 }}>
-        <div className="card" style={{ padding: 24, boxShadow: '0 10px 30px rgba(0,0,0,0.2)', border: '1px solid var(--border-light)' }}>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, display: 'block', color: 'var(--vercel-blue)' }}>✨ AI SMART ESTIMATOR (PROTOTYPE)</label>
-              <input 
-                type="text" 
-                placeholder="Ketik jenis event (misal: 'Gala Dinner LED' atau 'Event Medical')..." 
-                className="input" 
-                value={aiTitle}
-                onChange={handleAiTitleChange}
-                style={{ height: 48, fontSize: 16 }}
-              />
-            </div>
-            <button 
-              className="btn btn-primary btn-lg" 
-              style={{ height: 48, padding: '0 32px' }}
-              disabled={loading || !aiTitle}
-              onClick={handleCreateWithBundles}
-            >
-              {suggestions.length > 0 ? `Create with ${suggestions.length} Bundles` : 'Create Empty Project'}
-            </button>
-          </div>
-          
-          {suggestions.length > 0 && (
-            <div className="fade-in" style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 13, color: 'var(--text-3)', alignSelf: 'center', marginRight: 8 }}>Suggested:</span>
-              {suggestions.map(s => (
-                <span key={s.id} className="badge badge-surface" style={{ padding: '6px 12px', borderRadius: 20, fontSize: 12 }}>
-                  📦 {s.name}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
       <div className="page-wrap" style={{ marginTop: 40 }}>
         {/* Stats Row — Vercel Metrics Style */}
