@@ -1001,6 +1001,15 @@ export default function Builder() {
 
                   <button
                     className="btn btn-sm btn-surface"
+                    onClick={() => handleSave('draft')}
+                    disabled={saving}
+                    style={{ fontSize: 11, padding: '4px 10px', color: 'var(--vercel-blue)', fontWeight: 700 }}
+                  >
+                    {saving ? 'Saving...' : '💾 Save'}
+                  </button>
+
+                  <button
+                    className="btn btn-sm btn-surface"
                     onClick={() => setShowPreview(true)}
                     style={{ fontSize: 11, padding: '4px 10px' }}
                   >
