@@ -58,6 +58,15 @@ export default defineSchema({
     // Terms & Conditions
     notes: v.optional(v.array(v.string())),
 
+    // Zone/Activity System
+    zones: v.optional(v.array(v.object({
+      id: v.string(),
+      name: v.string(),
+      order: v.number(),
+      color: v.optional(v.union(v.string(), v.null())),
+      note: v.optional(v.union(v.string(), v.null())),
+    }))),
+
     // Embedded items for instant real-time sync
     items: v.array(v.any()), 
     updated_at: v.string(),
