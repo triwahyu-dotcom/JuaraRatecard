@@ -5,7 +5,7 @@ import { v } from "convex/values";
 export const update = mutation({
   args: {
     userName: v.string(),
-    quotationId: v.optional(v.id("quotations")),
+    quotationId: v.union(v.id("quotations"), v.null(), v.any()), // Use union to allow null
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -43,7 +43,7 @@ export const update = mutation({
 
 // List users on a specific quotation
 export const listByQuotation = query({
-  args: { quotationId: v.optional(v.id("quotations")) },
+  args: { quotationId: v.union(v.id("quotations"), v.null(), v.any()) },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("presence")
