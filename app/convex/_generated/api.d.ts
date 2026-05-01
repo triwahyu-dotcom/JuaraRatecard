@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as activities from "../activities.js";
 import type * as aiEstimator from "../aiEstimator.js";
 import type * as collaboration from "../collaboration.js";
 import type * as importScript from "../importScript.js";
@@ -23,6 +24,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  activities: typeof activities;
   aiEstimator: typeof aiEstimator;
   collaboration: typeof collaboration;
   importScript: typeof importScript;

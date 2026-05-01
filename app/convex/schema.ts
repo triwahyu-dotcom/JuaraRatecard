@@ -73,6 +73,14 @@ export default defineSchema({
     created_at: v.string(),
   }).index("by_quotation", ["quotation_id"]),
 
+  activities: defineTable({
+    quotation_id: v.id("quotations"),
+    user_name: v.string(),
+    type: v.string(), // edit, add, delete, status
+    description: v.string(),
+    created_at: v.string(),
+  }).index("by_quotation", ["quotation_id"]),
+
   revisions: defineTable({
     quotation_id: v.id("quotations"),
     version_no: v.number(),

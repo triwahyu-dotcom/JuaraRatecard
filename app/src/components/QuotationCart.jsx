@@ -47,6 +47,7 @@ function InlineText({ value, onChange, placeholder = '', bold = false, style = {
         onFocus={() => { setFocused(true); onFocus?.() }}
         onBlur={() => { setFocused(false); onBlur?.() }}
         onKeyDown={onKeyDown}
+        disabled={!!remoteCursor}
         data-row={row}
         data-col={col}
         className="cell-input"
@@ -55,13 +56,18 @@ function InlineText({ value, onChange, placeholder = '', bold = false, style = {
           border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
           borderRadius: 4, padding: focused ? '2px 6px' : '2px 0',
           fontSize: bold ? 12 : 11, fontWeight: bold ? 700 : 500,
-          color: 'var(--text)', outline: 'none',
+          color: remoteCursor ? 'var(--text-3)' : 'var(--text)', outline: 'none',
           transition: 'all 0.12s',
           whiteSpace: 'normal',
           wordBreak: 'break-word',
+          cursor: remoteCursor ? 'not-allowed' : 'text',
+          opacity: remoteCursor ? 0.7 : 1,
           ...style,
         }}
       />
+      {remoteCursor && (
+        <span style={{ position: 'absolute', right: 4, top: 4, fontSize: 8, opacity: 0.5 }}>🔒</span>
+      )}
     </div>
   )
 }
@@ -89,6 +95,7 @@ function InlineArea({ value, onChange, placeholder = '', style = {}, onKeyDown, 
         onFocus={() => { setFocused(true); onFocus?.() }}
         onBlur={() => { setFocused(false); onBlur?.() }}
         onKeyDown={onKeyDown}
+        disabled={!!remoteCursor}
         data-row={row}
         data-col={col}
         className="cell-input cell-area"
@@ -98,15 +105,20 @@ function InlineArea({ value, onChange, placeholder = '', style = {}, onKeyDown, 
           border: focused ? '1px solid var(--text-3)' : '1px solid transparent',
           borderRadius: 4, padding: focused ? '2px 6px' : '2px 0',
           fontSize: 9, fontWeight: 400,
-          color: 'var(--text)', outline: 'none',
+          color: remoteCursor ? 'var(--text-3)' : 'var(--text)', outline: 'none',
           transition: 'border 0.12s',
           resize: 'none',
           overflow: 'hidden',
           lineHeight: '1.4',
           display: 'block',
+          cursor: remoteCursor ? 'not-allowed' : 'text',
+          opacity: remoteCursor ? 0.7 : 1,
           ...style,
         }}
       />
+      {remoteCursor && (
+        <span style={{ position: 'absolute', right: 4, top: 4, fontSize: 8, opacity: 0.5 }}>🔒</span>
+      )}
     </div>
   )
 }
@@ -195,7 +207,8 @@ function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, o
   return (
     <tr 
       ref={setNodeRef} 
-      style={style} 
+      style={style}
+      data-row-key={item._ratecard_key}
       onClick={(e) => {
         // Toggle behavior: if already active, set to null
         if (isActive) onSetActive(null)

@@ -17,6 +17,7 @@ import { usePresence } from '../hooks/usePresence'
 import AIEstimatorPanel from '../components/AIEstimatorPanel'
 import { suggestBundlesAI } from '../lib/aiEstimator'
 import { useRef } from 'react'
+import ActivitySidebar from '../components/ActivitySidebar'
 
 
 const STEPS = [
@@ -76,6 +77,7 @@ export default function Builder() {
   const [showHistory, setShowHistory] = useState(false)
 
   const [historyLogs, setHistoryLogs] = useState([])
+  const [showActivities, setShowActivities] = useState(false)
   const fileInputRef = useRef(null)
 
   // --- COLLABORATION STATE ---
@@ -96,6 +98,9 @@ export default function Builder() {
   const quotation = useQuery(api.quotations.get, id ? { id: id } : "skip");
   const updateQuotationMutation = useMutation(api.quotations.update);
   const createRevisionMutation = useMutation(api.revisions.create);
+  const logActivityMutation = useMutation(api.activities.log);
+  const fetchedActivities = useQuery(api.activities.listByQuotation, id ? { quotationId: id } : "skip") || [];
+  
   const createBundleMutation = useMutation(api.masterData.createBundle);
   const addCommentMutation = useMutation(api.collaboration.addComment);
   const createCategoryMutation = useMutation(api.masterData.createCategory);
@@ -348,6 +353,15 @@ export default function Builder() {
       saveHistory([...items, newItem])
       setItems(prev => [...prev, newItem])
     }
+
+    if (id) {
+      logActivityMutation({
+        quotationId: id,
+        userName: userName,
+        type: 'add',
+        description: `added item "${ratecardItem.item_name}"`
+      })
+    }
   }
 
   const handleApplyTemplate = (templateId) => {
@@ -492,9 +506,18 @@ export default function Builder() {
   }
 
   const handleRemove = (key) => {
+    const removedItem = items.find(i => i._ratecard_key === key)
     const updated = items.filter(i => i._ratecard_key !== key)
     saveHistory(updated)
     setItems(updated)
+    if (id) {
+      logActivityMutation({
+        quotationId: id,
+        userName: userName,
+        type: 'delete',
+        description: `removed item "${removedItem?.item_name || 'unknown'}"`
+      })
+    }
   }
 
   const handleUpdate = (key, updates) => {
@@ -945,11 +968,23 @@ export default function Builder() {
                     {userName[0]?.toUpperCase()}
                   </div>
                   {activeUsers.map(u => (
-                    <div key={u._id} style={{ 
-                      width: 24, height: 24, borderRadius: '50%', background: 'var(--surface)', 
-                      color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                      fontSize: 10, fontWeight: 700, border: '2px solid var(--vercel-green)'
-                    }} title={`${u.user_name} is also here`}>
+                    <div 
+                      key={u._id} 
+                      onClick={() => {
+                        if (u.selection) {
+                          const [rowKey] = u.selection.split(':')
+                          const el = document.querySelector(`[data-row-key="${rowKey}"]`)
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        }
+                      }}
+                      style={{ 
+                        width: 24, height: 24, borderRadius: '50%', background: 'var(--surface)', 
+                        color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                        fontSize: 10, fontWeight: 700, border: '2px solid var(--vercel-green)',
+                        cursor: 'pointer'
+                      }} 
+                      title={`Click to Follow ${u.user_name}`}
+                    >
                       {u.user_name[0]?.toUpperCase()}
                     </div>
                   ))}
@@ -1096,6 +1131,9 @@ export default function Builder() {
                     <button className="btn-ghost" onClick={() => {
                       setShowHistory(true)
                     }} title="Version History" style={{ padding: '4px' }}>🕒</button>
+                    <button className="btn-ghost" onClick={() => {
+                      setShowActivities(!showActivities)
+                    }} title="Activity Log" style={{ padding: '4px', filter: showActivities ? 'drop-shadow(0 0 2px var(--vercel-green))' : 'none' }}>📜</button>
                   </div>
 
                   <button
@@ -1332,6 +1370,14 @@ export default function Builder() {
               })
             }}
             onClose={() => setCommentTarget(null)}
+          />
+        )}
+
+        {/* ACTIVITY SIDEBAR */}
+        {showActivities && (
+          <ActivitySidebar
+            activities={fetchedActivities}
+            onClose={() => setShowActivities(false)}
           />
         )}
 
