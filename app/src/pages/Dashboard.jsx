@@ -7,12 +7,15 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { usePresence } from '../hooks/usePresence'
 
 export default function Dashboard() {
   const quotations = useQuery(api.quotations.list) || []
   const createQuotationMutation = useMutation(api.quotations.create)
   const removeQuotationMutation = useMutation(api.quotations.remove)
   const updateQuotationMutation = useMutation(api.quotations.update)
+  
+  const { userName, allActive } = usePresence() // Global presence for dashboard
 
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef(null)
@@ -40,7 +43,8 @@ export default function Dashboard() {
       const id = await createQuotationMutation({
         title: 'Untitled Quotation',
         quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
-        client_name: 'New Client'
+        client_name: 'New Client',
+        owner: userName
       })
       navigate(`/edit/${id}`)
     } catch (err) {
@@ -70,6 +74,7 @@ export default function Dashboard() {
         ppn_rate: quot.ppn_rate,
         mgmt_fee_rate: quot.mgmt_fee_rate,
         notes: quot.notes,
+        owner: userName,
         status: 'draft'
       })
       navigate(`/edit/${id}`)
@@ -252,6 +257,20 @@ export default function Dashboard() {
                   }} className="quot-row">
                     <style>{`.quot-row:hover { background: var(--surface) !important; }`}</style>
                     
+                    {/* Collaborative Indicator */}
+                    {allActive.some(u => u.quotation_id === q._id && u.user_name !== userName) && (
+                      <div style={{ position: 'relative' }}>
+                         <div style={{ 
+                            width: 32, height: 32, borderRadius: '50%', background: 'var(--vercel-green)', 
+                            color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            fontSize: 12, fontWeight: 800, border: '3px solid var(--bg)',
+                            animation: 'pulse-sync 2s infinite'
+                         }} title="Someone is editing this right now!">
+                            {allActive.find(u => u.quotation_id === q._id && u.user_name !== userName)?.user_name[0].toUpperCase()}
+                         </div>
+                      </div>
+                    )}
+
                     {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>

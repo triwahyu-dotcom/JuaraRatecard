@@ -43,6 +43,7 @@ export default defineSchema({
     venue: v.optional(v.string()),
     city: v.optional(v.string()),
     signatory: v.optional(v.string()),
+    owner: v.optional(v.string()), // User who created it
     status: v.string(), // draft, sent, approved, rejected
     total_cost: v.number(),
     total_sell: v.number(),
@@ -81,6 +82,13 @@ export default defineSchema({
     created_at: v.string(),
   }).index("by_quotation", ["quotation_id"]),
   
+  // Presence for collaboration
+  presence: defineTable({
+    user_name: v.string(),
+    quotation_id: v.optional(v.id("quotations")), // null if in dashboard
+    last_seen: v.number(),
+  }).index("by_quotation", ["quotation_id"]),
+
   // Bundles
   bundles: defineTable({
     name: v.string(),

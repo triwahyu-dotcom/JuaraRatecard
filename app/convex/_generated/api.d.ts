@@ -12,6 +12,7 @@ import type * as aiEstimator from "../aiEstimator.js";
 import type * as collaboration from "../collaboration.js";
 import type * as importScript from "../importScript.js";
 import type * as masterData from "../masterData.js";
+import type * as presence from "../presence.js";
 import type * as quotations from "../quotations.js";
 import type * as revisions from "../revisions.js";
 
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   collaboration: typeof collaboration;
   importScript: typeof importScript;
   masterData: typeof masterData;
+  presence: typeof presence;
   quotations: typeof quotations;
   revisions: typeof revisions;
 }>;

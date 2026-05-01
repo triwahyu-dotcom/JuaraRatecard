@@ -13,6 +13,9 @@ import { useQuery, useMutation, useConvex } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { exportToExcelSync, importFromExcelSync } from '../utils/excelSync'
 import { diceCoefficient, predictCategory } from '../utils/stringUtils'
+import { usePresence } from '../hooks/usePresence'
+import AIEstimatorPanel from '../components/AIEstimatorPanel'
+import { suggestBundlesAI } from '../lib/aiEstimator'
 import { useRef } from 'react'
 
 
@@ -50,6 +53,8 @@ export default function Builder() {
   }, [step])
 
   const [eventData, setEventData] = useState(defaultEvent)
+  const { userName, activeUsers } = usePresence(id)
+  
   const [items, setItems] = useState([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(!!id)
@@ -911,18 +916,33 @@ export default function Builder() {
                 <span className="badge" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {id ? 'Project Editor' : 'New Project'}
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 12 }}>
-                  <div style={{
-                    width: 7, height: 7, borderRadius: '50%',
-                    background: realtimeStatus === 'online' ? '#00e676' : (realtimeStatus === 'connecting' ? '#ffab00' : '#ff3d00'),
-                    boxShadow: realtimeStatus === 'online' ? '0 0 8px rgba(0, 230, 118, 0.4)' : 'none',
-                    animation: realtimeStatus === 'connecting' ? 'pulse-sync 1.5s infinite' : 'none'
-                  }}></div>
-                  <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    {realtimeStatus}
-                  </span>
+                
+                {/* Presence List */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
+                  <div style={{ 
+                    width: 24, height: 24, borderRadius: '50%', background: 'var(--accent)', 
+                    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    fontSize: 10, fontWeight: 700, border: '2px solid var(--bg)'
+                  }} title={`You (${userName})`}>
+                    {userName[0]?.toUpperCase()}
+                  </div>
+                  {activeUsers.map(u => (
+                    <div key={u._id} style={{ 
+                      width: 24, height: 24, borderRadius: '50%', background: 'var(--surface)', 
+                      color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                      fontSize: 10, fontWeight: 700, border: '2px solid var(--vercel-green)'
+                    }} title={`${u.user_name} is also here`}>
+                      {u.user_name[0]?.toUpperCase()}
+                    </div>
+                  ))}
+                  {activeUsers.length > 0 && (
+                    <span style={{ fontSize: 9, color: 'var(--vercel-green)', fontWeight: 700, marginLeft: 4 }}>
+                      • LIVE
+                    </span>
+                  )}
                 </div>
-                <span style={{ fontSize: 13, color: 'var(--text-3)' }}>—</span>
+
+                <span style={{ fontSize: 13, color: 'var(--text-3)', marginLeft: 8 }}>—</span>
                 <span style={{ fontSize: 13, color: 'var(--text-3)' }}>{eventData.quot_number || 'REF-PENDING'}</span>
                 <span className="badge badge-success" style={{ marginLeft: 12, fontSize: 9, background: 'rgba(0, 112, 243, 0.1)', color: 'var(--vercel-blue)', border: '1px solid rgba(0, 112, 243, 0.2)' }}>
                   V2.4 COLLABORATIVE
