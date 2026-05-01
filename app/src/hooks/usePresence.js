@@ -4,6 +4,7 @@ import { api } from '../../convex/_generated/api'
 
 export function usePresence(quotationId = null) {
   const [userName, setUserName] = useState(localStorage.getItem('juara_user_name') || '')
+  const [selection, setSelection] = useState(null)
   
   const updatePresence = useMutation(api.presence.update)
   const activeUsers = useQuery(api.presence.listByQuotation, { quotationId }) || []
@@ -22,22 +23,24 @@ export function usePresence(quotationId = null) {
     }
   }, [userName])
 
-  // Heartbeat every 10 seconds
+  // Heartbeat every 3 seconds (faster for cursors/highlights)
   useEffect(() => {
     if (!userName) return
 
     const heartbeat = () => {
-      updatePresence({ userName, quotationId }).catch(console.error)
+      updatePresence({ userName, quotationId, selection }).catch(console.error)
     }
 
     heartbeat() // Initial
-    const interval = setInterval(heartbeat, 10000)
+    const interval = setInterval(heartbeat, 3000)
     
     return () => clearInterval(interval)
-  }, [userName, quotationId, updatePresence])
+  }, [userName, quotationId, selection, updatePresence])
 
   return {
     userName,
+    selection,
+    setSelection,
     activeUsers: activeUsers.filter(u => u.user_name !== userName),
     allActive: activeUsers
   }

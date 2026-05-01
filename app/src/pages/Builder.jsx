@@ -53,7 +53,7 @@ export default function Builder() {
   }, [step])
 
   const [eventData, setEventData] = useState(defaultEvent)
-  const { userName, activeUsers } = usePresence(id)
+  const { userName, activeUsers, setSelection } = usePresence(id)
   
   const [items, setItems] = useState([])
   const [saving, setSaving] = useState(false)
@@ -1274,8 +1274,18 @@ export default function Builder() {
                   onAddCustom={handleAddCustomItem}
                   onReorder={handleReorder}
                   onRenameSection={handleRenameSection}
-                  remoteCursors={[]}
-                  onFocusCell={() => { }}
+                  remoteCursors={activeUsers.reduce((acc, u) => {
+                    if (u.selection) {
+                      const [rowId, colId] = u.selection.split(':')
+                      acc[u._id] = { 
+                        userName: u.user_name, 
+                        userColor: u.user_name === 'Rama' ? '#ff0055' : '#0070f3',
+                        rowId, colId 
+                      }
+                    }
+                    return acc
+                  }, {})}
+                  onFocusCell={(rowId, colId) => setSelection(`${rowId}:${colId}`)}
                   comments={comments}
                   onComment={(key) => setCommentTarget(key)}
                 />
@@ -1539,7 +1549,7 @@ function CommentSidebar({ rowKey, itemName, comments, currentUser, onAdd, onClos
           </div>
         )}
         {comments.map((c, i) => {
-          const isMe = c.user_id === currentUser.id
+          const isMe = c.user_name === currentUser.name
           return (
             <div key={i} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
               <div style={{ fontSize: 9, color: 'var(--text-3)', marginBottom: 4, textAlign: isMe ? 'right' : 'left' }}>
@@ -1551,7 +1561,7 @@ function CommentSidebar({ rowKey, itemName, comments, currentUser, onAdd, onClos
                 padding: '8px 12px', borderRadius: 12, fontSize: 11, lineHeight: 1.4,
                 boxShadow: 'var(--shadow-sm)'
               }}>
-                {c.content}
+                {c.text}
               </div>
             </div>
           )

@@ -86,6 +86,7 @@ export default defineSchema({
   presence: defineTable({
     user_name: v.string(),
     quotation_id: v.optional(v.id("quotations")), // null if in dashboard
+    selection: v.optional(v.string()), // ID of the row/item being focused
     last_seen: v.number(),
   }).index("by_quotation", ["quotation_id"]),
 
