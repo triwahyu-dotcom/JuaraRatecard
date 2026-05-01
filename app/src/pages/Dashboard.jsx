@@ -163,7 +163,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      </div>
       <div className="page-wrap" style={{ marginTop: 40 }}>
         {/* Stats Row — Vercel Metrics Style */}
         {quotations.length > 0 && (
