@@ -160,6 +160,18 @@ export default function Builder() {
     }
   }, [id])
 
+  // --- AUTO-SAVE DEBOUNCED ---
+  useEffect(() => {
+    if (items.length === 0 || loading || saving) return
+    
+    const timer = setTimeout(() => {
+      console.log('[Sync] Auto-saving changes...')
+      handleCommitUpdate(items)
+    }, 1500) // Save after 1.5s of inactivity
+
+    return () => clearTimeout(timer)
+  }, [items])
+
   // --- REAL-TIME STATUS ---
   // --- REAL-TIME STATUS ENGINE ---
   const realtimeStatus = quotation === undefined ? 'connecting' : (quotation ? 'online' : 'error');
@@ -954,9 +966,17 @@ export default function Builder() {
                   V2.4 COLLABORATIVE
                 </span>
               </div>
-              <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: 4 }}>
-                {eventData.title || 'Untitled Project'}
-              </h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.03em' }}>
+                    {eventData.title || 'Untitled Quotation'}
+                  </h1>
+                  <span style={{ 
+                    fontSize: 10, background: 'var(--bg-2)', padding: '2px 8px', 
+                    borderRadius: 4, color: 'var(--text-3)', fontFamily: 'var(--font-mono)' 
+                  }}>
+                    ID: {id?.slice(-6)}
+                  </span>
+                </div>
               <p className="text-muted text-sm">
                 {eventData.client_name ? `Client: ${eventData.client_name}` : 'Configure event details and line items'}
               </p>
