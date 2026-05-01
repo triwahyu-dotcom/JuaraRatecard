@@ -80,6 +80,12 @@ export default function Builder() {
   const [historyLogs, setHistoryLogs] = useState([])
   const [showActivities, setShowActivities] = useState(false)
   const fileInputRef = useRef(null)
+  // Track which row keys are actively being typed in — protect from remote sync overwrite
+  const editingKeysRef = useRef(new Set())
+  const setEditingKey = (key, isEditing) => {
+    if (isEditing) editingKeysRef.current.add(key)
+    else editingKeysRef.current.delete(key)
+  }
 
   // --- COLLABORATION STATE ---
   const [currentUser] = useState(() => {
@@ -124,7 +130,7 @@ export default function Builder() {
 
   useEffect(() => {
     if (quotation && !saving) {
-      // SMART SYNC V3: Key-based merging
+      // SMART SYNC V4: Key-based merging with per-row edit lock
       setItems(prev => {
         const remoteItems = quotation.items || []
         if (prev.length === 0) return remoteItems
@@ -132,11 +138,13 @@ export default function Builder() {
         // 1. Create a map of remote items for quick lookup
         const remoteMap = new Map(remoteItems.map(it => [it._ratecard_key, it]))
         
-        // 2. Map existing local items: update with remote data unless active
+        // 2. Map existing local items: update with remote data unless actively being edited
         const updatedLocal = prev.map((localIt, idx) => {
           const remoteIt = remoteMap.get(localIt._ratecard_key)
           if (!remoteIt) return localIt // Item only exists locally (newly added)
-          if (idx === activeIndex) return localIt // Preserve active editing
+          // Protect row if: it's the active table row OR user is actively typing in it
+          if (idx === activeIndex) return localIt
+          if (editingKeysRef.current.has(localIt._ratecard_key)) return localIt
           return remoteIt
         })
 
@@ -1334,6 +1342,7 @@ export default function Builder() {
                   onAddCustom={handleAddCustomItem}
                   onReorder={handleReorder}
                   onRenameSection={handleRenameSection}
+                  onEditingKey={setEditingKey}
                   remoteCursors={activeUsers.reduce((acc, u) => {
                     if (u.selection) {
                       const [rowId, colId] = u.selection.split(':')

@@ -188,7 +188,7 @@ function NumInput({ value, onChange, w = '100%', highlight = false, row, col, on
 }
 
 /* ── Sortable row wrapper ── */
-function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, colWidths, masterZones, masterItems, onKeyDown, items, remoteCursors, onFocusCell, comments, onComment }) {
+function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, colWidths, masterZones, masterItems, onKeyDown, items, remoteCursors, onFocusCell, comments, onComment, onEditingKey }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const isActive = activeIndex === rowIndex
 
@@ -234,15 +234,18 @@ function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, o
         onFocusCell={onFocusCell}
         comments={comments}
         onComment={onComment}
+        onEditingKey={onEditingKey}
       />
     </tr>
   )
 }
 
 /* ── The actual cell content ── */
-function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, dragHandleProps, colWidths, masterItems = [], onKeyDown, items = [], remoteCursors = {}, onFocusCell, comments = [], onComment }) {
+function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, dragHandleProps, colWidths, masterItems = [], onKeyDown, items = [], remoteCursors = {}, onFocusCell, comments = [], onComment, onEditingKey }) {
   const key = item._ratecard_key
-  
+  const lockEdit = () => onEditingKey?.(key, true)
+  const unlockEdit = () => onEditingKey?.(key, false)
+
   const getCursor = (colId) => {
     return Object.values(remoteCursors).find(c => c.rowId === key && c.colId === colId)
   }
@@ -315,11 +318,13 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
       <td style={{ ...TD, width: colWidths.qty, verticalAlign: 'middle' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
           <NumInput value={item.qty} onChange={v => onUpdate(key, { qty: v })} w={45}
-            row={rowIndex} col="qty" onKeyDown={onKeyDown} onBlur={onCommit} 
-            onFocus={() => onFocusCell?.(key, 'qty')}
+            row={rowIndex} col="qty" onKeyDown={onKeyDown}
+            onBlur={() => { onCommit(); unlockEdit(); }}
+            onFocus={() => { onFocusCell?.(key, 'qty'); lockEdit(); }}
             remoteCursor={getCursor('qty')} />
           <InlineUnit value={item.qty_unit} onChange={v => upd('qty_unit', v)} 
-            row={rowIndex} col="qty_u" onKeyDown={onKeyDown} onBlur={onCommit} />
+            row={rowIndex} col="qty_u" onKeyDown={onKeyDown}
+            onBlur={() => { onCommit(); unlockEdit(); }} />
         </div>
       </td>
 
@@ -327,11 +332,13 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
       <td style={{ ...TD, width: colWidths.freq, verticalAlign: 'middle' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
           <NumInput value={item.freq} onChange={v => onUpdate(key, { freq: v })} w={45}
-            row={rowIndex} col="freq" onKeyDown={onKeyDown} onBlur={onCommit}
-            onFocus={() => onFocusCell?.(key, 'freq')}
+            row={rowIndex} col="freq" onKeyDown={onKeyDown}
+            onBlur={() => { onCommit(); unlockEdit(); }}
+            onFocus={() => { onFocusCell?.(key, 'freq'); lockEdit(); }}
             remoteCursor={getCursor('freq')} />
           <InlineUnit value={item.freq_unit} onChange={v => upd('freq_unit', v)} 
-            row={rowIndex} col="freq_u" onKeyDown={onKeyDown} onBlur={onCommit} />
+            row={rowIndex} col="freq_u" onKeyDown={onKeyDown}
+            onBlur={() => { onCommit(); unlockEdit(); }} />
         </div>
       </td>
 
@@ -345,8 +352,9 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
             onUpdate(key, updates)
           }}
           highlight={!!item.unit_cost}
-          row={rowIndex} col="cost" onKeyDown={onKeyDown} onBlur={onCommit}
-          onFocus={() => onFocusCell?.(key, 'cost')}
+          row={rowIndex} col="cost" onKeyDown={onKeyDown}
+          onBlur={() => { onCommit(); unlockEdit(); }}
+          onFocus={() => { onFocusCell?.(key, 'cost'); lockEdit(); }}
           remoteCursor={getCursor('cost')}
         />
       </td>
@@ -377,6 +385,8 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
               if (item.unit_cost > 0 && pct < 100)
                 onUpdate(key, { unit_sell: Math.round(item.unit_cost / (1 - pct / 100)) })
             }}
+            onFocus={lockEdit}
+            onBlur={() => { onCommit(); unlockEdit(); }}
             style={{
               width: '100%', textAlign: 'center', borderRadius: 4, padding: '2px 0',
               fontSize: 12, fontWeight: 700, color: 'var(--accent)',
@@ -392,8 +402,8 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
         <NumInput 
           value={item.unit_sell || ''} 
           onChange={v => onUpdate(key, { unit_sell: v })}
-          onBlur={onCommit}
-          onFocus={() => onFocusCell?.(key, 'sell')}
+          onBlur={() => { onCommit(); unlockEdit(); }}
+          onFocus={() => { onFocusCell?.(key, 'sell'); lockEdit(); }}
           remoteCursor={getCursor('sell')}
           row={rowIndex} col="sell" onKeyDown={onKeyDown}
         />
@@ -589,7 +599,7 @@ function SubcategoryHeaderRow({ name }) {
 
 const TD = { padding: '4px 8px', borderBottom: '1px solid var(--border)', position: 'relative' }
 
-export default function QuotationCart({ items, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddCustom, onReorder, onRenameSection, remoteCursors = {}, onFocusCell, comments = [], onComment }) {
+export default function QuotationCart({ items, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddCustom, onReorder, onRenameSection, remoteCursors = {}, onFocusCell, comments = [], onComment, onEditingKey }) {
   const [activeId, setActiveId] = useState(null)
   const [colWidths, setColWidths] = useState(() => {
     try {
@@ -808,6 +818,7 @@ export default function QuotationCart({ items, activeIndex, onSetActive, onUpdat
                                 onFocusCell={onFocusCell}
                                 comments={comments}
                                 onComment={onComment}
+                                onEditingKey={onEditingKey}
                               />
                             )
                           })}
