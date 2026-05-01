@@ -18,8 +18,8 @@ import { useRef } from 'react'
 
 const STEPS = [
   { label: 'Details', sub: 'Client & event info' },
-  { label: 'Items',  sub: 'Browse ratecard' },
-  { label: 'Review',        sub: 'Finalize & save' },
+  { label: 'Items', sub: 'Browse ratecard' },
+  { label: 'Review', sub: 'Finalize & save' },
 ]
 
 const defaultEvent = {
@@ -110,7 +110,7 @@ export default function Builder() {
   useEffect(() => {
     if (fetchedRevisions.length > 0) setHistoryLogs(fetchedRevisions);
   }, [fetchedRevisions]);
-  
+
   useEffect(() => {
     if (quotation) {
       setItems(quotation.items || [])
@@ -140,7 +140,7 @@ export default function Builder() {
   const realtimeStatus = quotation === undefined ? 'connecting' : (quotation ? 'online' : 'error');
   // Optional: check convex client status if needed for deeper info
   // const isConvexConnected = convex.status === "connected";
-  
+
   // --- BUNDLE MANAGEMENT ---
   const handleSaveAsBundle = async (name, description) => {
     if (items.length === 0) return
@@ -175,7 +175,7 @@ export default function Builder() {
           ...eventData
         }
       })
-      
+
       addDebugLog('Saved to Convex')
 
       // Create version snapshot
@@ -186,7 +186,7 @@ export default function Builder() {
         snapshot: items,
         changedBy: currentUser.name
       })
-      
+
       setSaveStatus('saved')
       setSuccessMsg('Changes saved and synced')
       setTimeout(() => setSaveStatus('idle'), 3000)
@@ -203,7 +203,7 @@ export default function Builder() {
       localStorage.setItem('juara_quotation_draft', JSON.stringify({ items, eventData }))
       const timer = setTimeout(() => setSaveStatus('saved'), 300)
       // Keep "Saved" status visible longer for peace of mind
-      const timer2 = setTimeout(() => setSaveStatus('idle'), 10000) 
+      const timer2 = setTimeout(() => setSaveStatus('idle'), 10000)
       return () => { clearTimeout(timer); clearTimeout(timer2); }
     }
   }, [items, eventData])
@@ -308,7 +308,7 @@ export default function Builder() {
   const handleApplyTemplate = (templateId) => {
     const template = EVENT_TEMPLATES.find(t => t.id === templateId)
     if (!template) return
-    
+
     // If quote already has items, ask for confirmation
     if (items.length > 0) {
       setPendingTemplate(template)
@@ -320,7 +320,7 @@ export default function Builder() {
   const executeTemplate = (template) => {
     const matched = findItemsInRatecard(template.items, ratecardData)
     const newItems = []
-    
+
     matched.forEach((item, idx) => {
       if (item.item_code) {
         const rcItem = ratecardData.find(r => r.item_code === item.item_code)
@@ -328,10 +328,10 @@ export default function Builder() {
           const key = `${rcItem.item_code}-${Date.now()}-${idx}`
           const mCost = rcItem.unit_cost ?? 0
           const mSell = rcItem.unit_sell ?? rcItem.unit_price ?? 0
-          
+
           const sectionName = rcItem.category || 'A. SETUP & SYSTEM'
           const sectionCode = sectionName.split('.')[0] || 'A'
-          
+
           newItems.push({
             _ratecard_key: key,
             item_code: rcItem.item_code,
@@ -386,7 +386,7 @@ export default function Builder() {
   const handleAddBundle = (bundle) => {
     const bundleParentKey = `bundle-parent-${bundle.id}-${Date.now()}`
     const newAddition = []
-    
+
     // 1. Create a "Parent Heading" for the Bundle
     const parentRow = {
       _ratecard_key: bundleParentKey,
@@ -404,7 +404,7 @@ export default function Builder() {
       is_bundle_parent: true,
       sort_order: items.length
     }
-    
+
     newAddition.push(parentRow)
 
     // 2. Add children items
@@ -437,7 +437,7 @@ export default function Builder() {
         })
       }
     })
-    
+
     if (newAddition.length > 0) {
       const updated = [...items, ...newAddition]
       saveHistory(updated)
@@ -462,7 +462,7 @@ export default function Builder() {
     // For now, let's just update state.
     setItems(updated)
   }
-  
+
 
 
   const handleAddCustomItem = (sectionCode = 'A', prefillName = '', insertAfterIdx = null, prefillCategory = 'custom', prefillSubCategory = '') => {
@@ -512,9 +512,9 @@ export default function Builder() {
 
   const handleSaveRevision = async () => {
     if (!id || !quotation) return;
-    
+
     const note = window.prompt('Enter a note for this revision:', 'Draft update');
-    if (note === null) return; 
+    if (note === null) return;
 
     setSaving(true);
     try {
@@ -593,7 +593,7 @@ export default function Builder() {
       } else {
         importedItems = await importFromExcelSync(file)
       }
-      
+
       if (importedItems.length === 0) {
         setConfirmState({
           title: 'Empty File',
@@ -608,7 +608,7 @@ export default function Builder() {
       // --- NEW: Ratecard Data Enrichment (v2 Smart Matching) ---
       const enrichedItems = importedItems.map(item => {
         // 1. Try Exact Match (Fastest)
-        let match = ratecardData.find(r => 
+        let match = ratecardData.find(r =>
           r.item_name.toLowerCase().trim() === item.item_name.toLowerCase().trim()
         );
 
@@ -665,11 +665,11 @@ export default function Builder() {
       };
 
       const finalEnrichedItems = enrichedItems.map(i => {
-        const isLegacyCat = 
-          (i.section_name || '').toLowerCase().includes('misc') || 
-          (i.category || '').toLowerCase().includes('misc') || 
+        const isLegacyCat =
+          (i.section_name || '').toLowerCase().includes('misc') ||
+          (i.category || '').toLowerCase().includes('misc') ||
           i.section_code === 'Misc';
-          
+
         if (isLegacyCat) {
           const match = migrationMap[i.item_name] || { category: 'Venue / Setup / System', sub: 'Additional Items' };
           return {
@@ -701,13 +701,13 @@ export default function Builder() {
         })
       }
       setSaving(false)
-      
+
       saveHistory(finalEnrichedItems)
       setItems(finalEnrichedItems)
-      
+
       const sections = [...new Set(enrichedItems.map(i => i.section_name))].length
       setSuccessMsg(`Successfully imported ${enrichedItems.length} items across ${sections} sections. Matched ${enrichedItems.filter(i => i.unit_cost > 0).length} items with Ratecard database.`)
-      localStorage.removeItem('juara_quotation_draft') 
+      localStorage.removeItem('juara_quotation_draft')
     } catch (err) {
       setConfirmState({
         title: 'Import Failed',
@@ -771,24 +771,24 @@ export default function Builder() {
   )
 
   const summary = calcSummary(items, {
-    discount_type:  eventData.discount_type,
+    discount_type: eventData.discount_type,
     discount_value: eventData.discount_value,
-    mgmt_value:     Math.round((eventData.mgmt_fee_rate || 0.1) * 100),
-    ppn_rate:       Math.round((eventData.ppn_rate || 0.12) * 100),
+    mgmt_value: Math.round((eventData.mgmt_fee_rate || 0.1) * 100),
+    ppn_rate: Math.round((eventData.ppn_rate || 0.12) * 100),
   })
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }} className="fade-in">
       {/* EMERGENCY CLEANUP BANNER */}
       {(items || []).some(i => (i.section_name || '').toLowerCase().includes('misc') || (i.category || '').toLowerCase().includes('misc')) && (
-        <div style={{ 
+        <div style={{
           background: '#fef3c7', padding: '12px 24px', borderBottom: '1px solid #fde68a',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 1000
         }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: '#92400e' }}>
             ⚠️ Deteksi Kategori Lama: Beberapa item Anda masih menggunakan kategori "Miscellaneous".
           </span>
-          <button 
+          <button
             onClick={() => {
               const migrationMap = {
                 'Per Diem': { category: 'Manpower / Crew', sub: 'Crew Welfare' },
@@ -826,8 +826,8 @@ export default function Builder() {
         </div>
       )}
       {/* ── BUILDER HEADER ── */}
-      <header style={{ 
-        padding: '32px 0 0 0', 
+      <header style={{
+        padding: '32px 0 0 0',
         borderBottom: '1px solid var(--border)',
         background: 'var(--bg)',
       }}>
@@ -835,9 +835,9 @@ export default function Builder() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <button 
-                  onClick={() => navigate('/')} 
-                  className="btn-ghost" 
+                <button
+                  onClick={() => navigate('/')}
+                  className="btn-ghost"
                   style={{ padding: '0 8px 0 0', display: 'flex', alignItems: 'center', color: 'var(--text-3)', fontSize: 13 }}
                 >
                   ← Back
@@ -846,8 +846,8 @@ export default function Builder() {
                   {id ? 'Project Editor' : 'New Project'}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 12 }}>
-                  <div style={{ 
-                    width: 7, height: 7, borderRadius: '50%', 
+                  <div style={{
+                    width: 7, height: 7, borderRadius: '50%',
                     background: realtimeStatus === 'online' ? '#00e676' : (realtimeStatus === 'connecting' ? '#ffab00' : '#ff3d00'),
                     boxShadow: realtimeStatus === 'online' ? '0 0 8px rgba(0, 230, 118, 0.4)' : 'none',
                     animation: realtimeStatus === 'connecting' ? 'pulse-sync 1.5s infinite' : 'none'
@@ -878,7 +878,7 @@ export default function Builder() {
 
       {/* ── CONTENT AREA ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        
+
         {/* Step 1 — Form */}
         {step === 0 && (
           <div style={{ padding: '64px 0', overflowY: 'auto', flex: 1 }}>
@@ -899,8 +899,8 @@ export default function Builder() {
 
               <EventForm data={eventData} onChange={setEventData} />
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 48, gap: 12 }}>
-                <button 
-                  className="btn btn-surface btn-lg" 
+                <button
+                  className="btn btn-surface btn-lg"
                   onClick={() => fileInputRef.current?.click()}
                   title="Import from Excel directly into this draft"
                 >
@@ -919,9 +919,9 @@ export default function Builder() {
         {/* Step 2 — Builder */}
         {step === 1 && (
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
-            
+
             {/* Vercel-style Metrics Bar */}
-            <div style={{ 
+            <div style={{
               background: 'var(--bg)', borderBottom: '1px solid var(--border)',
               position: 'sticky', top: 0, zIndex: 10
             }}>
@@ -965,9 +965,9 @@ export default function Builder() {
                     </span>
                   )}
                   {saveStatus === 'saved' && (
-                    <span style={{ 
-                      fontSize: 10, 
-                      color: '#00e676', 
+                    <span style={{
+                      fontSize: 10,
+                      color: '#00e676',
                       fontWeight: 600,
                       background: 'rgba(0, 230, 118, 0.1)',
                       padding: '1px 8px',
@@ -981,7 +981,7 @@ export default function Builder() {
                       <span style={{ fontSize: 12 }}>✓</span> Saved
                     </span>
                   )}
-                  
+
                   <div style={{ display: 'flex', gap: 2, marginRight: 8, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
                     <button className="btn-ghost" onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)" style={{ opacity: history.length === 0 ? 0.3 : 1, padding: '4px' }}>↩️</button>
                     <button className="btn-ghost" onClick={redo} disabled={redoStack.length === 0} title="Redo (Ctrl+Y)" style={{ opacity: redoStack.length === 0 ? 0.3 : 1, padding: '4px' }}>↪️</button>
@@ -990,22 +990,22 @@ export default function Builder() {
                     }} title="Version History" style={{ padding: '4px' }}>🕒</button>
                   </div>
 
-                  <button 
-                    className={`btn btn-sm ${sidebarOpen ? 'btn-surface' : 'btn-primary'}`} 
+                  <button
+                    className={`btn btn-sm ${sidebarOpen ? 'btn-surface' : 'btn-primary'}`}
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                     style={{ fontSize: 11, padding: '4px 10px' }}
                   >
                     {sidebarOpen ? 'Hide DB' : '📁 DB'}
                   </button>
 
-                  <button 
-                    className="btn btn-sm btn-surface" 
+                  <button
+                    className="btn btn-sm btn-surface"
                     onClick={() => setShowPreview(true)}
                     style={{ fontSize: 11, padding: '4px 10px' }}
                   >
                     👁️ Preview
                   </button>
-                  
+
                   <div style={{ display: 'flex', gap: 4, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
                     <button className="btn btn-sm btn-surface" onClick={handleExportExcel} style={{ fontSize: 11, padding: '4px 10px' }}>
                       📥 Exp
@@ -1013,12 +1013,12 @@ export default function Builder() {
                     <button className="btn btn-sm btn-surface" onClick={() => fileInputRef.current?.click()} style={{ fontSize: 11, padding: '4px 10px' }}>
                       📤 Imp
                     </button>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      style={{ display: 'none' }} 
-                      accept=".xlsx, .xls, .csv, .pdf" 
-                      onChange={handleImportExcel} 
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: 'none' }}
+                      accept=".xlsx, .xls, .csv, .pdf"
+                      onChange={handleImportExcel}
                     />
                   </div>
 
@@ -1029,8 +1029,8 @@ export default function Builder() {
               </div>
             </div>
 
-            <div 
-              className="builder-main" 
+            <div
+              className="builder-main"
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -1054,145 +1054,144 @@ export default function Builder() {
 
               {/* Left Sidebar (Database & Config) */}
               {sidebarOpen && (
-                <div style={{ 
-                  width: 320, 
-                  borderRight: '1px solid var(--border)', 
-                  display: 'flex', 
-                  flexDirection: 'column', 
+                <div style={{
+                  width: 320,
+                  borderRight: '1px solid var(--border)',
+                  display: 'flex',
+                  flexDirection: 'column',
                   background: 'var(--bg-2)',
                   flexShrink: 0
                 }}>
-                    {/* Sidebar Tabs */}
-                    <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
-                      <button 
-                        onClick={() => setLeftSidebarTab('DB')}
-                        style={{ 
-                          flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700, 
-                          color: leftSidebarTab === 'DB' ? 'var(--text)' : 'var(--text-3)',
-                          border: 'none', borderBottom: leftSidebarTab === 'DB' ? '2px solid var(--text)' : '2px solid transparent',
-                          background: 'transparent', cursor: 'pointer'
-                        }}
-                      >
-                        DATABASE
-                      </button>
-                      <button 
-                        onClick={() => setLeftSidebarTab('CONFIG')}
-                        style={{ 
-                          flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700, 
-                          color: leftSidebarTab === 'CONFIG' ? 'var(--text)' : 'var(--text-3)',
-                          border: 'none', borderBottom: leftSidebarTab === 'CONFIG' ? '2px solid var(--text)' : '2px solid transparent',
-                          background: 'transparent', cursor: 'pointer'
-                        }}
-                      >
-                        PROJECT SETTINGS
-                      </button>
-                    </div>
+                  <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
+                    <button
+                      onClick={() => setLeftSidebarTab('DB')}
+                      style={{
+                        flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700,
+                        color: leftSidebarTab === 'DB' ? 'var(--text)' : 'var(--text-3)',
+                        border: 'none', borderBottom: leftSidebarTab === 'DB' ? '2px solid var(--text)' : '2px solid transparent',
+                        background: 'transparent', cursor: 'pointer'
+                      }}
+                    >
+                      DATABASE
+                    </button>
+                    <button
+                      onClick={() => setLeftSidebarTab('CONFIG')}
+                      style={{
+                        flex: 1, padding: '12px 0', fontSize: 11, fontWeight: 700,
+                        color: leftSidebarTab === 'CONFIG' ? 'var(--text)' : 'var(--text-3)',
+                        border: 'none', borderBottom: leftSidebarTab === 'CONFIG' ? '2px solid var(--text)' : '2px solid transparent',
+                        background: 'transparent', cursor: 'pointer'
+                      }}
+                    >
+                      CONFIG
+                    </button>
+                  </div>
 
-                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-                      {leftSidebarTab === 'DB' ? (
-                        <RatecardBrowser selectedItems={items} onAdd={handleAdd} onAddBundle={handleAddBundle} />
-                      ) : (
-                        <div style={{ padding: '24px' }}>
-                          {/* Financial Config */}
-                          <div style={{ marginBottom: 32 }}>
-                            <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Financial Config</h3>
-                            
-                            <div className="form-group" style={{ marginBottom: 16 }}>
-                              <label className="form-label" style={{ fontSize: 10 }}>Management Fee (%)</label>
-                              <input type="number" 
-                                value={Math.round((eventData.mgmt_fee_rate ?? 0.10) * 100)}
-                                onChange={e => setEventData({ ...eventData, mgmt_fee_rate: Number(e.target.value) / 100 })}
-                                className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
-                            </div>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                    {leftSidebarTab === 'DB' ? (
+                      <RatecardBrowser selectedItems={items} onAdd={handleAdd} onAddBundle={handleAddBundle} />
+                    ) : (
+                      <div style={{ padding: '24px' }}>
+                        {/* Financial Config */}
+                        <div style={{ marginBottom: 32 }}>
+                          <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Financial Config</h3>
 
-                            <div className="form-group" style={{ marginBottom: 16 }}>
-                              <label className="form-label" style={{ fontSize: 10 }}>VAT / PPN (%)</label>
-                              <input type="number" 
-                                value={Math.round((eventData.ppn_rate ?? 0.12) * 100)}
-                                onChange={e => setEventData({ ...eventData, ppn_rate: Number(e.target.value) / 100 })}
-                                className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
-                            </div>
-
-                            <div className="form-group">
-                              <label className="form-label" style={{ fontSize: 10 }}>Discount (Nominal)</label>
-                              <input type="number" 
-                                value={eventData.discount_value ?? 0}
-                                onChange={e => setEventData({ ...eventData, discount_value: Number(e.target.value) })}
-                                className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
-                            </div>
+                          <div className="form-group" style={{ marginBottom: 16 }}>
+                            <label className="form-label" style={{ fontSize: 10 }}>Management Fee (%)</label>
+                            <input type="number"
+                              value={Math.round((eventData.mgmt_fee_rate ?? 0.10) * 100)}
+                              onChange={e => setEventData({ ...eventData, mgmt_fee_rate: Number(e.target.value) / 100 })}
+                              className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
                           </div>
 
-                          {/* Project Header */}
-                          <div style={{ marginBottom: 32 }}>
-                            <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Project Header</h3>
-                            <div className="form-group" style={{ marginBottom: 12 }}>
-                               <label className="form-label" style={{ fontSize: 10 }}>Client</label>
-                               <input value={eventData.client || ''} 
-                                 onChange={e => setEventData({...eventData, client: e.target.value})}
-                                 className="form-input" style={{ fontSize: 12, height: 32 }} />
-                            </div>
-                            <div className="form-group" style={{ marginBottom: 12 }}>
-                               <label className="form-label" style={{ fontSize: 10 }}>Title</label>
-                               <input value={eventData.event_title || ''} 
-                                 onChange={e => setEventData({...eventData, event_title: e.target.value})}
-                                 className="form-input" style={{ fontSize: 12, height: 32 }} />
-                            </div>
-                            <div className="form-group">
-                               <label className="form-label" style={{ fontSize: 10 }}>Terms & Conditions</label>
-                               <textarea 
-                                 value={(eventData.notes || []).join('\n')}
-                                 onChange={e => setEventData({...eventData, notes: e.target.value.split('\n')})}
-                                 className="form-input" 
-                                 style={{ fontSize: 11, lineHeight: 1.4, resize: 'vertical', minHeight: 80 }}
-                                 placeholder="One term per line..."
-                               />
-                            </div>
+                          <div className="form-group" style={{ marginBottom: 16 }}>
+                            <label className="form-label" style={{ fontSize: 10 }}>VAT / PPN (%)</label>
+                            <input type="number"
+                              value={Math.round((eventData.ppn_rate ?? 0.12) * 100)}
+                              onChange={e => setEventData({ ...eventData, ppn_rate: Number(e.target.value) / 100 })}
+                              className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
                           </div>
 
-                          {/* BUNDLE ACTIONS */}
-                          <div style={{ marginBottom: 32, padding: 16, background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>
-                             <h3 style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>Save as Template</h3>
-                             <p style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 12 }}>Save all current items as a shared bundle for future use.</p>
-                             <button 
-                               onClick={() => {
-                                 const name = prompt('Enter Bundle Name:', eventData.event_title + ' Package')
-                                 if (name) handleSaveAsBundle(name, 'Shared from ' + (eventData.client || 'Project'))
-                               }}
-                               className="btn btn-ghost" style={{ width: '100%', fontSize: 11, border: '1px dashed var(--border)' }}>
-                               📦 Save as Global Bundle
-                             </button>
+                          <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 10 }}>Discount (Nominal)</label>
+                            <input type="number"
+                              value={eventData.discount_value ?? 0}
+                              onChange={e => setEventData({ ...eventData, discount_value: Number(e.target.value) })}
+                              className="form-input" style={{ fontSize: 13, height: 32, fontFamily: 'var(--font-mono)' }} />
                           </div>
                         </div>
-                      )}
-                    </div>
+
+                        {/* Project Header */}
+                        <div style={{ marginBottom: 32 }}>
+                          <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Project Header</h3>
+                          <div className="form-group" style={{ marginBottom: 12 }}>
+                            <label className="form-label" style={{ fontSize: 10 }}>Client</label>
+                            <input value={eventData.client || ''}
+                              onChange={e => setEventData({ ...eventData, client: e.target.value })}
+                              className="form-input" style={{ fontSize: 12, height: 32 }} />
+                          </div>
+                          <div className="form-group" style={{ marginBottom: 12 }}>
+                            <label className="form-label" style={{ fontSize: 10 }}>Title</label>
+                            <input value={eventData.event_title || ''}
+                              onChange={e => setEventData({ ...eventData, event_title: e.target.value })}
+                              className="form-input" style={{ fontSize: 12, height: 32 }} />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 10 }}>Terms & Conditions</label>
+                            <textarea
+                              value={(eventData.notes || []).join('\n')}
+                              onChange={e => setEventData({ ...eventData, notes: e.target.value.split('\n') })}
+                              className="form-input"
+                              style={{ fontSize: 11, lineHeight: 1.4, resize: 'vertical', minHeight: 80 }}
+                              placeholder="One term per line..."
+                            />
+                          </div>
+                        </div>
+
+                        {/* BUNDLE ACTIONS */}
+                        <div style={{ marginBottom: 32, padding: 16, background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                          <h3 style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>Save as Template</h3>
+                          <p style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 12 }}>Save all current items as a shared bundle for future use.</p>
+                          <button
+                            onClick={() => {
+                              const name = prompt('Enter Bundle Name:', eventData.event_title + ' Package')
+                              if (name) handleSaveAsBundle(name, 'Shared from ' + (eventData.client || 'Project'))
+                            }}
+                            className="btn btn-ghost" style={{ width: '100%', fontSize: 11, border: '1px dashed var(--border)' }}>
+                            📦 Save as Global Bundle
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                  <QuotationCart 
-                    items={items} 
-                    activeIndex={activeIndex}
-                    onSetActive={setActiveIndex}
-                    onUpdate={handleUpdate} 
-                    onCommit={handleCommitUpdate}
-                    onRemove={handleRemove}
-                    onDuplicate={handleDuplicate}
-                    onAddCustom={handleAddCustomItem}
-                    onReorder={handleReorder}
-                    onRenameSection={handleRenameSection}
-                    remoteCursors={[]}
-                    onFocusCell={() => {}}
-                    comments={comments}
-                    onComment={(key) => setCommentTarget(key)}
-                  />
                 </div>
+              )}
+
+              <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <QuotationCart
+                  items={items}
+                  activeIndex={activeIndex}
+                  onSetActive={setActiveIndex}
+                  onUpdate={handleUpdate}
+                  onCommit={handleCommitUpdate}
+                  onRemove={handleRemove}
+                  onDuplicate={handleDuplicate}
+                  onAddCustom={handleAddCustomItem}
+                  onReorder={handleReorder}
+                  onRenameSection={handleRenameSection}
+                  remoteCursors={[]}
+                  onFocusCell={() => { }}
+                  comments={comments}
+                  onComment={(key) => setCommentTarget(key)}
+                />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
         {/* COMMENT SIDEBAR */}
         {commentTarget && (
-          <CommentSidebar 
+          <CommentSidebar
             rowKey={commentTarget}
             itemName={items.find(i => i._ratecard_key === commentTarget)?.item_name}
             comments={comments.filter(c => c.row_key === commentTarget)}
@@ -1239,7 +1238,7 @@ export default function Builder() {
           <div className="page-fluid" style={{ display: 'flex', justifyContent: 'space-between' }}>
             <button className="btn btn-ghost" onClick={() => setStep(0)}>← Event Details</button>
             <div style={{ display: 'flex', gap: 12 }}>
-               <button className="btn btn-ghost" onClick={handleSaveRevision} disabled={saving}>💾 Create Revision</button>
+              <button className="btn btn-ghost" onClick={handleSaveRevision} disabled={saving}>💾 Create Revision</button>
             </div>
           </div>
         </div>
@@ -1265,24 +1264,24 @@ export default function Builder() {
       {/* Modal Confirmation (Custom) */}
       {confirmState && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 24 }}
-             onClick={() => confirmState.onCancel()}>
+          onClick={() => confirmState.onCancel()}>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 20, padding: 40, maxWidth: 480, width: '100%', textAlign: 'center', boxShadow: '0 32px 100px rgba(0,0,0,0.6)' }}
-               onClick={e => e.stopPropagation()}>
+            onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 48, marginBottom: 24 }}>⚠️</div>
             <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16, letterSpacing: '-0.02em' }}>{confirmState.title}</h2>
             <p style={{ color: 'var(--text-2)', marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>{confirmState.message}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <button 
-                className="btn btn-primary btn-lg" 
-                style={{ width: '100%', height: 56, fontSize: 16, fontWeight: 700 }} 
+              <button
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', height: 56, fontSize: 16, fontWeight: 700 }}
                 onClick={() => confirmState.onConfirm()}
               >
                 {confirmState.confirmLabel || 'Confirm'}
               </button>
               {confirmState.onCancel && (
-                <button 
-                  className="btn btn-ghost btn-lg" 
-                  style={{ width: '100%', height: 56, fontSize: 16 }} 
+                <button
+                  className="btn btn-ghost btn-lg"
+                  style={{ width: '100%', height: 56, fontSize: 16 }}
                   onClick={() => confirmState.onCancel()}
                 >
                   {confirmState.cancelLabel || 'Cancel'}
@@ -1309,13 +1308,13 @@ export default function Builder() {
 
       {/* Live Preview Modal */}
       {showPreview && (
-        <div style={{ 
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', 
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)',
           backdropFilter: 'blur(8px)', zIndex: 1100,
           display: 'flex', flexDirection: 'column'
         }}>
-          <header style={{ 
-            height: 64, borderBottom: '1px solid var(--border)', 
+          <header style={{
+            height: 64, borderBottom: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '0 24px', background: 'var(--bg)'
           }}>
@@ -1338,20 +1337,20 @@ export default function Builder() {
               </div>
               <button onClick={() => setShowHistory(false)} className="btn btn-ghost" style={{ fontSize: 20 }}>✕</button>
             </div>
-            
+
             <div style={{ flex: 1, overflowY: 'auto', padding: '32px', position: 'relative' }}>
               {/* Vertical Line */}
               <div style={{ position: 'absolute', left: 47, top: 40, bottom: 40, width: 2, background: 'var(--border)', opacity: 0.5 }}></div>
 
               {historyLogs.length === 0 && <p style={{ textAlign: 'center', padding: 60, opacity: 0.5, fontSize: 13 }}>No history records found.</p>}
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                 {historyLogs.map((log, idx) => (
                   <div key={log.id} style={{ display: 'flex', gap: 20, position: 'relative', zIndex: 1 }}>
                     {/* User Avatar / Icon */}
-                    <div style={{ 
-                      width: 32, height: 32, borderRadius: '50%', 
-                      background: idx === 0 ? 'var(--vercel-blue)' : 'var(--surface)', 
+                    <div style={{
+                      width: 32, height: 32, borderRadius: '50%',
+                      background: idx === 0 ? 'var(--vercel-blue)' : 'var(--surface)',
                       color: idx === 0 ? 'white' : 'var(--text-2)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 10, fontWeight: 900, border: '4px solid var(--bg)',
@@ -1364,8 +1363,8 @@ export default function Builder() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                             <span style={{ fontSize: 13, fontWeight: 800 }}>{idx === 0 ? 'Current Snapshot' : `Version ${log.version_no}`}</span>
-                             {idx === 0 && <span className="badge" style={{ fontSize: 8, background: 'rgba(0, 230, 118, 0.1)', color: 'var(--vercel-green)', border: 'none' }}>LATEST</span>}
+                            <span style={{ fontSize: 13, fontWeight: 800 }}>{idx === 0 ? 'Current Snapshot' : `Version ${log.version_no}`}</span>
+                            {idx === 0 && <span className="badge" style={{ fontSize: 8, background: 'rgba(0, 230, 118, 0.1)', color: 'var(--vercel-green)', border: 'none' }}>LATEST</span>}
                           </div>
                           <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
                             {log.changed_by} • {new Date(log.changed_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
@@ -1381,9 +1380,9 @@ export default function Builder() {
                           }}>Restore</button>
                         )}
                       </div>
-                      
-                      <div style={{ 
-                        marginTop: 12, padding: '10px 14px', borderRadius: 10, 
+
+                      <div style={{
+                        marginTop: 12, padding: '10px 14px', borderRadius: 10,
                         background: 'var(--bg-2)', border: '1px solid var(--border)',
                         fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5
                       }}>
@@ -1397,9 +1396,9 @@ export default function Builder() {
                 ))}
               </div>
             </div>
-            
+
             <div style={{ padding: 24, borderTop: '1px solid var(--border)', background: 'var(--bg-2)', display: 'flex', justifyContent: 'center' }}>
-               <button className="btn btn-ghost" onClick={() => setShowHistory(false)} style={{ fontSize: 12, fontWeight: 600 }}>Close Activity Log</button>
+              <button className="btn btn-ghost" onClick={() => setShowHistory(false)} style={{ fontSize: 12, fontWeight: 600 }}>Close Activity Log</button>
             </div>
           </div>
         </div>
@@ -1465,8 +1464,8 @@ function CommentSidebar({ rowKey, itemName, comments, currentUser, onAdd, onClos
       </div>
 
       <div style={{ padding: 20, borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
-        <textarea 
-          value={text} 
+        <textarea
+          value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), submit())}
           placeholder="Write a comment..."
