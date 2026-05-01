@@ -118,16 +118,28 @@ export default function Builder() {
 
   useEffect(() => {
     if (quotation && !saving) {
-      // SMART SYNC: Only update items that aren't being locally edited
-      // Or if the items length changed (rows added/deleted)
+      // SMART SYNC V3: Key-based merging
       setItems(prev => {
-        if (prev.length === 0 || prev.length !== (quotation.items?.length || 0)) return quotation.items || []
+        const remoteItems = quotation.items || []
+        if (prev.length === 0) return remoteItems
         
-        // Merge strategy: Keep local values for the item being edited (activeIndex)
-        return quotation.items.map((remoteItem, idx) => {
-          if (idx === activeIndex) return prev[idx] || remoteItem
-          return remoteItem
+        // 1. Create a map of remote items for quick lookup
+        const remoteMap = new Map(remoteItems.map(it => [it._ratecard_key, it]))
+        
+        // 2. Map existing local items: update with remote data unless active
+        const updatedLocal = prev.map((localIt, idx) => {
+          const remoteIt = remoteMap.get(localIt._ratecard_key)
+          if (!remoteIt) return localIt // Item only exists locally (newly added)
+          if (idx === activeIndex) return localIt // Preserve active editing
+          return remoteIt
         })
+
+        // 3. Find items that exist on remote but not locally (added by others)
+        const localKeys = new Set(prev.map(it => it._ratecard_key))
+        const itemsFromRemote = remoteItems.filter(it => !localKeys.has(it._ratecard_key))
+
+        // 4. Combine and sort
+        return [...updatedLocal, ...itemsFromRemote].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
       })
 
       setEventData(prev => ({
