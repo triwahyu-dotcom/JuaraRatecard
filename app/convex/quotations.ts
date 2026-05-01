@@ -20,8 +20,8 @@ export const get = query({
 // Create a new quotation
 export const create = mutation({
   args: {
-    title: v.string(),
-    quot_number: v.string(),
+    title: v.optional(v.string()),
+    quot_number: v.optional(v.string()),
     client_name: v.optional(v.string()),
     event_date: v.optional(v.string()),
     venue: v.optional(v.string()),
@@ -33,9 +33,11 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const now = new Date().toISOString();
-    const { items, status, total_cost, total_sell, margin, ...baseArgs } = args;
+    const { items, status, total_cost, total_sell, margin, title, quot_number, ...baseArgs } = args;
     const id = await ctx.db.insert("quotations", {
       ...baseArgs,
+      title: title || "New Quotation",
+      quot_number: quot_number || `QUOT-${Date.now().toString().slice(-6)}`,
       status: status || "draft",
       total_cost: total_cost || 0,
       total_sell: total_sell || 0,

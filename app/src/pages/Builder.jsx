@@ -169,10 +169,10 @@ export default function Builder() {
         id: id,
         updates: {
           items,
-          title: eventData.event_title,
-          total_cost: summary.totalCost,
-          total_sell: summary.totalSell,
-          margin: summary.margin,
+          title: eventData.event_title || 'Untitled Project',
+          total_cost: summary.totalCost || 0,
+          total_sell: summary.totalSell || 0,
+          margin: summary.margin || 0,
           ...eventData
         }
       })
@@ -546,10 +546,10 @@ export default function Builder() {
         updates: {
           status,
           items,
-          title: eventData.event_title,
-          total_cost: summary.totalCost,
-          total_sell: summary.totalSell,
-          margin: summary.margin,
+          title: eventData.event_title || 'Untitled Project',
+          total_cost: summary.totalCost || 0,
+          total_sell: summary.totalSell || 0,
+          margin: summary.margin || 0,
           ...eventData
         }
       })
@@ -755,23 +755,24 @@ export default function Builder() {
           id: id,
           updates: {
             ...eventData,
-            title: eventData.event_title,
+            title: eventData.event_title || 'Untitled Project',
             status: 'final',
             items: items,
-            total_cost: summary.totalCost,
-            total_sell: summary.totalSell,
-            margin: summary.margin
+            total_cost: summary.totalCost || 0,
+            total_sell: summary.totalSell || 0,
+            margin: summary.margin || 0
           }
         })
       } else {
         const createdId = await convex.mutation(api.quotations.create, {
           ...eventData,
-          title: eventData.event_title,
+          title: eventData.event_title || 'Untitled Project',
+          quot_number: eventData.quot_number || `QUOT-${Date.now().toString().slice(-6)}`,
           status: 'final',
           items: items,
-          total_cost: summary.totalCost,
-          total_sell: summary.totalSell,
-          margin: summary.margin
+          total_cost: summary.totalCost || 0,
+          total_sell: summary.totalSell || 0,
+          margin: summary.margin || 0
         })
         navigate(`/edit/${createdId}`)
         targetId = createdId
