@@ -184,14 +184,20 @@ export default function Builder() {
   }
 
   // --- AUTO-SAVE & NAVIGATION GUARD ---
-  const handleCommitUpdate = async () => {
-    saveHistory(items)
+  const handleCommitUpdate = async (latestItems = items) => {
     if (!id) return
     setSaveStatus('saving')
     try {
-      console.log('[Builder] Committing update to Convex...')
+      // Calculate summary locally based on latest data to ensure totals are correct
+      const currentSummary = calcSummary(latestItems, {
+        discount_type: eventData.discount_type,
+        discount_value: eventData.discount_value,
+        ppn_rate: eventData.ppn_rate,
+        mgmt_fee_rate: eventData.mgmt_fee_rate
+      })
+
       const payload = {
-        items,
+        items: latestItems,
         title: eventData.title || 'Untitled Project',
         client_name: eventData.client_name || '',
         event_date: eventData.event_date || '',
@@ -199,9 +205,9 @@ export default function Builder() {
         city: eventData.city || '',
         signatory: eventData.signatory || '',
         quot_number: eventData.quot_number || '',
-        total_cost: summary.totalHPP || 0,
-        total_sell: summary.grandTotal || 0,
-        margin: summary.grossMarginPct || 0,
+        total_cost: currentSummary.totalHPP || 0,
+        total_sell: currentSummary.grandTotal || 0,
+        margin: currentSummary.grossMarginPct || 0,
         discount_type: eventData.discount_type || 'amt',
         discount_value: eventData.discount_value || 0,
         ppn_rate: eventData.ppn_rate || 0.12,
@@ -215,21 +221,10 @@ export default function Builder() {
       })
       
       setSaveStatus('saved')
-      addDebugLog('Synced to Cloud')
-
-      // Create version snapshot
-      await createRevisionMutation({
-        quotationId: id,
-        note: 'Automatic Save',
-        snapshot: items,
-        changedBy: currentUser.name
-      })
-
-      setSaveStatus('saved')
+      console.log('[Sync] Successfully saved to cloud')
       setSuccessMsg('Changes saved and synced')
       setTimeout(() => setSaveStatus('idle'), 3000)
     } catch (err) {
-      console.error('Save failed:', err)
       setSaveStatus('idle')
       addDebugLog('Save error: ' + err.message)
     }
@@ -1279,7 +1274,7 @@ export default function Builder() {
                   activeIndex={activeIndex}
                   onSetActive={setActiveIndex}
                   onUpdate={handleUpdate}
-                  onCommit={handleCommitUpdate}
+                  onCommit={() => handleCommitUpdate(items)}
                   onRemove={handleRemove}
                   onDuplicate={handleDuplicate}
                   onAddCustom={handleAddCustomItem}
