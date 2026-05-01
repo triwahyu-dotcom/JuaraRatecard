@@ -376,7 +376,7 @@ function DetailPage({ eventData, section, items, index }) {
                     {row.code}
                   </td>
                   <td style={{ ...TD, fontWeight: 700, paddingLeft: 10, color: '#444', fontSize: 8, fontStyle: 'italic' }} colSpan={8}>
-                    {row.sub}
+                    {stripPrefix(row.sub)}
                   </td>
                 </tr>
               )
@@ -519,7 +519,7 @@ function CombinedPage({ eventData, items }) {
                     {row.code}
                   </td>
                   <td style={{ ...TD, fontWeight: 700, paddingLeft: 10, color: '#444', fontSize: 8, fontStyle: 'italic' }} colSpan={7}>
-                    {row.sub}
+                    {stripPrefix(row.sub)}
                   </td>
                 </tr>
               )
