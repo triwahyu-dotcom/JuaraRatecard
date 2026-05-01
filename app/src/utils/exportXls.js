@@ -2,6 +2,12 @@ import * as xlsx from 'xlsx';
 import { calcLineSell, calcSummary, calcAllSectionSellTotals, getUniqueSections, getQuotationLines } from './calc';
 import { fmtDate } from './fmt';
 
+const stripPrefix = (str) => {
+  if (!str) return ''
+  // Strips "A. ", "G5. ", "H10. " etc.
+  return str.replace(/^[A-Z]\d*\.\s*/i, '')
+}
+
 export function exportQuotationToXls(quotation) {
   const items = getQuotationLines(quotation);
   const eventData = quotation;
@@ -29,19 +35,20 @@ export function exportQuotationToXls(quotation) {
   rows.push([]); // empty row
   
   // Table Headers
-  rows.push(['NO', 'SECTION', 'CATEGORY', 'ZONE', 'ITEM / TASK', 'VARIANT', 'SPECIFICATION', 'QTY', 'UNIT', 'DUR', 'DUR UNIT', 'PRICE', 'AMOUNT']);
+  rows.push(['NO', 'SECTION', 'CATEGORY', 'SUB-CATEGORY', 'ITEM / TASK', 'SPECIFICATION', 'QTY', 'UNIT', 'DUR', 'DUR UNIT', 'PRICE', 'AMOUNT']);
   
   // Details
   let globalIndex = 1;
   
   sections.forEach((sec) => {
-    const secItems = items.filter(i => i.section_code === sec.code);
-    rows.push([globalIndex++, `${sec.code} - ${sec.name}`, '', '', '', '', '', '', '', sectionTotals[sec.code] || 0]);
+    const secItems = items.filter(i => (i.section_code || i.section) === sec.code);
+    const secName = stripPrefix(sec.name || `Section ${sec.code}`).replace(/^Set \d+ - /i, '');
+    rows.push([globalIndex++, secName, '', '', '', '', '', '', '', '', '', sectionTotals[sec.code] || 0]);
     
-    const categories = [...new Set(secItems.map(i => i.category))];
+    const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
     
     categories.forEach(cat => {
-      rows.push(['', '', cat, '', '', '', '', '', '', '', '', '', '']); // category row
+      rows.push(['', '', stripPrefix(cat), '', '', '', '', '', '', '', '', '', '']); // category row
       
       const catItems = secItems.filter(i => i.category === cat);
       catItems.forEach(item => {
@@ -57,9 +64,8 @@ export function exportQuotationToXls(quotation) {
           '', // NO
           '', // SECTION
           '', // CATEGORY
-          item.zone_name || '',
+          stripPrefix(item.sub_category || ''),
           item.item_name,
-          item.variant_name || '',
           item.spec || '',
           item.qty,
           item.qty_unit,

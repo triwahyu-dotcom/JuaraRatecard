@@ -12,6 +12,7 @@ import { EVENT_TEMPLATES, findItemsInRatecard } from '../utils/templates'
 import { useQuery, useMutation, useConvex } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { exportToExcelSync, importFromExcelSync } from '../utils/excelSync'
+import { exportQuotationToXls } from '../utils/exportXls'
 import { diceCoefficient, predictCategory } from '../utils/stringUtils'
 import { usePresence } from '../hooks/usePresence'
 import AIEstimatorPanel from '../components/AIEstimatorPanel'
@@ -1391,6 +1392,9 @@ export default function Builder() {
                 <div style={{ display: 'flex', gap: 16 }}>
                   <button className="btn btn-surface btn-lg" disabled={saving} onClick={() => handleSave('draft')}>
                     Save Draft
+                  </button>
+                  <button className="btn btn-surface btn-lg" onClick={() => exportQuotationToXls({ ...eventData, items })}>
+                    📊 Export XLS
                   </button>
                   <button className="btn btn-primary btn-lg" disabled={saving || items.length === 0} onClick={handleFinalize}>
                     {saving ? 'Saving...' : 'Finalize & Preview Export'}
