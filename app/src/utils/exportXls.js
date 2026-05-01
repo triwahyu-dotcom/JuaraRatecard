@@ -1,105 +1,484 @@
-import * as xlsx from 'xlsx';
+import ExcelJS from 'exceljs';
 import { calcLineSell, calcSummary, calcAllSectionSellTotals, getUniqueSections, getQuotationLines } from './calc';
 import { fmtDate } from './fmt';
 
+const COMPANY = 'PT Juara Berhasil Berkah Sejahtera';
+
 const stripPrefix = (str) => {
-  if (!str) return ''
-  // Strips "A. ", "G5. ", "H10. " etc.
-  return str.replace(/^[A-Z]\d*\.\s*/i, '')
+  if (!str) return '';
+  return str.replace(/^[A-Z]\d*\.\s*/i, '');
+};
+
+const fmtNum = (n) => {
+  if (!n || n === 0) return '';
+  return Math.round(n).toLocaleString('id-ID');
+};
+
+// Color palette matching PDF
+const COLOR = {
+  headerBg: '1a1a1a',      // dark header
+  headerFg: 'FFFFFF',
+  sectionBg: 'F5F5F5',     // light grey section row
+  catBg: 'FAFAFA',         // lighter grey category row
+  subBg: 'FFFFFF',
+  summaryBg: '1a1a1a',
+  summaryFg: 'FFFFFF',
+  border: 'E8E8E8',
+  textMuted: '888888',
+  totalBg: '1a1a1a',
+};
+
+// Column definitions matching PDF columns: NO | ITEM/TASK | SPECIFICATION | QTY | UNIT | DUR | DUR UNIT | PRICE | AMOUNT
+const COLS = [
+  { key: 'no',    width: 8 },
+  { key: 'item',  width: 38 },
+  { key: 'spec',  width: 32 },
+  { key: 'qty',   width: 8 },
+  { key: 'unit',  width: 10 },
+  { key: 'dur',   width: 8 },
+  { key: 'dunit', width: 10 },
+  { key: 'price', width: 18 },
+  { key: 'amount',width: 18 },
+];
+
+function applyBorder(cell) {
+  cell.border = {
+    bottom: { style: 'thin', color: { argb: 'FFE8E8E8' } },
+  };
 }
 
-export function exportQuotationToXls(quotation) {
-  const items = getQuotationLines(quotation);
+function headerStyle(cell, bgHex = COLOR.headerBg, fgHex = COLOR.headerFg) {
+  cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + bgHex } };
+  cell.font = { bold: true, color: { argb: 'FF' + fgHex }, size: 8 };
+  cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+}
+
+function sectionRowStyle(ws, rowNum) {
+  for (let c = 1; c <= 9; c++) {
+    const cell = ws.getCell(rowNum, c);
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
+    cell.font = { bold: true, size: 9 };
+    cell.border = { bottom: { style: 'medium', color: { argb: 'FFCCCCCC' } } };
+  }
+}
+
+function catRowStyle(ws, rowNum) {
+  for (let c = 1; c <= 9; c++) {
+    const cell = ws.getCell(rowNum, c);
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFAFAFA' } };
+    cell.font = { bold: true, size: 8 };
+    cell.border = { bottom: { style: 'thin', color: { argb: 'FFE0E0E0' } } };
+  }
+}
+
+function subRowStyle(ws, rowNum) {
+  for (let c = 1; c <= 9; c++) {
+    const cell = ws.getCell(rowNum, c);
+    cell.font = { bold: true, italic: true, size: 8, color: { argb: 'FF444444' } };
+    cell.border = { bottom: { style: 'thin', color: { argb: 'FFEEEEEE' } } };
+  }
+}
+
+export async function exportQuotationToXls(quotation) {
+  const rawItems = getQuotationLines(quotation);
+  const items = rawItems.filter(i => {
+    const name = (i.item_name || '').toLowerCase();
+    return !['item / task', 'item/task', 'item', 'task'].includes(name);
+  });
+
   const eventData = quotation;
   const sections = getUniqueSections(items);
   const sectionTotals = calcAllSectionSellTotals(items);
-  
-  const summary = calcSummary(items, {
-    discount_type:  eventData.discount_type,
-    discount_value: eventData.discount_value,
-    mgmt_value:     Math.round((eventData.mgmt_fee_rate || 0.1) * 100),
+
+  const opts = {
+    discount_type:  eventData.discount_type  || 'amt',
+    discount_value: eventData.discount_value ?? 0,
+    mgmt_type:      'pct',
+    mgmt_value:     Math.round((eventData.mgmt_fee_rate || 0.10) * 100),
     ppn_rate:       Math.round((eventData.ppn_rate || 0.12) * 100),
+  };
+  const { subtotal, discountAmount, mgmtFeeAmount, taxBase, ppnAmount, grandTotal } = calcSummary(items, opts);
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = COMPANY;
+
+  // ── SHEET 1: SUMMARY ──────────────────────────────────────────────
+  const sumSheet = wb.addWorksheet('Summary', { pageSetup: { paperSize: 9 } });
+  COLS.forEach((col, i) => { sumSheet.getColumn(i + 1).width = col.width; });
+
+  let r = 1;
+
+  // Info header block
+  const infoRows = [
+    ['CLIENT',      eventData.client_name || ''],
+    ['EVENT TITLE', eventData.title || ''],
+    ['DATE',        fmtDate(eventData.event_date)],
+    ['VENUE',       eventData.venue || ''],
+    ['CITY',        eventData.city || ''],
+    ['NUMBER',      eventData.quot_number || ''],
+  ];
+  infoRows.forEach(([label, val]) => {
+    sumSheet.getCell(r, 1).value = label;
+    sumSheet.getCell(r, 1).font = { bold: true, size: 8, color: { argb: 'FF555555' } };
+    sumSheet.getCell(r, 2).value = val;
+    sumSheet.getCell(r, 2).font = { size: 8 };
+    sumSheet.mergeCells(r, 2, r, 9);
+    r++;
   });
 
+  r++; // blank row
 
-  // First we build the data rows for the sheet
-  const rows = [];
-  
-  // Header Infos
-  rows.push(['CLIENT', eventData.client_name]);
-  rows.push(['EVENT TITLE', eventData.title]);
-  rows.push(['DATE', eventData.event_date ? fmtDate(eventData.event_date) : '']);
-  rows.push(['VENUE', eventData.venue]);
-  rows.push(['CITY', eventData.city]);
-  rows.push(['NUMBER', eventData.quot_number]);
-  rows.push([]); // empty row
-  
-  // Table Headers
-  rows.push(['NO', 'SECTION', 'CATEGORY', 'SUB-CATEGORY', 'ITEM / TASK', 'SPECIFICATION', 'QTY', 'UNIT', 'DUR', 'DUR UNIT', 'PRICE', 'AMOUNT']);
-  
-  // Details
-  let globalIndex = 1;
-  
-  sections.forEach((sec) => {
-    const secItems = items.filter(i => (i.section_code || i.section) === sec.code);
-    const secName = stripPrefix(sec.name || `Section ${sec.code}`).replace(/^Set \d+ - /i, '');
-    rows.push([globalIndex++, secName, '', '', '', '', '', '', '', '', '', sectionTotals[sec.code] || 0]);
-    
-    const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
-    
-    categories.forEach(cat => {
-      rows.push(['', '', stripPrefix(cat), '', '', '', '', '', '', '', '', '', '']); // category row
-      
-      const catItems = secItems.filter(i => i.category === cat);
-      catItems.forEach(item => {
-        const amount = calcLineSell(item);
-        const priceStr = item.is_complimentary ? 'complimentary' : item.unit_sell || 0;
-        const amountStr = item.is_complimentary ? 'complimentary' : amount || 0;
-        
-        // duration support (old freq or new duration)
-        const dQty = item.duration_qty ?? item.freq ?? 1;
-        const dUnit = item.duration_unit ?? item.freq_unit ?? 'day';
+  // Title
+  sumSheet.getCell(r, 1).value = 'SUMMARY QUOTATION';
+  sumSheet.getCell(r, 1).font = { bold: true, size: 14 };
+  sumSheet.getCell(r, 1).alignment = { horizontal: 'center' };
+  sumSheet.mergeCells(r, 1, r, 9);
+  r++;
 
-        rows.push([
-          '', // NO
-          '', // SECTION
-          '', // CATEGORY
-          stripPrefix(item.sub_category || ''),
-          item.item_name,
-          item.spec || '',
-          item.qty,
-          item.qty_unit,
-          dQty,
-          dUnit,
-          priceStr,
-          amountStr
-        ]);
-      });
-    });
+  // Column headers
+  const sumHeaders = ['NO', 'ITEM / TASK', 'SPECIFICATION', 'QTY', 'UNIT', 'DUR', 'DUR UNIT', 'PRICE', 'AMOUNT'];
+  sumHeaders.forEach((h, i) => {
+    const cell = sumSheet.getCell(r, i + 1);
+    cell.value = h;
+    headerStyle(cell);
+  });
+  sumSheet.getRow(r).height = 20;
+  r++;
+
+  // "A SUMMARY" block header
+  sumSheet.getCell(r, 1).value = 'A';
+  sumSheet.getCell(r, 2).value = 'SUMMARY';
+  sumSheet.mergeCells(r, 2, r, 9);
+  sectionRowStyle(sumSheet, r);
+  sumSheet.getRow(r).height = 16;
+  r++;
+
+  // Section rows
+  sections.forEach((s, i) => {
+    const total = sectionTotals[s.code] || 0;
+    const letter = String.fromCharCode(65 + i);
+    sumSheet.getCell(r, 1).value = letter;
+    sumSheet.getCell(r, 1).alignment = { horizontal: 'center' };
+    sumSheet.getCell(r, 2).value = stripPrefix(s.name) || `Section ${s.code}`;
+    sumSheet.getCell(r, 2).font = { bold: true, size: 9 };
+    sumSheet.mergeCells(r, 2, r, 7);
+    sumSheet.getCell(r, 8).value = total;
+    sumSheet.getCell(r, 8).numFmt = '#,##0';
+    sumSheet.getCell(r, 8).alignment = { horizontal: 'right' };
+    sumSheet.getCell(r, 9).value = total;
+    sumSheet.getCell(r, 9).numFmt = '#,##0';
+    sumSheet.getCell(r, 9).alignment = { horizontal: 'right' };
+    for (let c = 1; c <= 9; c++) applyBorder(sumSheet.getCell(r, c));
+    r++;
   });
 
-  const mgmtPct = Math.round((eventData.mgmt_fee_rate || 0.1) * 100);
-  const ppnPct = Math.round((eventData.ppn_rate || 0.12) * 100);
+  r++; // blank
 
-  rows.push([]);
-  rows.push(['', '', '', '', '', '', '', '', '', '', '', 'Total Cost (Subtotal)', summary.subtotal]);
-  if (summary.discountAmount > 0) {
-    rows.push(['', '', '', '', '', '', '', '', '', '', '', 'Diskon', -summary.discountAmount]);
+  // Financial summary
+  const finRows = [
+    ['Subtotal', subtotal],
+    ...(discountAmount > 0 ? [[opts.discount_type === 'pct' ? `Diskon (${opts.discount_value}%)` : 'Diskon', -discountAmount]] : []),
+    ...(mgmtFeeAmount > 0 ? [[`Management Fee (${opts.mgmt_value}%)`, mgmtFeeAmount]] : []),
+    ['Tax Base (DPP)', taxBase],
+    [`PPN ${opts.ppn_rate}%`, ppnAmount],
+  ];
+
+  finRows.forEach(([label, val]) => {
+    sumSheet.mergeCells(r, 1, r, 7);
+    sumSheet.getCell(r, 8).value = label;
+    sumSheet.getCell(r, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
+    sumSheet.getCell(r, 8).alignment = { horizontal: 'right' };
+    sumSheet.getCell(r, 9).value = val;
+    sumSheet.getCell(r, 9).numFmt = '#,##0';
+    sumSheet.getCell(r, 9).alignment = { horizontal: 'right' };
+    sumSheet.getCell(r, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+    r++;
+  });
+
+  // Grand Total row
+  sumSheet.mergeCells(r, 1, r, 7);
+  sumSheet.getCell(r, 8).value = 'GRAND TOTAL';
+  sumSheet.getCell(r, 9).value = grandTotal;
+  for (let c = 8; c <= 9; c++) {
+    const cell = sumSheet.getCell(r, c);
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1a1a1a' } };
+    cell.font = { bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+    cell.alignment = { horizontal: c === 8 ? 'right' : 'right' };
   }
-  rows.push(['', '', '', '', '', '', '', '', '', '', '', `Management Fee ${mgmtPct}%`, summary.mgmtFeeAmount]);
-  rows.push(['', '', '', '', '', '', '', '', '', '', '', 'Dasar Pengenaan Pajak (DPP)', summary.taxBase]);
-  rows.push(['', '', '', '', '', '', '', '', '', '', '', `PPN ${ppnPct}%`, summary.ppnAmount]);
-  rows.push(['', '', '', '', '', '', '', '', '', '', '', 'GRAND TOTAL', summary.grandTotal]);
-  
-  // Create workbook
-  const worksheet = xlsx.utils.aoa_to_sheet(rows);
-  const workbook = xlsx.utils.book_new();
-  xlsx.utils.book_append_sheet(workbook, worksheet, "Quotation");
-  
-  // File name
-  const safeTitle = (eventData.title || '').replace(/[^a-zA-Z0-9]/g, '_') || 'quotation';
-  const fileName = `${eventData.quot_number || 'draft'}_${safeTitle}.xlsx`;
-  
-  // Save
-  xlsx.writeFile(workbook, fileName);
+  sumSheet.getCell(r, 9).numFmt = '#,##0';
+  r += 3;
+
+  // Signatory
+  sumSheet.getCell(r, 1).value = `${eventData.city || 'Jakarta'}, ${fmtDate(eventData.event_date)}`;
+  r++;
+  sumSheet.getCell(r, 1).value = 'Submitted by,';
+  r += 4;
+  sumSheet.getCell(r, 1).value = eventData.signatory || '';
+  sumSheet.getCell(r, 1).font = { bold: true, underline: true };
+  r++;
+  sumSheet.getCell(r, 1).value = COMPANY;
+
+  // ── SHEET 2: QUOTATION DETAIL ─────────────────────────────────────
+  const detSheet = wb.addWorksheet('Quotation Detail', { pageSetup: { paperSize: 9 } });
+  COLS.forEach((col, i) => { detSheet.getColumn(i + 1).width = col.width; });
+
+  let dr = 1;
+
+  // Info header block
+  infoRows.forEach(([label, val]) => {
+    detSheet.getCell(dr, 1).value = label;
+    detSheet.getCell(dr, 1).font = { bold: true, size: 8, color: { argb: 'FF555555' } };
+    detSheet.getCell(dr, 2).value = val;
+    detSheet.getCell(dr, 2).font = { size: 8 };
+    detSheet.mergeCells(dr, 2, dr, 9);
+    dr++;
+  });
+  dr++;
+
+  // Title
+  detSheet.getCell(dr, 1).value = 'QUOTATION';
+  detSheet.getCell(dr, 1).font = { bold: true, size: 14 };
+  detSheet.getCell(dr, 1).alignment = { horizontal: 'center' };
+  detSheet.mergeCells(dr, 1, dr, 9);
+  dr++;
+
+  // Column headers
+  const detHeaders = ['NO', 'ITEM / TASK', 'SPECIFICATION', 'QTY', 'UNIT', 'DUR', 'DUR UNIT', 'PRICE', 'AMOUNT'];
+  detHeaders.forEach((h, i) => {
+    const cell = detSheet.getCell(dr, i + 1);
+    cell.value = h;
+    headerStyle(cell);
+  });
+  detSheet.getRow(dr).height = 20;
+  dr++;
+
+  // Build rows matching PDF detail page logic
+  sections.forEach((sec, secIdx) => {
+    const secItems = items.filter(i => (i.section_code || i.section || '_') === sec.code);
+    if (secItems.length === 0) return;
+
+    const secLetter = String.fromCharCode(65 + secIdx);
+    const secName = stripPrefix(sec.name || `Section ${sec.code}`).replace(/^Set \d+ - /i, '');
+
+    // Section header row
+    detSheet.getCell(dr, 1).value = secLetter;
+    detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+    detSheet.getCell(dr, 2).value = secName.toUpperCase();
+    detSheet.mergeCells(dr, 2, dr, 9);
+    sectionRowStyle(detSheet, dr);
+    detSheet.getRow(dr).height = 16;
+    dr++;
+
+    const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
+
+    if (categories.length > 0) {
+      categories.forEach((cat, catIdx) => {
+        const catCode = `${secLetter}.${catIdx + 1}`;
+        const catItems = secItems.filter(i => i.category === cat);
+
+        // Category header
+        detSheet.getCell(dr, 1).value = catCode;
+        detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+        detSheet.getCell(dr, 2).value = stripPrefix(cat).toUpperCase();
+        detSheet.mergeCells(dr, 2, dr, 9);
+        catRowStyle(detSheet, dr);
+        detSheet.getRow(dr).height = 15;
+        dr++;
+
+        const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))];
+        const noSubItems = catItems.filter(i => !i.sub_category);
+        let level2Counter = 1;
+
+        subCategories.forEach(sub => {
+          const subCode = `${catCode}.${level2Counter++}`;
+          const subItems = catItems.filter(i => i.sub_category === sub);
+
+          // Sub-category header
+          detSheet.getCell(dr, 1).value = subCode;
+          detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+          detSheet.getCell(dr, 2).value = stripPrefix(sub);
+          detSheet.mergeCells(dr, 2, dr, 9);
+          subRowStyle(detSheet, dr);
+          dr++;
+
+          subItems.forEach((item, itemIdx) => {
+            writeItemRow(detSheet, dr, item, `${subCode}.${itemIdx + 1}`, 2);
+            dr++;
+          });
+        });
+
+        noSubItems.forEach(item => {
+          writeItemRow(detSheet, dr, item, `${catCode}.${level2Counter++}`, 1);
+          dr++;
+        });
+      });
+
+      // Items with no category
+      const noCatItems = secItems.filter(i => !i.category);
+      noCatItems.forEach((item, idx) => {
+        writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
+        dr++;
+      });
+    } else {
+      secItems.forEach((item, idx) => {
+        writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
+        dr++;
+      });
+    }
+
+    // Section total row
+    const secTotal = sectionTotals[sec.code] || 0;
+    detSheet.mergeCells(dr, 1, dr, 7);
+    detSheet.getCell(dr, 8).value = 'Section Total';
+    detSheet.getCell(dr, 8).font = { bold: true, size: 9 };
+    detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+    detSheet.getCell(dr, 9).value = secTotal;
+    detSheet.getCell(dr, 9).numFmt = '#,##0';
+    detSheet.getCell(dr, 9).font = { bold: true };
+    detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+    detSheet.getCell(dr, 9).border = { top: { style: 'medium', color: { argb: 'FF1a1a1a' } }, bottom: { style: 'medium', color: { argb: 'FF1a1a1a' } } };
+    dr += 2;
+  });
+
+  // Financial summary at bottom of detail sheet
+  const finRows2 = [
+    ['Subtotal', subtotal],
+    ...(discountAmount > 0 ? [[opts.discount_type === 'pct' ? `Diskon (${opts.discount_value}%)` : 'Diskon', -discountAmount]] : []),
+    ...(mgmtFeeAmount > 0 ? [[`Management Fee (${opts.mgmt_value}%)`, mgmtFeeAmount]] : []),
+    ['Tax Base (DPP)', taxBase],
+    [`PPN ${opts.ppn_rate}%`, ppnAmount],
+  ];
+  finRows2.forEach(([label, val]) => {
+    detSheet.mergeCells(dr, 1, dr, 7);
+    detSheet.getCell(dr, 8).value = label;
+    detSheet.getCell(dr, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
+    detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+    detSheet.getCell(dr, 9).value = val;
+    detSheet.getCell(dr, 9).numFmt = '#,##0';
+    detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+    detSheet.getCell(dr, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+    dr++;
+  });
+
+  // Grand Total
+  detSheet.mergeCells(dr, 1, dr, 7);
+  detSheet.getCell(dr, 8).value = 'GRAND TOTAL';
+  detSheet.getCell(dr, 9).value = grandTotal;
+  detSheet.getCell(dr, 9).numFmt = '#,##0';
+  for (let c = 8; c <= 9; c++) {
+    const cell = detSheet.getCell(dr, c);
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1a1a1a' } };
+    cell.font = { bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+    cell.alignment = { horizontal: 'right' };
+  }
+  dr += 3;
+
+  // Notes
+  const defaultNotes = [
+    'Offering Validations:',
+    'The offer price above valid as long as the term specified',
+    'The Offer Price Included Rehearsal D-1',
+  ];
+  const notes = eventData.notes?.length ? eventData.notes : defaultNotes;
+  detSheet.getCell(dr, 1).value = 'NOTE :';
+  detSheet.getCell(dr, 1).font = { bold: true, size: 8 };
+  dr++;
+  notes.forEach(n => {
+    detSheet.getCell(dr, 1).value = `• ${n}`;
+    detSheet.getCell(dr, 1).font = { size: 8 };
+    detSheet.mergeCells(dr, 1, dr, 9);
+    dr++;
+  });
+  dr += 2;
+
+  // Signatory
+  detSheet.getCell(dr, 1).value = `${eventData.city || 'Jakarta'}, ${fmtDate(eventData.event_date)}`;
+  dr++;
+  detSheet.getCell(dr, 1).value = 'Submitted by,';
+  dr += 4;
+  detSheet.getCell(dr, 1).value = eventData.signatory || '';
+  detSheet.getCell(dr, 1).font = { bold: true, underline: true };
+  dr++;
+  detSheet.getCell(dr, 1).value = COMPANY;
+
+  // ── WRITE FILE ────────────────────────────────────────────────────
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeTitle = (eventData.title || 'quotation').replace(/[^a-zA-Z0-9]/g, '_');
+  a.href = url;
+  a.download = `${eventData.quot_number || 'draft'}_${safeTitle}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function writeItemRow(ws, rowNum, item, num, depth) {
+  const durQty  = item.duration_qty  ?? item.freq ?? 1;
+  const durUnit = item.duration_unit ?? item.freq_unit ?? 'day';
+  const amount  = calcLineSell(item);
+  const priceInput = item.unit_sell ?? item.unit_price;
+  const isNumericPrice = priceInput !== null && priceInput !== undefined && priceInput !== '' && !isNaN(Number(priceInput));
+
+  const priceDisplay = item.provided_by
+    ? `Provided by ${item.provided_by}`
+    : isNumericPrice ? Number(priceInput) : (priceInput || '');
+
+  const amountDisplay = item.provided_by
+    ? `Provided by ${item.provided_by}`
+    : amount > 0 ? amount : '';
+
+  ws.getCell(rowNum, 1).value = num;
+  ws.getCell(rowNum, 1).alignment = { horizontal: 'right' };
+  ws.getCell(rowNum, 1).font = { size: 8, color: { argb: 'FF888888' } };
+
+  // Item name with indent based on depth
+  const indent = depth * 2;
+  ws.getCell(rowNum, 2).value = (item.item_name || '—');
+  ws.getCell(rowNum, 2).alignment = { indent, wrapText: true, vertical: 'top' };
+  ws.getCell(rowNum, 2).font = { size: 9 };
+
+  ws.getCell(rowNum, 3).value = item.spec || item.specification || '';
+  ws.getCell(rowNum, 3).alignment = { wrapText: true, vertical: 'top' };
+  ws.getCell(rowNum, 3).font = { size: 8, color: { argb: 'FF666666' } };
+
+  ws.getCell(rowNum, 4).value = item.qty || 0;
+  ws.getCell(rowNum, 4).alignment = { horizontal: 'right' };
+  ws.getCell(rowNum, 4).font = { bold: true, size: 9 };
+
+  ws.getCell(rowNum, 5).value = item.qty_unit || '';
+  ws.getCell(rowNum, 5).alignment = { horizontal: 'center' };
+  ws.getCell(rowNum, 5).font = { size: 8, color: { argb: 'FF777777' } };
+
+  ws.getCell(rowNum, 6).value = durQty;
+  ws.getCell(rowNum, 6).alignment = { horizontal: 'right' };
+  ws.getCell(rowNum, 6).font = { size: 9 };
+
+  ws.getCell(rowNum, 7).value = durUnit;
+  ws.getCell(rowNum, 7).alignment = { horizontal: 'center' };
+  ws.getCell(rowNum, 7).font = { size: 8, color: { argb: 'FF777777' } };
+
+  if (typeof priceDisplay === 'number') {
+    ws.getCell(rowNum, 8).value = priceDisplay;
+    ws.getCell(rowNum, 8).numFmt = '#,##0';
+  } else {
+    ws.getCell(rowNum, 8).value = priceDisplay;
+  }
+  ws.getCell(rowNum, 8).alignment = { horizontal: 'right' };
+  ws.getCell(rowNum, 8).font = { size: 9 };
+
+  if (typeof amountDisplay === 'number') {
+    ws.getCell(rowNum, 9).value = amountDisplay;
+    ws.getCell(rowNum, 9).numFmt = '#,##0';
+  } else {
+    ws.getCell(rowNum, 9).value = amountDisplay;
+  }
+  ws.getCell(rowNum, 9).alignment = { horizontal: 'right' };
+  ws.getCell(rowNum, 9).font = { bold: true, size: 9 };
+
+  for (let c = 1; c <= 9; c++) {
+    applyBorder(ws.getCell(rowNum, c));
+  }
 }
