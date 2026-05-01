@@ -253,6 +253,8 @@ export async function exportQuotationToXls(quotation) {
   dr++;
 
   // Build rows matching PDF detail page logic
+  const sectionTotalRows = []; // track section total row numbers for Subtotal SUM
+
   sections.forEach((sec, secIdx) => {
     const secItems = items.filter(i => (i.section_code || i.section || '_') === sec.code);
     if (secItems.length === 0) return;
@@ -268,6 +270,8 @@ export async function exportQuotationToXls(quotation) {
     sectionRowStyle(detSheet, dr);
     detSheet.getRow(dr).height = 16;
     dr++;
+
+    const itemRowsInSection = []; // track item row numbers for SUM
 
     const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
 
@@ -303,12 +307,14 @@ export async function exportQuotationToXls(quotation) {
 
           subItems.forEach((item, itemIdx) => {
             writeItemRow(detSheet, dr, item, `${subCode}.${itemIdx + 1}`, 2);
+            itemRowsInSection.push(dr);
             dr++;
           });
         });
 
         noSubItems.forEach(item => {
           writeItemRow(detSheet, dr, item, `${catCode}.${level2Counter++}`, 1);
+          itemRowsInSection.push(dr);
           dr++;
         });
       });
@@ -317,53 +323,109 @@ export async function exportQuotationToXls(quotation) {
       const noCatItems = secItems.filter(i => !i.category);
       noCatItems.forEach((item, idx) => {
         writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
+        itemRowsInSection.push(dr);
         dr++;
       });
     } else {
       secItems.forEach((item, idx) => {
         writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
+        itemRowsInSection.push(dr);
         dr++;
       });
     }
 
-    // Section total row
-    const secTotal = sectionTotals[sec.code] || 0;
+    // Section total row — SUM formula of all item AMOUNT cells
     detSheet.mergeCells(dr, 1, dr, 7);
     detSheet.getCell(dr, 8).value = 'Section Total';
     detSheet.getCell(dr, 8).font = { bold: true, size: 9 };
     detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
-    detSheet.getCell(dr, 9).value = secTotal;
+
+    if (itemRowsInSection.length > 0) {
+      const sumParts = itemRowsInSection.map(r => `I${r}`).join(',');
+      detSheet.getCell(dr, 9).value = { formula: `SUM(${sumParts})` };
+    } else {
+      detSheet.getCell(dr, 9).value = 0;
+    }
     detSheet.getCell(dr, 9).numFmt = '#,##0';
     detSheet.getCell(dr, 9).font = { bold: true };
     detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
     detSheet.getCell(dr, 9).border = { top: { style: 'medium', color: { argb: 'FF1a1a1a' } }, bottom: { style: 'medium', color: { argb: 'FF1a1a1a' } } };
+    sectionTotalRows.push(dr);
     dr += 2;
   });
 
-  // Financial summary at bottom of detail sheet
-  const finRows2 = [
-    ['Subtotal', subtotal],
-    ...(discountAmount > 0 ? [[opts.discount_type === 'pct' ? `Diskon (${opts.discount_value}%)` : 'Diskon', -discountAmount]] : []),
-    ...(mgmtFeeAmount > 0 ? [[`Management Fee (${opts.mgmt_value}%)`, mgmtFeeAmount]] : []),
-    ['Tax Base (DPP)', taxBase],
-    [`PPN ${opts.ppn_rate}%`, ppnAmount],
-  ];
-  finRows2.forEach(([label, val]) => {
+  // ── Financial summary with FORMULAS ──────────────────────────────
+  const mgmtDecimal = (eventData.mgmt_fee_rate || 0.10);
+  const ppnDecimal = (eventData.ppn_rate || 0.12);
+
+  // Subtotal = SUM of all section totals
+  detSheet.mergeCells(dr, 1, dr, 7);
+  detSheet.getCell(dr, 8).value = 'Subtotal';
+  detSheet.getCell(dr, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
+  detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+  const subtotalFormula = sectionTotalRows.map(r => `I${r}`).join(',');
+  detSheet.getCell(dr, 9).value = { formula: `SUM(${subtotalFormula})` };
+  detSheet.getCell(dr, 9).numFmt = '#,##0';
+  detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+  const subtotalRow = dr;
+  dr++;
+
+  // Discount (if any) — static value
+  let afterDiscountRef = `I${subtotalRow}`;
+  if (discountAmount > 0) {
     detSheet.mergeCells(dr, 1, dr, 7);
-    detSheet.getCell(dr, 8).value = label;
+    detSheet.getCell(dr, 8).value = opts.discount_type === 'pct' ? `Diskon (${opts.discount_value}%)` : 'Diskon';
     detSheet.getCell(dr, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
     detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
-    detSheet.getCell(dr, 9).value = val;
+    detSheet.getCell(dr, 9).value = -discountAmount;
     detSheet.getCell(dr, 9).numFmt = '#,##0';
     detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
     detSheet.getCell(dr, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+    afterDiscountRef = `I${subtotalRow}+I${dr}`;
     dr++;
-  });
+  }
 
-  // Grand Total
+  // Management Fee = (Subtotal - Discount) × rate
+  detSheet.mergeCells(dr, 1, dr, 7);
+  detSheet.getCell(dr, 8).value = `Management Fee (${Math.round(mgmtDecimal * 100)}%)`;
+  detSheet.getCell(dr, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
+  detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).value = { formula: `(${afterDiscountRef})*${mgmtDecimal}` };
+  detSheet.getCell(dr, 9).numFmt = '#,##0';
+  detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+  const mgmtRow = dr;
+  dr++;
+
+  // Tax Base (DPP) = (Subtotal - Discount) + Mgmt Fee
+  detSheet.mergeCells(dr, 1, dr, 7);
+  detSheet.getCell(dr, 8).value = 'Tax Base (DPP)';
+  detSheet.getCell(dr, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
+  detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).value = { formula: `(${afterDiscountRef})+I${mgmtRow}` };
+  detSheet.getCell(dr, 9).numFmt = '#,##0';
+  detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+  const dppRow = dr;
+  dr++;
+
+  // PPN = DPP × rate
+  detSheet.mergeCells(dr, 1, dr, 7);
+  detSheet.getCell(dr, 8).value = `PPN ${Math.round(ppnDecimal * 100)}%`;
+  detSheet.getCell(dr, 8).font = { bold: true, size: 9, color: { argb: 'FF555555' } };
+  detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).value = { formula: `I${dppRow}*${ppnDecimal}` };
+  detSheet.getCell(dr, 9).numFmt = '#,##0';
+  detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+  detSheet.getCell(dr, 9).border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+  const ppnRow = dr;
+  dr++;
+
+  // Grand Total = DPP + PPN
   detSheet.mergeCells(dr, 1, dr, 7);
   detSheet.getCell(dr, 8).value = 'GRAND TOTAL';
-  detSheet.getCell(dr, 9).value = grandTotal;
+  detSheet.getCell(dr, 9).value = { formula: `I${dppRow}+I${ppnRow}` };
   detSheet.getCell(dr, 9).numFmt = '#,##0';
   for (let c = 8; c <= 9; c++) {
     const cell = detSheet.getCell(dr, c);
@@ -418,23 +480,14 @@ export async function exportQuotationToXls(quotation) {
 function writeItemRow(ws, rowNum, item, num, depth) {
   const durQty  = item.duration_qty  ?? item.freq ?? 1;
   const durUnit = item.duration_unit ?? item.freq_unit ?? 'day';
-  const amount  = calcLineSell(item);
   const priceInput = item.unit_sell ?? item.unit_price;
   const isNumericPrice = priceInput !== null && priceInput !== undefined && priceInput !== '' && !isNaN(Number(priceInput));
-
-  const priceDisplay = item.provided_by
-    ? `Provided by ${item.provided_by}`
-    : isNumericPrice ? Number(priceInput) : (priceInput || '');
-
-  const amountDisplay = item.provided_by
-    ? `Provided by ${item.provided_by}`
-    : amount > 0 ? amount : '';
+  const isProvided = !!item.provided_by;
 
   ws.getCell(rowNum, 1).value = num;
   ws.getCell(rowNum, 1).alignment = { horizontal: 'right' };
   ws.getCell(rowNum, 1).font = { size: 8, color: { argb: 'FF888888' } };
 
-  // Item name with indent based on depth
   const indent = depth * 2;
   ws.getCell(rowNum, 2).value = (item.item_name || '—');
   ws.getCell(rowNum, 2).alignment = { indent, wrapText: true, vertical: 'top' };
@@ -460,20 +513,26 @@ function writeItemRow(ws, rowNum, item, num, depth) {
   ws.getCell(rowNum, 7).alignment = { horizontal: 'center' };
   ws.getCell(rowNum, 7).font = { size: 8, color: { argb: 'FF777777' } };
 
-  if (typeof priceDisplay === 'number') {
-    ws.getCell(rowNum, 8).value = priceDisplay;
+  // PRICE column
+  if (isProvided) {
+    ws.getCell(rowNum, 8).value = `Provided by ${item.provided_by}`;
+  } else if (isNumericPrice) {
+    ws.getCell(rowNum, 8).value = Number(priceInput);
     ws.getCell(rowNum, 8).numFmt = '#,##0';
   } else {
-    ws.getCell(rowNum, 8).value = priceDisplay;
+    ws.getCell(rowNum, 8).value = priceInput || '';
   }
   ws.getCell(rowNum, 8).alignment = { horizontal: 'right' };
   ws.getCell(rowNum, 8).font = { size: 9 };
 
-  if (typeof amountDisplay === 'number') {
-    ws.getCell(rowNum, 9).value = amountDisplay;
+  // AMOUNT column — FORMULA: =QTY * DUR * PRICE
+  if (isProvided) {
+    ws.getCell(rowNum, 9).value = `Provided by ${item.provided_by}`;
+  } else if (isNumericPrice) {
+    ws.getCell(rowNum, 9).value = { formula: `D${rowNum}*F${rowNum}*H${rowNum}` };
     ws.getCell(rowNum, 9).numFmt = '#,##0';
   } else {
-    ws.getCell(rowNum, 9).value = amountDisplay;
+    ws.getCell(rowNum, 9).value = '';
   }
   ws.getCell(rowNum, 9).alignment = { horizontal: 'right' };
   ws.getCell(rowNum, 9).font = { bold: true, size: 9 };
