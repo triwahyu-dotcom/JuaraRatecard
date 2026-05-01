@@ -40,7 +40,7 @@ export default function Preview() {
           <Link to={`/edit/${id}`} className="btn btn-ghost btn-sm">← Edit</Link>
           <Link to="/" className="btn btn-ghost btn-sm">Dashboard</Link>
           <div style={{ marginLeft: 8 }}>
-            <div style={{ fontSize: 14, fontWeight: 700 }}>{quotation.event_title}</div>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>{quotation.title}</div>
             <div style={{ fontSize: 11, color: 'var(--text-2)' }}>{quotation.quot_number}</div>
           </div>
         </div>

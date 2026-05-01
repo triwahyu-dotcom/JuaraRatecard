@@ -21,11 +21,11 @@ function PrintHeader({ eventData }) {
       <table style={{ borderCollapse: 'collapse', fontSize: 9 }}>
         <tbody>
           {[
-            ['CLIENT', eventData.client],
-            ['EVENT TITLE', eventData.event_title],
+            ['CLIENT', eventData.client_name],
+            ['EVENT TITLE', eventData.title],
             ['DATE', fmtDate(eventData.event_date)],
             ['VENUE', eventData.venue],
-            ['TO', eventData.client],
+            ['TO', eventData.client_name],
             ['CITY', eventData.city],
             ['NUMBER', eventData.quot_number],
           ].map(([label, val]) => (

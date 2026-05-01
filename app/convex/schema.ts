@@ -41,10 +41,22 @@ export default defineSchema({
     client_name: v.optional(v.string()),
     event_date: v.optional(v.string()),
     venue: v.optional(v.string()),
+    city: v.optional(v.string()),
+    signatory: v.optional(v.string()),
     status: v.string(), // draft, sent, approved, rejected
     total_cost: v.number(),
     total_sell: v.number(),
     margin: v.number(),
+    
+    // Financial settings
+    discount_type: v.optional(v.string()),
+    discount_value: v.optional(v.number()),
+    ppn_rate: v.optional(v.number()),
+    mgmt_fee_rate: v.optional(v.number()),
+    
+    // Terms & Conditions
+    notes: v.optional(v.array(v.string())),
+
     // Embedded items for instant real-time sync
     items: v.array(v.any()), 
     updated_at: v.string(),

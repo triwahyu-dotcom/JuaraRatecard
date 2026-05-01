@@ -23,9 +23,9 @@ const STEPS = [
 ]
 
 const defaultEvent = {
-  client: '', event_title: '', event_date: '', venue: '', city: '',
+  client_name: '', title: '', event_date: '', venue: '', city: '',
   quot_number: '', signatory: 'Eka Marutha Yuswardana',
-  discount: 0, discount_type: 'amt', discount_value: 0,
+  discount_type: 'amt', discount_value: 0,
   ppn_rate: 0.12,
   mgmt_fee_rate: 0.10,
   notes: [
@@ -114,14 +114,24 @@ export default function Builder() {
   useEffect(() => {
     if (quotation) {
       setItems(quotation.items || [])
-      setEventData(prev => ({
-        ...prev,
-        quot_number: quotation.quot_number,
-        title: quotation.title,
+      setEventData({
+        title: quotation.title || '',
         client_name: quotation.client_name || '',
         event_date: quotation.event_date || '',
         venue: quotation.venue || '',
-      }))
+        city: quotation.city || '',
+        signatory: quotation.signatory || 'Eka Marutha Yuswardana',
+        quot_number: quotation.quot_number || '',
+        discount_type: quotation.discount_type || 'amt',
+        discount_value: quotation.discount_value || 0,
+        ppn_rate: quotation.ppn_rate ?? 0.12,
+        mgmt_fee_rate: quotation.mgmt_fee_rate ?? 0.10,
+        notes: quotation.notes || [
+          'The offer price above valid as long as the term specified',
+          'The Offer Price Included Rehearsal D-1',
+        ],
+        status: quotation.status || 'draft',
+      })
       setLoading(false)
     }
   }, [quotation])
@@ -165,16 +175,28 @@ export default function Builder() {
     setSaveStatus('saving')
     try {
       console.log('[Builder] Committing update to Convex...')
+      const payload = {
+        items,
+        title: eventData.title || 'Untitled Project',
+        client_name: eventData.client_name || '',
+        event_date: eventData.event_date || '',
+        venue: eventData.venue || '',
+        city: eventData.city || '',
+        signatory: eventData.signatory || '',
+        quot_number: eventData.quot_number || '',
+        total_cost: summary.totalHPP || 0,
+        total_sell: summary.grandTotal || 0,
+        margin: summary.grossMarginPct || 0,
+        discount_type: eventData.discount_type || 'amt',
+        discount_value: eventData.discount_value || 0,
+        ppn_rate: eventData.ppn_rate || 0.12,
+        mgmt_fee_rate: eventData.mgmt_fee_rate || 0.10,
+        notes: eventData.notes || []
+      }
+
       await updateQuotationMutation({
         id: id,
-        updates: {
-          items,
-          title: eventData.event_title || 'Untitled Project',
-          total_cost: summary.totalCost || 0,
-          total_sell: summary.totalSell || 0,
-          margin: summary.margin || 0,
-          ...eventData
-        }
+        updates: payload
       })
 
       addDebugLog('Saved to Convex')
@@ -538,32 +560,50 @@ export default function Builder() {
   };
 
   const handleSave = async (status = 'draft') => {
-    if (!id) return;
     setSaving(true)
     try {
-      await updateQuotationMutation({
-        id,
-        updates: {
-          status,
-          items,
-          title: eventData.event_title || 'Untitled Project',
-          total_cost: summary.totalCost || 0,
-          total_sell: summary.totalSell || 0,
-          margin: summary.margin || 0,
-          ...eventData
-        }
-      })
-      setSuccessMsg('Changes saved')
+      const payload = {
+        status,
+        items,
+        title: eventData.title || 'Untitled Project',
+        client_name: eventData.client_name || '',
+        event_date: eventData.event_date || '',
+        venue: eventData.venue || '',
+        city: eventData.city || '',
+        signatory: eventData.signatory || '',
+        quot_number: eventData.quot_number || `QUOT-${Date.now().toString().slice(-6)}`,
+        total_cost: summary.totalHPP || 0,
+        total_sell: summary.grandTotal || 0,
+        margin: summary.grossMarginPct || 0,
+        discount_type: eventData.discount_type || 'amt',
+        discount_value: eventData.discount_value || 0,
+        ppn_rate: eventData.ppn_rate || 0.12,
+        mgmt_fee_rate: eventData.mgmt_fee_rate || 0.10,
+        notes: eventData.notes || []
+      }
+
+      if (id) {
+        await updateQuotationMutation({
+          id,
+          updates: payload
+        })
+        setSuccessMsg('Changes saved')
+      } else {
+        const createdId = await convex.mutation(api.quotations.create, payload)
+        navigate(`/edit/${createdId}`)
+        setSuccessMsg('New quotation created and saved')
+      }
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
       console.error(err)
+      alert('Save failed: ' + err.message)
     } finally {
       setSaving(false)
     }
   }
 
   const handleExportExcel = () => {
-    const fileName = `${eventData.quot_number || 'draft'}_${eventData.event_title || 'quotation'}.xlsx`.replace(/\s+/g, '_')
+    const fileName = `${eventData.quot_number || 'draft'}_${eventData.title || 'quotation'}.xlsx`.replace(/\s+/g, '_')
     exportToExcelSync(items, fileName)
   }
 
@@ -749,31 +789,34 @@ export default function Builder() {
   const handleFinalize = async () => {
     setSaving(true)
     try {
+      const payload = {
+        status: 'final',
+        items,
+        title: eventData.title || 'Untitled Project',
+        client_name: eventData.client_name || '',
+        event_date: eventData.event_date || '',
+        venue: eventData.venue || '',
+        city: eventData.city || '',
+        signatory: eventData.signatory || '',
+        quot_number: eventData.quot_number || `QUOT-${Date.now().toString().slice(-6)}`,
+        total_cost: summary.totalHPP || 0,
+        total_sell: summary.grandTotal || 0,
+        margin: summary.grossMarginPct || 0,
+        discount_type: eventData.discount_type || 'amt',
+        discount_value: eventData.discount_value || 0,
+        ppn_rate: eventData.ppn_rate || 0.12,
+        mgmt_fee_rate: eventData.mgmt_fee_rate || 0.10,
+        notes: eventData.notes || []
+      }
+
       let targetId = id
       if (id) {
         await updateQuotationMutation({
           id: id,
-          updates: {
-            ...eventData,
-            title: eventData.event_title || 'Untitled Project',
-            status: 'final',
-            items: items,
-            total_cost: summary.totalCost || 0,
-            total_sell: summary.totalSell || 0,
-            margin: summary.margin || 0
-          }
+          updates: payload
         })
       } else {
-        const createdId = await convex.mutation(api.quotations.create, {
-          ...eventData,
-          title: eventData.event_title || 'Untitled Project',
-          quot_number: eventData.quot_number || `QUOT-${Date.now().toString().slice(-6)}`,
-          status: 'final',
-          items: items,
-          total_cost: summary.totalCost || 0,
-          total_sell: summary.totalSell || 0,
-          margin: summary.margin || 0
-        })
+        const createdId = await convex.mutation(api.quotations.create, payload)
         navigate(`/edit/${createdId}`)
         targetId = createdId
       }
@@ -886,10 +929,10 @@ export default function Builder() {
                 </span>
               </div>
               <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: 4 }}>
-                {eventData.event_title || 'Untitled Project'}
+                {eventData.title || 'Untitled Project'}
               </h1>
               <p className="text-muted text-sm">
-                {eventData.client ? `Client: ${eventData.client}` : 'Configure event details and line items'}
+                {eventData.client_name ? `Client: ${eventData.client_name}` : 'Configure event details and line items'}
               </p>
             </div>
             <div style={{ minWidth: 460 }}>
@@ -930,7 +973,7 @@ export default function Builder() {
                   📥 Quick Import
                 </button>
                 <button className="btn btn-primary btn-lg"
-                  disabled={!eventData.client || !eventData.event_title || !eventData.event_date}
+                  disabled={!eventData.client_name || !eventData.title || !eventData.event_date}
                   onClick={() => setStep(1)}>
                   Add Line Items →
                 </button>
@@ -1158,14 +1201,14 @@ export default function Builder() {
                           <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Project Header</h3>
                           <div className="form-group" style={{ marginBottom: 12 }}>
                             <label className="form-label" style={{ fontSize: 10 }}>Client</label>
-                            <input value={eventData.client || ''}
-                              onChange={e => setEventData({ ...eventData, client: e.target.value })}
+                            <input value={eventData.client_name || ''}
+                              onChange={e => setEventData({ ...eventData, client_name: e.target.value })}
                               className="form-input" style={{ fontSize: 12, height: 32 }} />
                           </div>
                           <div className="form-group" style={{ marginBottom: 12 }}>
                             <label className="form-label" style={{ fontSize: 10 }}>Title</label>
-                            <input value={eventData.event_title || ''}
-                              onChange={e => setEventData({ ...eventData, event_title: e.target.value })}
+                            <input value={eventData.title || ''}
+                              onChange={e => setEventData({ ...eventData, title: e.target.value })}
                               className="form-input" style={{ fontSize: 12, height: 32 }} />
                           </div>
                           <div className="form-group">
@@ -1186,8 +1229,8 @@ export default function Builder() {
                           <p style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 12 }}>Save all current items as a shared bundle for future use.</p>
                           <button
                             onClick={() => {
-                              const name = prompt('Enter Bundle Name:', eventData.event_title + ' Package')
-                              if (name) handleSaveAsBundle(name, 'Shared from ' + (eventData.client || 'Project'))
+                              const name = prompt('Enter Bundle Name:', eventData.title + ' Package')
+                              if (name) handleSaveAsBundle(name, 'Shared from ' + (eventData.client_name || 'Project'))
                             }}
                             className="btn btn-ghost" style={{ width: '100%', fontSize: 11, border: '1px dashed var(--border)' }}>
                             📦 Save as Global Bundle

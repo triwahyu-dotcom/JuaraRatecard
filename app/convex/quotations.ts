@@ -25,11 +25,18 @@ export const create = mutation({
     client_name: v.optional(v.string()),
     event_date: v.optional(v.string()),
     venue: v.optional(v.string()),
+    city: v.optional(v.string()),
+    signatory: v.optional(v.string()),
     status: v.optional(v.string()),
     items: v.optional(v.any()),
     total_cost: v.optional(v.number()),
     total_sell: v.optional(v.number()),
     margin: v.optional(v.number()),
+    discount_type: v.optional(v.string()),
+    discount_value: v.optional(v.number()),
+    ppn_rate: v.optional(v.number()),
+    mgmt_fee_rate: v.optional(v.number()),
+    notes: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const now = new Date().toISOString();

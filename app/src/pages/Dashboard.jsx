@@ -56,14 +56,26 @@ export default function Dashboard() {
       const id = await createQuotationMutation({
         title: `${quot.title} (Copy)`,
         quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
-        client_name: quot.client_name
+        client_name: quot.client_name,
+        event_date: quot.event_date,
+        venue: quot.venue,
+        city: quot.city,
+        signatory: quot.signatory,
+        items: quot.items,
+        total_cost: quot.total_cost || 0,
+        total_sell: quot.total_sell || 0,
+        margin: quot.margin || 0,
+        discount_type: quot.discount_type,
+        discount_value: quot.discount_value,
+        ppn_rate: quot.ppn_rate,
+        mgmt_fee_rate: quot.mgmt_fee_rate,
+        notes: quot.notes,
+        status: 'draft'
       })
-      await updateQuotationMutation({
-        id,
-        updates: { items: quot.items }
-      })
+      navigate(`/edit/${id}`)
     } catch (err) {
-      console.error(err)
+      console.error('Duplicate failed:', err)
+      alert('Gagal menduplikasi quotation')
     } finally {
       setLoading(false)
     }
@@ -91,18 +103,21 @@ export default function Dashboard() {
       const eventDate  = metadata.event_date  || null
       const eventVenue = metadata.event_venue || ''
       
-      // Create new quotation record in Convex
+      // Calculate initial totals for the imported items
+      const summary = calcSummary(items)
+      
+      // Create new quotation record in Convex with all data
       const id = await createQuotationMutation({
         title: eventTitle,
         quot_number: `QUOT-${Date.now().toString().slice(-6)}`,
         client_name: clientName,
         event_date: eventDate,
-        venue: eventVenue
-      })
-      
-      await updateQuotationMutation({
-        id,
-        updates: { items }
+        venue: eventVenue,
+        items: items,
+        total_cost: summary.totalHPP || 0,
+        total_sell: summary.grandTotal || 0,
+        margin: summary.grossMarginPct || 0,
+        status: 'draft'
       })
       
       navigate(`/edit/${id}`)
@@ -222,7 +237,7 @@ export default function Dashboard() {
                   discount_type:  q.discount_type  || 'amt',
                   discount_value: q.discount_value ?? 0,
                   mgmt_type:      'pct',
-                  mgmt_value:     q.management_fee_value ?? Math.round((q.mgmt_fee_rate || 0.10) * 100),
+                  mgmt_value:     q.mgmt_fee_rate ? (q.mgmt_fee_rate > 1 ? q.mgmt_fee_rate : Math.round(q.mgmt_fee_rate * 100)) : 10,
                   ppn_rate:       q.ppn_rate ? (q.ppn_rate > 1 ? q.ppn_rate : Math.round(q.ppn_rate * 100)) : 12,
                 }
                 const { grandTotal } = calcSummary(items, opts)

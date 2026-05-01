@@ -4,8 +4,8 @@ export default function EventForm({ data, onChange }) {
   const set = (field, val) => onChange({ ...data, [field]: val })
 
   const handleAutoNumber = () => {
-    if (data.client && data.event_title && data.event_date) {
-      set('quot_number', generateQuotNumber(data.client, data.event_title, data.event_date))
+    if (data.client_name && data.title && data.event_date) {
+      set('quot_number', generateQuotNumber(data.client_name, data.title, data.event_date))
     }
   }
 
@@ -19,12 +19,12 @@ export default function EventForm({ data, onChange }) {
       <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px 32px' }}>
         <div className="form-group">
           <label className="form-label">Client Name <span style={{ color: 'var(--red)' }}>*</span></label>
-          <input className="form-input" value={data.client || ''} onChange={e => set('client', e.target.value)} placeholder="e.g. Disney / Netflix" />
+          <input className="form-input" value={data.client_name || ''} onChange={e => set('client_name', e.target.value)} placeholder="e.g. Disney / Netflix" />
         </div>
         
         <div className="form-group">
           <label className="form-label">Event / Project Title <span style={{ color: 'var(--red)' }}>*</span></label>
-          <input className="form-input" value={data.event_title || ''} onChange={e => set('event_title', e.target.value)} placeholder="e.g. Music Festival 2026" />
+          <input className="form-input" value={data.title || ''} onChange={e => set('title', e.target.value)} placeholder="e.g. Music Festival 2026" />
         </div>
 
         <div className="form-group">

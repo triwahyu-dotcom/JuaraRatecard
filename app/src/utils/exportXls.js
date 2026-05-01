@@ -20,8 +20,8 @@ export function exportQuotationToXls(quotation) {
   const rows = [];
   
   // Header Infos
-  rows.push(['CLIENT', eventData.client]);
-  rows.push(['EVENT TITLE', eventData.event_title]);
+  rows.push(['CLIENT', eventData.client_name]);
+  rows.push(['EVENT TITLE', eventData.title]);
   rows.push(['DATE', eventData.event_date ? fmtDate(eventData.event_date) : '']);
   rows.push(['VENUE', eventData.venue]);
   rows.push(['CITY', eventData.city]);
@@ -91,7 +91,7 @@ export function exportQuotationToXls(quotation) {
   xlsx.utils.book_append_sheet(workbook, worksheet, "Quotation");
   
   // File name
-  const safeTitle = (eventData.event_title || '').replace(/[^a-zA-Z0-9]/g, '_') || 'quotation';
+  const safeTitle = (eventData.title || '').replace(/[^a-zA-Z0-9]/g, '_') || 'quotation';
   const fileName = `${eventData.quot_number || 'draft'}_${safeTitle}.xlsx`;
   
   // Save
