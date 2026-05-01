@@ -181,8 +181,7 @@ export default function Builder() {
       // Create version snapshot
       await createRevisionMutation({
         quotationId: id,
-        versionNo: (quotation?.version_no || 0) + 1,
-        changeNote: 'Automatic Save',
+        note: 'Automatic Save',
         snapshot: items,
         changedBy: currentUser.name
       })
@@ -543,9 +542,11 @@ export default function Builder() {
     try {
       await updateQuotationMutation({
         id,
-        status,
-        items,
-        ...eventData
+        updates: {
+          status,
+          items,
+          ...eventData
+        }
       })
       setSuccessMsg('Changes saved')
       setTimeout(() => setSuccessMsg(''), 3000)
