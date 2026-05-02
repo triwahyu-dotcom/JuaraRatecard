@@ -33,6 +33,10 @@ export function usePresence(quotationId = null) {
     if (!userName || !updatePresence) return
 
     const heartbeat = () => {
+      // GUARD 4: Skip presence update if no quotation context (e.g. Dashboard)
+      // Stops schema validation errors when quotationId is null
+      if (!quotationId) return
+
       updatePresence({ 
         userName, 
         quotationId: quotationId || null, 

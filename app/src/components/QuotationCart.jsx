@@ -193,9 +193,15 @@ function NumInput({ value, onChange, w = '100%', highlight = false, row, col, on
   )
 }
 
-function ZonePicker({ currentZone, zones = [], onSelect }) {
+function ZonePicker({ currentZone, zones = [], onSelect, onOpenChange }) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef(null)
+
+  // Notify parent when dropdown open state changes
+  // Used by Builder to pause autosave while dropdown is open
+  useEffect(() => {
+    if (onOpenChange) onOpenChange(isOpen)
+  }, [isOpen, onOpenChange])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -385,6 +391,7 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
           currentZone={item.zone_name}
           zones={zones}
           onSelect={(newZoneName) => onSetItemZone(item._ratecard_key, newZoneName)}
+          onOpenChange={(open) => onEditingKey?.(`zone-picker:${item._ratecard_key}`, open)}
         />
       </td>
 

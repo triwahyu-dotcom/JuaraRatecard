@@ -90,6 +90,7 @@ export default function Builder() {
     if (isEditing) editingKeysRef.current.add(key)
     else editingKeysRef.current.delete(key)
   }
+  const lastProcessedActiveIndex = useRef(activeIndex)
 
   // --- COLLABORATION STATE ---
   const [currentUser] = useState(() => {
@@ -135,48 +136,82 @@ export default function Builder() {
 
   useEffect(() => {
     if (quotation && !saving) {
-      // SMART SYNC V4: Key-based merging with per-row edit lock
-      setItems(prev => {
-        const remoteItems = quotation.items || []
-        if (prev.length === 0) return remoteItems
-        
-        // 1. Create a map of remote items for quick lookup
-        const remoteMap = new Map(remoteItems.map(it => [it._ratecard_key, it]))
-        
-        // 2. Map existing local items: update with remote data unless actively being edited
-        const updatedLocal = prev.map((localIt, idx) => {
-          const remoteIt = remoteMap.get(localIt._ratecard_key)
-          if (!remoteIt) return localIt // Item only exists locally (newly added)
-          // Protect row if: it's the active table row OR user is actively typing in it
-          if (idx === activeIndex) return localIt
-          if (editingKeysRef.current.has(localIt._ratecard_key)) return localIt
-          return remoteIt
+      const remoteItems = quotation.items || []
+
+      // GUARD 1: Skip Smart Sync setItems if items already match remote and focus hasn't changed
+      // Prevents infinite loop: autosave -> mutation -> realtime broadcast -> setItems -> autosave...
+      const itemsAlreadyInSync = items.length === remoteItems.length &&
+        items.every(localIt => {
+          if (!localIt._ratecard_key) return false // force re-sync for new/unsynced items
+          const remoteIt = remoteItems.find(r => r._ratecard_key === localIt._ratecard_key)
+          return remoteIt && JSON.stringify(localIt) === JSON.stringify(remoteIt)
         })
+      
+      if (itemsAlreadyInSync && activeIndex === lastProcessedActiveIndex.current) {
+        console.log('[Sync] Smart Sync skipped — items synced and activeIndex unchanged')
+      } else {
+        lastProcessedActiveIndex.current = activeIndex
+        // SMART SYNC V4: Key-based merging with per-row edit lock
+        setItems(prev => {
+          if (prev.length === 0) return remoteItems
+          
+          // 1. Create a map of remote items for quick lookup
+          const remoteMap = new Map(remoteItems.map(it => [it._ratecard_key, it]))
+          
+          // 2. Map existing local items: update with remote data unless actively being edited
+          const updatedLocal = prev.map((localIt, idx) => {
+            const remoteIt = remoteMap.get(localIt._ratecard_key)
+            if (!remoteIt) return localIt // Item only exists locally (newly added)
+            // Protect row if: it's the active table row OR user is actively typing in it
+            if (idx === activeIndex) return localIt
+            if (editingKeysRef.current.has(localIt._ratecard_key)) return localIt
+            return remoteIt
+          })
 
-        // 3. Find items that exist on remote but not locally (added by others)
-        const localKeys = new Set(prev.map(it => it._ratecard_key))
-        const itemsFromRemote = remoteItems.filter(it => !localKeys.has(it._ratecard_key))
+          // 3. Find items that exist on remote but not locally (added by others)
+          const localKeys = new Set(prev.map(it => it._ratecard_key))
+          const itemsFromRemote = remoteItems.filter(it => !localKeys.has(it._ratecard_key))
 
-        // 4. Combine and sort
-        return [...updatedLocal, ...itemsFromRemote].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+          // 4. Combine and sort
+          const newItems = [...updatedLocal, ...itemsFromRemote].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+
+          // GUARD 2: Return prev reference if content unchanged
+          // React skips re-render if reference is same -> no useEffect re-fire
+          if (newItems.length === prev.length &&
+              newItems.every((it, i) => JSON.stringify(it) === JSON.stringify(prev[i]))) {
+            console.log('[Sync] setItems skipped — content unchanged')
+            return prev
+          }
+          return newItems
+        })
+      }
+
+      setEventData(prev => {
+        const next = {
+          ...prev,
+          title: quotation.title || prev.title,
+          client_name: quotation.client_name || prev.client_name,
+          event_date: quotation.event_date || prev.event_date,
+          venue: quotation.venue || prev.venue,
+          city: quotation.city || prev.city,
+          signatory: quotation.signatory || prev.signatory,
+          quot_number: quotation.quot_number || prev.quot_number,
+          discount_type: quotation.discount_type || prev.discount_type,
+          discount_value: quotation.discount_value || prev.discount_value,
+          ppn_rate: quotation.ppn_rate ?? prev.ppn_rate,
+          mgmt_fee_rate: quotation.mgmt_fee_rate ?? prev.mgmt_fee_rate,
+          notes: quotation.notes || prev.notes,
+          status: quotation.status || prev.status,
+        }
+
+        // GUARD 3: Return prev reference if content unchanged
+        if (JSON.stringify(next) === JSON.stringify(prev)) {
+          console.log('[Sync] setEventData skipped — content unchanged')
+          return prev
+        }
+        return next
       })
 
-      setEventData(prev => ({
-        ...prev,
-        title: quotation.title || prev.title,
-        client_name: quotation.client_name || prev.client_name,
-        event_date: quotation.event_date || prev.event_date,
-        venue: quotation.venue || prev.venue,
-        city: quotation.city || prev.city,
-        signatory: quotation.signatory || prev.signatory,
-        quot_number: quotation.quot_number || prev.quot_number,
-        discount_type: quotation.discount_type || prev.discount_type,
-        discount_value: quotation.discount_value || prev.discount_value,
-        ppn_rate: quotation.ppn_rate ?? prev.ppn_rate,
-        mgmt_fee_rate: quotation.mgmt_fee_rate ?? prev.mgmt_fee_rate,
-        notes: quotation.notes || prev.notes,
-        status: quotation.status || prev.status,
-      }))
       setLoading(false)
       setSaveStatus('saved')
     }
@@ -196,6 +231,12 @@ export default function Builder() {
     if (items.length === 0 || loading || saving) return
     
     const timer = setTimeout(() => {
+      // Skip autosave if user is actively interacting (typing or dropdown open)
+      // editingKeysRef tracks: inline edit cells + open dropdowns
+      if (editingKeysRef.current.size > 0) {
+        console.log('[Sync] Autosave skipped — user active:', Array.from(editingKeysRef.current))
+        return
+      }
       console.log('[Sync] Auto-saving changes...')
       handleCommitUpdate(items)
     }, 1500) // Save after 1.5s of inactivity
