@@ -110,6 +110,7 @@ export default function Builder() {
   const updateQuotationMutation = useMutation(api.quotations.update);
   const createRevisionMutation = useMutation(api.revisions.create);
   const logActivityMutation = useMutation(api.activities.log);
+  const setItemZoneMutation = useMutation(api.quotations.setItemZone);
   const fetchedActivities = useQuery(api.activities.listByQuotation, id ? { quotationId: id } : "skip") || [];
   
   const createBundleMutation = useMutation(api.masterData.createBundle);
@@ -268,6 +269,15 @@ export default function Builder() {
     } catch (err) {
       setSaveStatus('idle')
       console.error('[Sync] Save error:', err)
+    }
+  }
+
+  const handleSetItemZone = async (itemKey, zoneName) => {
+    if (!id) return
+    try {
+      await setItemZoneMutation({ id: id, itemKey, zoneName })
+    } catch (err) {
+      console.error('setItemZone failed:', err)
     }
   }
 
@@ -1354,6 +1364,7 @@ export default function Builder() {
                 <QuotationCart
                   items={items}
                   zones={quotation?.zones || []}
+                  onSetItemZone={handleSetItemZone}
                   activeIndex={activeIndex}
                   onSetActive={setActiveIndex}
                   onUpdate={handleUpdate}

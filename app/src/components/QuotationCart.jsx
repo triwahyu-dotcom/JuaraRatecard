@@ -193,8 +193,112 @@ function NumInput({ value, onChange, w = '100%', highlight = false, row, col, on
   )
 }
 
+function ZonePicker({ currentZone, zones = [], onSelect }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
+
+  const isValid = zones.some(z => z.name === currentZone)
+  const isOrphan = currentZone && !isValid
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%', padding: '4px 8px', border: '1px solid var(--border)',
+          borderRadius: 3, fontSize: 11, cursor: 'pointer', textAlign: 'left',
+          background: 'transparent', display: 'flex', alignItems: 'center', gap: 6,
+          transition: 'all 0.2s', color: isOrphan ? 'var(--yellow)' : (currentZone ? 'var(--text)' : 'var(--text-3)'),
+          fontStyle: currentZone ? 'normal' : 'italic'
+        }}
+        onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+        onMouseLeave={e => e.target.style.background = 'transparent'}
+      >
+        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {isOrphan ? `⚠️ ${currentZone}` : (currentZone ? `🎯 ${currentZone}` : '➕ assign zone')}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', left: 0, 
+          background: 'var(--surface)', border: '1px solid var(--border)',
+          borderRadius: 4, minWidth: 180, zIndex: 100,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.3)', padding: '4px 0'
+        }}>
+          <button 
+            onClick={() => { console.log('Create zone — TODO Phase 2'); setIsOpen(false); }}
+            style={{ 
+              width: '100%', padding: '6px 12px', fontSize: 11, textAlign: 'left',
+              background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--vercel-blue)',
+              fontWeight: 600
+            }}
+            onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+            onMouseLeave={e => e.target.style.background = 'transparent'}
+          >
+            ➕ Buat zone baru
+          </button>
+          
+          {currentZone && (
+            <>
+              <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
+              <button 
+                onClick={() => { onSelect(null); setIsOpen(false); }}
+                style={{ 
+                  width: '100%', padding: '6px 12px', fontSize: 11, textAlign: 'left',
+                  background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--red)'
+                }}
+                onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+                onMouseLeave={e => e.target.style.background = 'transparent'}
+              >
+                ✕ Hapus assignment
+              </button>
+            </>
+          )}
+
+          <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
+          
+          {zones.length === 0 ? (
+            <div style={{ padding: '8px 12px', fontSize: 10, color: 'var(--text-3)', textAlign: 'center' }}>
+              Belum ada zone
+            </div>
+          ) : (
+            zones.map(z => (
+              <button 
+                key={z.name}
+                onClick={() => { onSelect(z.name); setIsOpen(false); }}
+                style={{ 
+                  width: '100%', padding: '6px 12px', fontSize: 11, textAlign: 'left',
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  color: 'var(--text)'
+                }}
+                onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+                onMouseLeave={e => e.target.style.background = 'transparent'}
+              >
+                <span>{z.name}</span>
+                {currentZone === z.name && <span style={{ color: 'var(--vercel-blue)' }}>✓</span>}
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ── Sortable row wrapper ── */
-function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, colWidths, masterZones, masterItems, onKeyDown, items, remoteCursors, onFocusCell, comments, onComment, onEditingKey }) {
+function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, colWidths, masterZones, masterItems, onKeyDown, items, remoteCursors, onFocusCell, comments, onComment, onEditingKey, zones, onSetItemZone }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const isActive = activeIndex === rowIndex
 
@@ -241,13 +345,15 @@ function SortableRow({ id, item, rowIndex, activeIndex, onSetActive, onUpdate, o
         comments={comments}
         onComment={onComment}
         onEditingKey={onEditingKey}
+        zones={zones}
+        onSetItemZone={onSetItemZone}
       />
     </tr>
   )
 }
 
 /* ── The actual cell content ── */
-function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, dragHandleProps, colWidths, masterItems = [], onKeyDown, items = [], remoteCursors = {}, onFocusCell, comments = [], onComment, onEditingKey }) {
+function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicate, onAddBelow, onEnterKey, dragHandleProps, colWidths, masterItems = [], onKeyDown, items = [], remoteCursors = {}, onFocusCell, comments = [], onComment, onEditingKey, zones = [], onSetItemZone }) {
   const key = item._ratecard_key
   const lockEdit = () => onEditingKey?.(key, true)
   const unlockEdit = () => onEditingKey?.(key, false)
@@ -271,8 +377,15 @@ function ItemRowCells({ item, rowIndex, onUpdate, onCommit, onRemove, onDuplicat
 
   return (
     <>
-      <td style={{ ...TD, width: 22, color: 'var(--text-3)', verticalAlign: 'middle' }} {...dragHandleProps}>
+      <td style={{ ...TD, width: 40, verticalAlign: 'middle' }} {...dragHandleProps}>
         <div style={{ cursor: 'grab', userSelect: 'none', padding: '4px' }}>⠿</div>
+      </td>
+      <td style={{ ...TD, width: 140, verticalAlign: 'middle' }}>
+        <ZonePicker
+          currentZone={item.zone_name}
+          zones={zones}
+          onSelect={(newZoneName) => onSetItemZone(item._ratecard_key, newZoneName)}
+        />
       </td>
 
       {/* ── ITEM NAME & SPECS (SINGLE LINE) ── */}
@@ -549,7 +662,7 @@ function SectionHeaderRow({ sec, secTotal, onAddToSection, onRenameSection, sect
   return (
     <tr style={{ background: 'var(--bg-2)' }}>
       <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--border)' }}></td>
-      <td colSpan={7} style={{ padding: '4px 12px', borderBottom: '1px solid var(--border)' }}>
+      <td colSpan={8} style={{ padding: '4px 12px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {sec !== sectionName && sec !== '_' && (
             <span style={{ 
@@ -589,7 +702,7 @@ function SubcategoryHeaderRow({ name }) {
   return (
     <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
       <td style={{ padding: '4px 8px' }}></td>
-      <td colSpan={8} style={{ padding: '6px 32px' }}>
+      <td colSpan={9} style={{ padding: '6px 32px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 4, height: 12, background: 'var(--accent)', borderRadius: 2 }}></div>
           <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
@@ -633,7 +746,7 @@ function ZoneHeaderRow({ zoneName, subtotal, indent = false, isOrphan = false })
   const isUnallocated = !zoneName
   return (
     <tr>
-      <td colSpan={10}
+      <td colSpan={11}
         style={{
           background: 'var(--surface-2)',
           padding: indent ? '7px 12px 7px 32px' : '7px 12px 7px 12px',
@@ -673,7 +786,8 @@ export default function QuotationCart({
   onFocusCell, 
   comments = [], 
   onComment, 
-  onEditingKey 
+  onEditingKey,
+  onSetItemZone 
 }) {
   const [activeId, setActiveId] = useState(null)
   const [colWidths, setColWidths] = useState(() => {
@@ -847,8 +961,9 @@ export default function QuotationCart({
         <div style={{ flex: 1, overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
-              <tr>
+              <tr style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
                 <ColH w={40} center noResize>#</ColH>
+                <ColH w={140} noResize>Zone</ColH>
                 <ColH w={colWidths.item} onResize={(e) => handleResizeStart(e, 'item')}>Service / Item</ColH>
                 <ColH w={colWidths.qty} center onResize={(e) => handleResizeStart(e, 'qty')}>Qty</ColH>
                 <ColH w={colWidths.freq} center onResize={(e) => handleResizeStart(e, 'freq')}>Freq</ColH>
@@ -906,6 +1021,8 @@ export default function QuotationCart({
                                   comments={comments}
                                   onComment={onComment}
                                   onEditingKey={onEditingKey}
+                                  zones={zones}
+                                  onSetItemZone={onSetItemZone}
                                 />
                               )
                             })}
@@ -962,6 +1079,8 @@ export default function QuotationCart({
                                     comments={comments}
                                     onComment={onComment}
                                     onEditingKey={onEditingKey}
+                                    zones={zones}
+                                    onSetItemZone={onSetItemZone}
                                   />
                                 )
                               })}
@@ -1005,6 +1124,8 @@ export default function QuotationCart({
                               comments={comments}
                               onComment={onComment}
                               onEditingKey={onEditingKey}
+                              zones={zones}
+                              onSetItemZone={onSetItemZone}
                             />
                           )
                         })}
@@ -1051,6 +1172,8 @@ export default function QuotationCart({
                   onEnterKey={() => {}}
                   onKeyDown={() => {}}
                   items={items}
+                  zones={zones}
+                  onSetItemZone={() => {}}
                 />
               </tbody>
             </table>
