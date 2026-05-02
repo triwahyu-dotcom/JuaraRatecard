@@ -9,7 +9,10 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
-import { calcLineCost, calcLineSell, calcAllSectionSellTotals, calcVendorTax, getUniqueSections } from '../utils/calc'
+import { 
+  calcLineCost, calcLineSell, calcAllSectionSellTotals, calcVendorTax, getUniqueSections,
+  getUniqueZones, calcAllZoneSellTotals 
+} from '../utils/calc'
 import { fmtRp } from '../utils/fmt'
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -164,7 +167,11 @@ function NumInput({ value, onChange, w = '100%', highlight = false, row, col, on
         }}
         onKeyDown={onKeyDown}
         onBlur={onBlur}
-        onFocus={onFocus}
+        onFocus={e => { 
+          e.target.style.borderColor = 'var(--vercel-blue)'; 
+          e.target.style.background = 'var(--surface)'; 
+          onFocus?.() 
+        }}
         data-row={row}
         data-col={col}
         className="cell-input"
@@ -181,7 +188,6 @@ function NumInput({ value, onChange, w = '100%', highlight = false, row, col, on
         }}
         onMouseEnter={e => e.target.style.borderColor = 'var(--border)'}
         onMouseLeave={e => { if (document.activeElement !== e.target) e.target.style.borderColor = 'transparent' }}
-        onFocus={e => { e.target.style.borderColor = 'var(--vercel-blue)'; e.target.style.background = 'var(--surface)'; onFocus?.() }}
       />
     </div>
   )
@@ -599,7 +605,76 @@ function SubcategoryHeaderRow({ name }) {
 
 const TD = { padding: '4px 8px', borderBottom: '1px solid var(--border)', position: 'relative' }
 
-export default function QuotationCart({ items, activeIndex, onSetActive, onUpdate, onCommit, onRemove, onDuplicate, onAddCustom, onReorder, onRenameSection, remoteCursors = {}, onFocusCell, comments = [], onComment, onEditingKey }) {
+function GroupByToggle({ value, onChange }) {
+  const options = [
+    { key: 'hybrid', label: 'Hybrid' },
+    { key: 'pure_zone', label: 'Group by Zone' },
+    { key: 'pure_section', label: 'Group by Section' },
+  ]
+  return (
+    <div style={{ display: 'flex', gap: 4, padding: '8px 32px', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
+      {options.map(opt => (
+        <button key={opt.key} onClick={() => onChange(opt.key)}
+          style={{
+            padding: '4px 12px', fontSize: 10, borderRadius: 4,
+            background: value === opt.key ? 'var(--surface-2)' : 'transparent',
+            border: `1px solid ${value === opt.key ? 'var(--text)' : 'var(--border)'}`,
+            color: value === opt.key ? 'var(--text)' : 'var(--text-3)',
+            cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.02em'
+          }}>
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function ZoneHeaderRow({ zoneName, subtotal, indent = false, isOrphan = false }) {
+  const isUnallocated = !zoneName
+  return (
+    <tr>
+      <td colSpan={10}
+        style={{
+          background: 'var(--surface-2)',
+          padding: indent ? '7px 12px 7px 32px' : '7px 12px 7px 12px',
+          borderBottom: '1px solid var(--border)',
+          fontWeight: 600,
+          fontSize: 12,
+          color: isUnallocated ? 'var(--text-3)' : 'var(--text)',
+          fontStyle: isUnallocated ? 'italic' : 'normal',
+        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>{isUnallocated ? '(Belum dialokasikan)' : `🎯 ${zoneName}`}</span>
+          {isOrphan && (
+            <span title="Zone name not found in settings" style={{ fontSize: 10, filter: 'grayscale(1)' }}>⚠️</span>
+          )}
+          <span style={{ marginLeft: 'auto', color: 'var(--vercel-blue)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+            Rp {(subtotal || 0).toLocaleString('id-ID')}
+          </span>
+        </div>
+      </td>
+    </tr>
+  )
+}
+
+export default function QuotationCart({ 
+  items, 
+  zones = [],
+  activeIndex, 
+  onSetActive, 
+  onUpdate, 
+  onCommit, 
+  onRemove, 
+  onDuplicate, 
+  onAddCustom, 
+  onReorder, 
+  onRenameSection, 
+  remoteCursors = {}, 
+  onFocusCell, 
+  comments = [], 
+  onComment, 
+  onEditingKey 
+}) {
   const [activeId, setActiveId] = useState(null)
   const [colWidths, setColWidths] = useState(() => {
     try {
@@ -611,6 +686,16 @@ export default function QuotationCart({ items, activeIndex, onSetActive, onUpdat
       return { item: 420, qty: 80, freq: 80, hpp: 120, tax: 90, margin: 50, sell: 120, subtotal: 120, actions: 80 }
     }
   })
+
+  const [groupBy, setGroupBy] = useState(() => {
+    try {
+      return localStorage.getItem('quotation_groupby') || 'hybrid'
+    } catch { return 'hybrid' }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('quotation_groupby', groupBy) } catch {}
+  }, [groupBy])
 
   // --- KEYBOARD NAVIGATION ENGINE ---
   const handleKeyDown = (e) => {
@@ -757,6 +842,7 @@ export default function QuotationCart({ items, activeIndex, onSetActive, onUpdat
         boxShadow: 'var(--shadow-sm)', margin: 0
       }}>
         <CartHeader itemCount={items.length} />
+        <GroupByToggle value={groupBy} onChange={setGroupBy} />
         
         <div style={{ flex: 1, overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
@@ -776,57 +862,156 @@ export default function QuotationCart({ items, activeIndex, onSetActive, onUpdat
             </thead>
             <tbody>
               <SortableContext items={items.map(i => i._ratecard_key)} strategy={verticalListSortingStrategy}>
-                {uniqueSections.map(s => {
-                  const sec = s.code
-                  const secItems = items.filter(i => (i.section_code || i.section || '_') === sec)
-                  
-                  // Group by subcategory
-                  const subGroups = secItems.reduce((acc, item) => {
-                    const sub = item.subcategory || item.sub_category || ''
-                    if (!acc[sub]) acc[sub] = []
-                    acc[sub].push(item)
-                    return acc
-                  }, {})
+                {(groupBy === 'pure_section' || (groupBy === 'hybrid' && zones.length === 0)) && (
+                  uniqueSections.map(s => {
+                    const sec = s.code
+                    const secItems = items.filter(i => (i.section_code || i.section || '_') === sec)
+                    
+                    // Group by subcategory
+                    const subGroups = secItems.reduce((acc, item) => {
+                      const sub = item.subcategory || item.sub_category || ''
+                      if (!acc[sub]) acc[sub] = []
+                      acc[sub].push(item)
+                      return acc
+                    }, {})
 
-                  return (
-                    <Fragment key={sec}>
-                      <SectionHeaderRow 
-                        sec={sec} 
-                        secTotal={sectionTotals[sec] || 0} 
-                        sectionName={s.name || secItems[0]?.section_name || ''} 
-                        onAddToSection={() => onAddCustom(sec)} 
-                        onRenameSection={onRenameSection} 
-                      />
-                      {Object.entries(subGroups).map(([subName, subItems]) => (
-                        <Fragment key={`${sec}-${subName}`}>
-                          {subName && <SubcategoryHeaderRow name={subName} />}
-                          {subItems.map(item => {
-                            const globalIdx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
-                            return (
-                              <SortableRow key={item._ratecard_key} id={item._ratecard_key} 
-                                item={item} rowIndex={globalIdx} 
-                                activeIndex={activeIndex}
-                                onSetActive={onSetActive}
-                                onUpdate={onUpdate} onCommit={onCommit} onRemove={onRemove} 
-                                onDuplicate={onDuplicate} 
-                                onAddBelow={() => handleAddBelow(item._ratecard_key)} 
-                                onEnterKey={() => handleAddBelow(item._ratecard_key)} 
-                                colWidths={colWidths} masterItems={masterItems}
-                                onKeyDown={handleKeyDown}
-                                items={items}
-                                remoteCursors={remoteCursors}
-                                onFocusCell={onFocusCell}
-                                comments={comments}
-                                onComment={onComment}
-                                onEditingKey={onEditingKey}
+                    return (
+                      <Fragment key={sec}>
+                        <SectionHeaderRow 
+                          sec={sec} 
+                          secTotal={sectionTotals[sec] || 0} 
+                          sectionName={s.name || secItems[0]?.section_name || ''} 
+                          onAddToSection={() => onAddCustom(sec)} 
+                          onRenameSection={onRenameSection} 
+                        />
+                        {Object.entries(subGroups).map(([subName, subItems]) => (
+                          <Fragment key={`${sec}-${subName}`}>
+                            {subName && <SubcategoryHeaderRow name={subName} />}
+                            {subItems.map(item => {
+                              const globalIdx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
+                              return (
+                                <SortableRow key={item._ratecard_key} id={item._ratecard_key} 
+                                  item={item} rowIndex={globalIdx} 
+                                  activeIndex={activeIndex}
+                                  onSetActive={onSetActive}
+                                  onUpdate={onUpdate} onCommit={onCommit} onRemove={onRemove} 
+                                  onDuplicate={onDuplicate} 
+                                  onAddBelow={() => handleAddBelow(item._ratecard_key)} 
+                                  onEnterKey={() => handleAddBelow(item._ratecard_key)} 
+                                  colWidths={colWidths} masterItems={masterItems}
+                                  onKeyDown={handleKeyDown}
+                                  items={items}
+                                  remoteCursors={remoteCursors}
+                                  onFocusCell={onFocusCell}
+                                  comments={comments}
+                                  onComment={onComment}
+                                  onEditingKey={onEditingKey}
+                                />
+                              )
+                            })}
+                          </Fragment>
+                        ))}
+                      </Fragment>
+                    )
+                  })
+                )}
+
+                {groupBy === 'hybrid' && zones.length > 0 && (
+                  uniqueSections.map(s => {
+                    const sec = s.code
+                    const secItems = items.filter(i => (i.section_code || i.section || '_') === sec)
+                    const sectionZones = getUniqueZones(secItems, zones)
+                    const zoneTotalsInSection = calcAllZoneSellTotals(secItems)
+                    
+                    return (
+                      <Fragment key={sec}>
+                        <SectionHeaderRow 
+                          sec={sec} 
+                          secTotal={sectionTotals[sec] || 0} 
+                          sectionName={s.name || secItems[0]?.section_name || ''} 
+                          onAddToSection={() => onAddCustom(sec)} 
+                          onRenameSection={onRenameSection} 
+                        />
+                        {sectionZones.map(z => {
+                          const zoneItems = secItems.filter(i => (i.zone_name || null) === z.name)
+                          if (zoneItems.length === 0) return null
+                          return (
+                            <Fragment key={`${sec}-${z.name || '_unallocated'}`}>
+                              <ZoneHeaderRow 
+                                zoneName={z.name} 
+                                subtotal={zoneTotalsInSection[z.name || '_unallocated']} 
+                                indent={true} 
+                                isOrphan={z.isOrphan}
                               />
-                            )
-                          })}
-                        </Fragment>
-                      ))}
-                    </Fragment>
-                  )
-                })}
+                              {zoneItems.map(item => {
+                                const globalIdx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
+                                return (
+                                  <SortableRow key={item._ratecard_key} id={item._ratecard_key} 
+                                    item={item} rowIndex={globalIdx} 
+                                    activeIndex={activeIndex}
+                                    onSetActive={onSetActive}
+                                    onUpdate={onUpdate} onCommit={onCommit} onRemove={onRemove} 
+                                    onDuplicate={onDuplicate} 
+                                    onAddBelow={() => handleAddBelow(item._ratecard_key)} 
+                                    onEnterKey={() => handleAddBelow(item._ratecard_key)} 
+                                    colWidths={colWidths} masterItems={masterItems}
+                                    onKeyDown={handleKeyDown}
+                                    items={items}
+                                    remoteCursors={remoteCursors}
+                                    onFocusCell={onFocusCell}
+                                    comments={comments}
+                                    onComment={onComment}
+                                    onEditingKey={onEditingKey}
+                                  />
+                                )
+                              })}
+                            </Fragment>
+                          )
+                        })}
+                      </Fragment>
+                    )
+                  })
+                )}
+
+                {groupBy === 'pure_zone' && (() => {
+                  const allZones = getUniqueZones(items, zones)
+                  const zoneTotals = calcAllZoneSellTotals(items)
+                  return allZones.map(z => {
+                    const zoneItems = items.filter(i => (i.zone_name || null) === z.name)
+                    if (zoneItems.length === 0) return null
+                    return (
+                      <Fragment key={z.name || '_unallocated'}>
+                        <ZoneHeaderRow 
+                          zoneName={z.name} 
+                          subtotal={zoneTotals[z.name || '_unallocated']} 
+                          isOrphan={z.isOrphan}
+                        />
+                        {zoneItems.map(item => {
+                          const globalIdx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
+                          return (
+                            <SortableRow key={item._ratecard_key} id={item._ratecard_key} 
+                              item={item} rowIndex={globalIdx} 
+                              activeIndex={activeIndex}
+                              onSetActive={onSetActive}
+                              onUpdate={onUpdate} onCommit={onCommit} onRemove={onRemove} 
+                              onDuplicate={onDuplicate} 
+                              onAddBelow={() => handleAddBelow(item._ratecard_key)} 
+                              onEnterKey={() => handleAddBelow(item._ratecard_key)} 
+                              colWidths={colWidths} masterItems={masterItems}
+                              onKeyDown={handleKeyDown}
+                              items={items}
+                              remoteCursors={remoteCursors}
+                              onFocusCell={onFocusCell}
+                              comments={comments}
+                              onComment={onComment}
+                              onEditingKey={onEditingKey}
+                            />
+                          )
+                        })}
+                      </Fragment>
+                    )
+                  })
+                })()}
               </SortableContext>
             </tbody>
           </table>

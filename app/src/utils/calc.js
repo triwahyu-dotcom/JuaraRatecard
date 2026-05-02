@@ -239,3 +239,46 @@ export function getUniqueSections(items) {
     return orderA - orderB;
   });
 }
+
+// Mirror getUniqueSections, tapi untuk zones
+export function getUniqueZones(items, zones) {
+  const validZoneNames = new Set((zones || []).map(z => z.name));
+  const seenZones = new Set();
+  const result = [];
+  
+  // First: tambahkan zones yang ada di quotation.zones (urut by zones[].order)
+  (zones || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0)).forEach(z => {
+    const hasItems = items.some(i => i.zone_name === z.name);
+    if (hasItems) {
+      result.push({ name: z.name, order: z.order || 0 });
+      seenZones.add(z.name);
+    }
+  });
+  
+  // Second: tambahkan orphan zones (zone_name yang ada di items tapi tidak di zones[])
+  // Letakkan setelah valid zones, sebelum unallocated
+  items.forEach(item => {
+    if (item.zone_name && !validZoneNames.has(item.zone_name) && !seenZones.has(item.zone_name)) {
+      result.push({ name: item.zone_name, order: 998, isOrphan: true });
+      seenZones.add(item.zone_name);
+    }
+  });
+  
+  // Last: bucket "Belum dialokasikan" kalau ada item dengan zone_name null/undefined
+  if (items.some(i => !i.zone_name)) {
+    result.push({ name: null, order: 999 });
+  }
+  
+  return result;
+}
+
+// Mirror calcAllSectionSellTotals, tapi group by zone_name
+export function calcAllZoneSellTotals(items) {
+  const totals = {};
+  items.forEach(item => {
+    const zoneKey = item.zone_name || '_unallocated';
+    if (!totals[zoneKey]) totals[zoneKey] = 0;
+    totals[zoneKey] += calcLineSell(item);
+  });
+  return totals;
+}

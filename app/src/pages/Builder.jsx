@@ -1353,6 +1353,7 @@ export default function Builder() {
               <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <QuotationCart
                   items={items}
+                  zones={quotation?.zones || []}
                   activeIndex={activeIndex}
                   onSetActive={setActiveIndex}
                   onUpdate={handleUpdate}
