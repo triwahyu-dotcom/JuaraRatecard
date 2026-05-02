@@ -79,7 +79,7 @@ export default function ZoneManager({
       const newZone = { id: generateZoneId(), name, order: localZones.length, color: null, note: null }
       const previousZones = localZones
       const newArr = [...localZones, newZone]
-      
+
       setLocalZones(newArr)
       setAddInput('')
       setIsAdding(false)
@@ -167,7 +167,7 @@ export default function ZoneManager({
       {/* Header */}
       <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Zones</h3>
-        <button 
+        <button
           onClick={() => setIsAdding(true)}
           style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', padding: '4px 8px', color: 'var(--text)' }}
         >
@@ -204,9 +204,9 @@ export default function ZoneManager({
               autoFocus
               value={addInput}
               onChange={(e) => setAddInput(e.target.value)}
-              onKeyDown={(e) => { 
-                if (e.key === 'Enter') handleAddZone(); 
-                if (e.key === 'Escape') setIsAdding(false) 
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAddZone();
+                if (e.key === 'Escape') setIsAdding(false)
               }}
               onBlur={handleAddZone}
               placeholder="Nama zona baru..."
@@ -222,7 +222,7 @@ export default function ZoneManager({
         )}
 
         {/* Unallocated Bucket */}
-        <UnallocatedRow 
+        <UnallocatedRow
           isActive={activeZoneName === null}
           itemCount={getItemCount(null)}
           onSelect={() => onActiveZoneChange(null)}
@@ -238,7 +238,7 @@ export default function ZoneManager({
 
       {/* Delete Modal */}
       {deletingZone && (
-        <DeleteModal 
+        <DeleteModal
           zone={deletingZone}
           otherZones={localZones.filter(z => z.name !== deletingZone.name)}
           reassignTo={reassignTo}
@@ -254,7 +254,7 @@ export default function ZoneManager({
 
 function SortableZoneRow({ zone, isActive, itemCount, onSelect, isEditing, onStartRename, renameInput, onRenameChange, onRenameCommit, onRenameCancel, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: zone.id })
-  
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -269,13 +269,13 @@ function SortableZoneRow({ zone, isActive, itemCount, onSelect, isEditing, onSta
   if (isEditing) {
     return (
       <div ref={setNodeRef} style={{ ...style, padding: '4px 12px' }}>
-        <input 
+        <input
           autoFocus
           value={renameInput}
           onChange={(e) => onRenameChange(e.target.value)}
-          onKeyDown={(e) => { 
-            if (e.key === 'Enter') onRenameCommit(); 
-            if (e.key === 'Escape') onRenameCancel() 
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onRenameCommit();
+            if (e.key === 'Escape') onRenameCancel()
           }}
           onBlur={onRenameCommit}
           style={{ width: '100%', padding: '4px 8px', background: 'var(--bg)', border: '1px solid var(--vercel-blue)', borderRadius: 4, color: 'var(--text)' }}
@@ -302,7 +302,7 @@ function SortableZoneRow({ zone, isActive, itemCount, onSelect, isEditing, onSta
 
 function UnallocatedRow({ isActive, itemCount, onSelect }) {
   return (
-    <div 
+    <div
       onClick={onSelect}
       style={{
         display: 'flex', alignItems: 'center', padding: '12px 16px', marginTop: 8,
@@ -324,12 +324,16 @@ function ActionBtn({ children, onClick, danger }) {
   return (
     <button
       onClick={onClick}
+      onPointerDown={(e) => e.stopPropagation()}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
         background: hover ? (danger ? 'var(--red)' : 'var(--surface)') : 'transparent',
-        border: '1px solid var(--border)', borderRadius: 4,
-        padding: '2px 4px', fontSize: 12, cursor: 'pointer',
+        border: '1px solid var(--border)',
+        borderRadius: 4,
+        padding: '2px 4px',
+        fontSize: 12,
+        cursor: 'pointer',
         color: hover && danger ? 'white' : 'var(--text-3)',
         transition: 'all 0.1s'
       }}
@@ -344,14 +348,14 @@ function DeleteModal({ zone, otherZones, reassignTo, onReassignChange, onConfirm
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: 24, width: '100%', maxWidth: 400, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)' }}>
         <h4 style={{ margin: '0 0 16px 0', fontSize: 16 }}>Hapus zone "{zone.name}"?</h4>
-        
+
         {itemCount > 0 && (
           <div style={{ marginBottom: 20 }}>
             <p style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 8 }}>
               {itemCount} item akan dipindahkan. Pilih zone tujuan:
             </p>
-            <select 
-              value={reassignTo || ''} 
+            <select
+              value={reassignTo || ''}
               onChange={(e) => onReassignChange(e.target.value || null)}
               style={{ width: '100%', padding: '8px', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: 4 }}
             >
@@ -360,7 +364,7 @@ function DeleteModal({ zone, otherZones, reassignTo, onReassignChange, onConfirm
             </select>
           </div>
         )}
-        
+
         {itemCount === 0 && <p style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 20 }}>Konfirmasi hapus zone ini?</p>}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>

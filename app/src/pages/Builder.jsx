@@ -19,6 +19,7 @@ import AIEstimatorPanel from '../components/AIEstimatorPanel'
 import { suggestBundlesAI } from '../lib/aiEstimator'
 import { useRef } from 'react'
 import ActivitySidebar from '../components/ActivitySidebar'
+import ZoneManager from '../components/ZoneManager'
 
 
 const STEPS = [
@@ -79,6 +80,9 @@ export default function Builder() {
 
   const [historyLogs, setHistoryLogs] = useState([])
   const [showActivities, setShowActivities] = useState(false)
+  
+  const [activeZoneName, setActiveZoneName] = useState(null)
+  useEffect(() => { setActiveZoneName(null) }, [id])
   const fileInputRef = useRef(null)
   // Track which row keys are actively being typed in — protect from remote sync overwrite
   const editingKeysRef = useRef(new Set())
@@ -350,6 +354,7 @@ export default function Builder() {
       unit_cost: ratecardItem.unit_cost || 0,
       unit_sell: ratecardItem.unit_sell || 0,
       is_complimentary: false,
+      zone_name: activeZoneName,
     }
 
     if (activeIndex !== null && activeIndex >= 0) {
@@ -898,7 +903,22 @@ export default function Builder() {
   })
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }} className="fade-in">
+    <main style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column',
+      paddingLeft: (id && quotation) ? 280 : 0,
+      transition: 'padding-left 0.2s ease'
+    }} className="fade-in">
+      {id && quotation && (
+        <ZoneManager
+          quotationId={id}
+          zones={quotation?.zones || []}
+          items={items}
+          activeZoneName={activeZoneName}
+          onActiveZoneChange={setActiveZoneName}
+        />
+      )}
       {/* EMERGENCY CLEANUP BANNER */}
       {(items || []).some(i => (i.section_name || '').toLowerCase().includes('misc') || (i.category || '').toLowerCase().includes('misc')) && (
         <div style={{
