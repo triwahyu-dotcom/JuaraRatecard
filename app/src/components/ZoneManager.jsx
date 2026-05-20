@@ -20,6 +20,8 @@ export default function ZoneManager({
   items = [],
   activeZoneName,
   onActiveZoneChange,
+  isOpen,
+  onToggle
 }) {
   const updateZones = useMutation(api.quotations.updateZones)
   const renameZone = useMutation(api.quotations.renameZone)
@@ -159,24 +161,23 @@ export default function ZoneManager({
 
   return (
     <div style={{
-      position: 'fixed', left: 0, top: 0, bottom: 0, width: 280,
-      background: 'var(--bg)', borderRight: '1px solid var(--border)',
-      display: 'flex', flexDirection: 'column', zIndex: 100,
-      fontSize: 13, color: 'var(--text)'
+      display: 'flex', flexDirection: 'column', 
+      fontSize: 13, color: 'var(--text)',
+      width: '100%'
     }}>
-      {/* Header */}
-      <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Zones</h3>
+      {/* Header (Simplified for Sidebar) */}
+      <div style={{ padding: '16px 0', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-3)' }}>Zones List</h3>
         <button
           onClick={() => setIsAdding(true)}
-          style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', padding: '4px 8px', color: 'var(--text)' }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', padding: '2px 6px', color: 'var(--text)', fontSize: 9 }}
         >
-          ➕
+          + NEW
         </button>
       </div>
 
       {/* List */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+      <div style={{ flex: 1, padding: '8px 0' }}>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
           <SortableContext items={localZones.map(z => z.id)} strategy={verticalListSortingStrategy}>
             {localZones.map((zone) => (
@@ -199,7 +200,7 @@ export default function ZoneManager({
         </DndContext>
 
         {isAdding && (
-          <div style={{ padding: '8px 16px' }}>
+          <div style={{ padding: '8px 0' }}>
             <input
               autoFocus
               value={addInput}
@@ -209,17 +210,19 @@ export default function ZoneManager({
                 if (e.key === 'Escape') setIsAdding(false)
               }}
               onBlur={handleAddZone}
-              placeholder="Nama zona baru..."
-              style={{ width: '100%', padding: '6px 8px', background: 'var(--surface)', border: '1px solid var(--vercel-blue)', borderRadius: 4, color: 'var(--text)', outline: 'none' }}
+              placeholder="Zone name..."
+              style={{ width: '100%', padding: '6px 10px', background: 'var(--surface)', border: '1px solid var(--vercel-blue)', borderRadius: 6, color: 'var(--text)', outline: 'none', fontSize: 11 }}
             />
           </div>
         )}
 
         {localZones.length === 0 && !isAdding && (
-          <div style={{ padding: 24, textAlign: 'center', color: 'var(--text-3)', fontSize: 12 }}>
-            Belum ada zone. Buat zone untuk mengelompokkan item per aktivitas event.
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--text-3)', fontSize: 10, opacity: 0.5 }}>
+            No zones created.
           </div>
         )}
+
+        <div style={{ height: 1, background: 'var(--border)', margin: '12px 0' }} />
 
         {/* Unallocated Bucket */}
         <UnallocatedRow
@@ -231,7 +234,7 @@ export default function ZoneManager({
 
       {/* Error Footer */}
       {inlineError && (
-        <div style={{ padding: '8px 16px', background: 'var(--red)', color: 'white', fontSize: 11, transition: 'all 0.3s' }}>
+        <div style={{ padding: '8px', background: 'var(--red)', color: 'white', fontSize: 10, fontWeight: 600, borderRadius: 4, marginTop: 8 }}>
           ⚠️ {inlineError}
         </div>
       )}
@@ -287,14 +290,14 @@ function SortableZoneRow({ zone, isActive, itemCount, onSelect, isEditing, onSta
   return (
     <div ref={setNodeRef} style={style} onClick={onSelect}>
       <div {...attributes} {...listeners} style={{ marginRight: 8, cursor: 'grab', opacity: 0.3, fontSize: 16 }}>⋮⋮</div>
-      <div style={{ width: 16, marginRight: 4, color: 'var(--vercel-blue)' }}>{isActive ? '▶' : ''}</div>
-      <div style={{ flex: 1, fontWeight: isActive ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div style={{ width: 12, marginRight: 4, color: 'var(--vercel-blue)', fontSize: 8 }}>{isActive ? '●' : ''}</div>
+      <div style={{ flex: 1, fontWeight: isActive ? 700 : 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: isActive ? 'var(--text)' : 'var(--text-2)' }}>
         {zone.name}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text-3)', marginRight: 8 }}>{itemCount} items</div>
-      <div className="zone-actions" style={{ display: 'flex', gap: 4 }}>
-        <ActionBtn onClick={(e) => { e.stopPropagation(); onStartRename() }}>✏️</ActionBtn>
-        <ActionBtn onClick={(e) => { e.stopPropagation(); onDelete() }} danger>🗑️</ActionBtn>
+      <div style={{ fontSize: 9, color: 'var(--text-3)', marginRight: 12, opacity: 0.7 }}>{itemCount}</div>
+      <div className="zone-actions" style={{ display: 'flex', gap: 2 }}>
+        <ActionBtn onClick={(e) => { e.stopPropagation(); onStartRename() }}>Edit</ActionBtn>
+        <ActionBtn onClick={(e) => { e.stopPropagation(); onDelete() }} danger>Del</ActionBtn>
       </div>
     </div>
   )

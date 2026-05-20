@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import { calcLineSell, calcSummary, calcAllSectionSellTotals, getUniqueSections, getQuotationLines } from './calc';
+import { calcLineSell, calcSummary, calcAllSectionSellTotals, getUniqueSections, getQuotationLines, getUniqueZones, calcAllZoneSellTotals } from './calc';
 import { fmtDate } from './fmt';
 
 const COMPANY = 'PT Juara Berhasil Berkah Sejahtera';
@@ -79,7 +79,7 @@ function subRowStyle(ws, rowNum) {
   }
 }
 
-export async function exportQuotationToXls(quotation) {
+export async function exportQuotationToXls(quotation, layoutMode = 'existing') {
   const rawItems = getQuotationLines(quotation);
   const items = rawItems.filter(i => {
     const name = (i.item_name || '').toLowerCase();
@@ -153,24 +153,45 @@ export async function exportQuotationToXls(quotation) {
   sumSheet.getRow(r).height = 16;
   r++;
 
-  // Section rows
-  sections.forEach((s, i) => {
-    const total = sectionTotals[s.code] || 0;
-    const letter = String.fromCharCode(65 + i);
-    sumSheet.getCell(r, 1).value = letter;
-    sumSheet.getCell(r, 1).alignment = { horizontal: 'center' };
-    sumSheet.getCell(r, 2).value = stripPrefix(s.name) || `Section ${s.code}`;
-    sumSheet.getCell(r, 2).font = { bold: true, size: 9 };
-    sumSheet.mergeCells(r, 2, r, 7);
-    sumSheet.getCell(r, 8).value = total;
-    sumSheet.getCell(r, 8).numFmt = '#,##0';
-    sumSheet.getCell(r, 8).alignment = { horizontal: 'right' };
-    sumSheet.getCell(r, 9).value = total;
-    sumSheet.getCell(r, 9).numFmt = '#,##0';
-    sumSheet.getCell(r, 9).alignment = { horizontal: 'right' };
-    for (let c = 1; c <= 9; c++) applyBorder(sumSheet.getCell(r, c));
-    r++;
-  });
+  // Section or Zone rows
+  if (layoutMode === 'pure_zone') {
+    const zones = getUniqueZones(items, eventData.zones || []);
+    const zoneTotals = calcAllZoneSellTotals(items);
+    zones.forEach((z, i) => {
+      const total = zoneTotals[z.name || '_unallocated'] || 0;
+      sumSheet.getCell(r, 1).value = String(i + 1);
+      sumSheet.getCell(r, 1).alignment = { horizontal: 'center' };
+      sumSheet.getCell(r, 2).value = (z.name || '(BELUM DIALOKASIKAN)').toUpperCase();
+      sumSheet.getCell(r, 2).font = { bold: true, size: 9 };
+      sumSheet.mergeCells(r, 2, r, 7);
+      sumSheet.getCell(r, 8).value = total;
+      sumSheet.getCell(r, 8).numFmt = '#,##0';
+      sumSheet.getCell(r, 8).alignment = { horizontal: 'right' };
+      sumSheet.getCell(r, 9).value = total;
+      sumSheet.getCell(r, 9).numFmt = '#,##0';
+      sumSheet.getCell(r, 9).alignment = { horizontal: 'right' };
+      for (let c = 1; c <= 9; c++) applyBorder(sumSheet.getCell(r, c));
+      r++;
+    });
+  } else {
+    sections.forEach((s, i) => {
+      const total = sectionTotals[s.code] || 0;
+      const letter = String.fromCharCode(65 + i);
+      sumSheet.getCell(r, 1).value = letter;
+      sumSheet.getCell(r, 1).alignment = { horizontal: 'center' };
+      sumSheet.getCell(r, 2).value = stripPrefix(s.name) || `Section ${s.code}`;
+      sumSheet.getCell(r, 2).font = { bold: true, size: 9 };
+      sumSheet.mergeCells(r, 2, r, 7);
+      sumSheet.getCell(r, 8).value = total;
+      sumSheet.getCell(r, 8).numFmt = '#,##0';
+      sumSheet.getCell(r, 8).alignment = { horizontal: 'right' };
+      sumSheet.getCell(r, 9).value = total;
+      sumSheet.getCell(r, 9).numFmt = '#,##0';
+      sumSheet.getCell(r, 9).alignment = { horizontal: 'right' };
+      for (let c = 1; c <= 9; c++) applyBorder(sumSheet.getCell(r, c));
+      r++;
+    });
+  }
 
   r++; // blank
 
@@ -253,149 +274,299 @@ export async function exportQuotationToXls(quotation) {
   dr++;
 
   // Build rows matching PDF detail page logic
-  const sectionTotalRows = []; // track section total row numbers for Subtotal SUM
+  const sectionTotalRows = []; // track total row numbers for Subtotal SUM
 
-  sections.forEach((sec, secIdx) => {
-    const secItems = items.filter(i => (i.section_code || i.section || '_') === sec.code);
-    if (secItems.length === 0) return;
+  if (layoutMode === 'pure_zone') {
+    const allZones = getUniqueZones(items, eventData.zones || []);
+    const zoneTotals = calcAllZoneSellTotals(items);
 
-    const secLetter = String.fromCharCode(65 + secIdx);
-    const secName = stripPrefix(sec.name || `Section ${sec.code}`).replace(/^Set \d+ - /i, '');
-    const secNameNorm = secName.toLowerCase().trim();
+    allZones.forEach((z, zIdx) => {
+      const zItems = items.filter(i => (i.zone_name || null) === z.name);
+      if (zItems.length === 0) return;
 
-    // Section header row
-    detSheet.getCell(dr, 1).value = secLetter;
-    detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
-    detSheet.getCell(dr, 2).value = secName.toUpperCase();
-    detSheet.mergeCells(dr, 2, dr, 9);
-    sectionRowStyle(detSheet, dr);
-    detSheet.getRow(dr).height = 16;
-    dr++;
+      const zoneCode = String(zIdx + 1);
+      
+      // Zone Header Row
+      detSheet.getCell(dr, 1).value = zoneCode;
+      detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+      detSheet.getCell(dr, 2).value = (z.name || '(BELUM DIALOKASIKAN)').toUpperCase();
+      detSheet.mergeCells(dr, 2, dr, 9);
+      sectionRowStyle(detSheet, dr);
+      detSheet.getRow(dr).height = 16;
+      dr++;
 
-    const itemRowsInSection = [];
-    const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
+      const itemRowsInZone = [];
+      const categories = [...new Set(zItems.map(i => i.category).filter(Boolean))];
 
-    // Detect redundant category: all categories have same stripped name as section
-    const isRedundant = categories.length > 0 &&
-      categories.every(c => stripPrefix(c).toLowerCase().trim() === secNameNorm);
-
-    if (isRedundant) {
-      // SKIP category level — use sub_categories as A.1/A.2, items as A.1.1
-      const allCatItems = secItems.filter(i => i.category); // all items under these cats
-      const subCategories = [...new Set(allCatItems.map(i => i.sub_category).filter(Boolean))];
-      const noSubItems = allCatItems.filter(i => !i.sub_category);
-      let l1 = 1;
-
-      subCategories.forEach(sub => {
-        const code = `${secLetter}.${l1}`;
-        const subItems = allCatItems.filter(i => i.sub_category === sub);
-
-        // Sub-category becomes the A.1 level header
-        detSheet.getCell(dr, 1).value = code;
-        detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
-        detSheet.getCell(dr, 2).value = stripPrefix(sub).toUpperCase();
-        detSheet.mergeCells(dr, 2, dr, 9);
-        catRowStyle(detSheet, dr);
-        detSheet.getRow(dr).height = 15;
-        dr++;
-
-        subItems.forEach((item, idx) => {
-          writeItemRow(detSheet, dr, item, `${code}.${idx + 1}`, 1);
-          itemRowsInSection.push(dr);
-          dr++;
-        });
-        l1++;
-      });
-
-      noSubItems.forEach(item => {
-        writeItemRow(detSheet, dr, item, `${secLetter}.${l1++}`, 0);
-        itemRowsInSection.push(dr);
-        dr++;
-      });
-
-      // Items with no category at all
-      secItems.filter(i => !i.category).forEach((item, idx) => {
-        writeItemRow(detSheet, dr, item, `${secLetter}.${l1++}`, 0);
-        itemRowsInSection.push(dr);
-        dr++;
-      });
-
-    } else if (categories.length > 0) {
-      // Normal: Category → Sub-category → Items
       categories.forEach((cat, catIdx) => {
-        const catCode = `${secLetter}.${catIdx + 1}`;
-        const catItems = secItems.filter(i => i.category === cat);
+        const catCode = `${zoneCode}.${catIdx + 1}`;
+        const catItems = zItems.filter(i => i.category === cat);
 
         detSheet.getCell(dr, 1).value = catCode;
         detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
         detSheet.getCell(dr, 2).value = stripPrefix(cat).toUpperCase();
         detSheet.mergeCells(dr, 2, dr, 9);
         catRowStyle(detSheet, dr);
-        detSheet.getRow(dr).height = 15;
         dr++;
 
-        const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))];
-        const noSubItems = catItems.filter(i => !i.sub_category);
+        const subs = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))];
+        const noSubs = catItems.filter(i => !i.sub_category);
         let l2 = 1;
-
-        subCategories.forEach(sub => {
+        subs.forEach(sub => {
           const subCode = `${catCode}.${l2++}`;
           const subItems = catItems.filter(i => i.sub_category === sub);
-
           detSheet.getCell(dr, 1).value = subCode;
-          detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
           detSheet.getCell(dr, 2).value = stripPrefix(sub);
           detSheet.mergeCells(dr, 2, dr, 9);
           subRowStyle(detSheet, dr);
           dr++;
+          subItems.forEach((item, n) => { writeItemRow(detSheet, dr, item, `${subCode}.${n + 1}`, 2); itemRowsInZone.push(dr); dr++; });
+        });
+        noSubs.forEach(item => { writeItemRow(detSheet, dr, item, `${catCode}.${l2++}`, 1); itemRowsInZone.push(dr); dr++; });
+      });
 
-          subItems.forEach((item, itemIdx) => {
-            writeItemRow(detSheet, dr, item, `${subCode}.${itemIdx + 1}`, 2);
+      const noCats = zItems.filter(i => !i.category);
+      noCats.forEach(item => { writeItemRow(detSheet, dr, item, `${zoneCode}.${zItems.length}`, 0); itemRowsInZone.push(dr); dr++; });
+
+      // Zone total row
+      detSheet.mergeCells(dr, 1, dr, 7);
+      detSheet.getCell(dr, 8).value = 'Zone Total';
+      detSheet.getCell(dr, 8).font = { bold: true, size: 9 };
+      detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
+
+      if (itemRowsInZone.length > 0) {
+        const sumParts = itemRowsInZone.map(r => `I${r}`).join(',');
+        detSheet.getCell(dr, 9).value = { formula: `SUM(${sumParts})` };
+      } else {
+        detSheet.getCell(dr, 9).value = 0;
+      }
+      detSheet.getCell(dr, 9).numFmt = '#,##0';
+      detSheet.getCell(dr, 9).font = { bold: true };
+      detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+      detSheet.getCell(dr, 9).border = { top: { style: 'medium', color: { argb: 'FF1a1a1a' } }, bottom: { style: 'medium', color: { argb: 'FF1a1a1a' } } };
+      sectionTotalRows.push(dr);
+      dr += 2;
+    });
+
+  } else {
+    sections.forEach((sec, secIdx) => {
+      const secItems = items.filter(i => (i.section_code || i.section || '_') === sec.code);
+      if (secItems.length === 0) return;
+
+      const secLetter = String.fromCharCode(65 + secIdx);
+      const secName = stripPrefix(sec.name || `Section ${sec.code}`).replace(/^Set \d+ - /i, '');
+      const secNameNorm = secName.toLowerCase().trim();
+
+      // Section header row
+      detSheet.getCell(dr, 1).value = secLetter;
+      detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+      detSheet.getCell(dr, 2).value = secName.toUpperCase();
+      detSheet.mergeCells(dr, 2, dr, 9);
+      sectionRowStyle(detSheet, dr);
+      detSheet.getRow(dr).height = 16;
+      dr++;
+
+      const itemRowsInSection = [];
+      const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))];
+
+      // Detect redundant category: all categories have same stripped name as section
+      const isRedundant = categories.length > 0 &&
+        categories.every(c => stripPrefix(c).toLowerCase().trim() === secNameNorm);
+
+      if (layoutMode === 'hybrid') {
+        const allZones = getUniqueZones(secItems, eventData.zones || []);
+        const zoneTotals = calcAllZoneSellTotals(secItems);
+        const allocatedZones = allZones.filter(z => z.name !== null);
+        const unallocatedItems = secItems.filter(i => !i.zone_name);
+        let zCounter = 1;
+
+        // Helper: write zone items as Zone (A.1) → SubCat (A.1.1) → Item (A.1.1.1)
+        const writeZoneItems = (itemList, zCode) => {
+          const subs = [...new Set(itemList.map(i => i.sub_category).filter(Boolean))];
+          const noSubs = itemList.filter(i => !i.sub_category);
+          let l1 = 1;
+          subs.forEach(sub => {
+            const subCode = `${zCode}.${l1++}`;
+            const subItems = itemList.filter(i => i.sub_category === sub);
+            detSheet.getCell(dr, 1).value = subCode;
+            detSheet.getCell(dr, 2).value = stripPrefix(sub);
+            detSheet.mergeCells(dr, 2, dr, 9);
+            subRowStyle(detSheet, dr);
+            dr++;
+            subItems.forEach((item, n) => { writeItemRow(detSheet, dr, item, `${subCode}.${n + 1}`, 1); itemRowsInSection.push(dr); dr++; });
+          });
+          noSubs.forEach(item => { writeItemRow(detSheet, dr, item, `${zCode}.${l1++}`, 0); itemRowsInSection.push(dr); dr++; });
+        };
+
+        // Helper: write unallocated items as Cat (A.N) → SubCat (A.N.1) → Item (A.N.1.1)
+        const writeUnallocated = (itemList, startCounter) => {
+          const cats = [...new Set(itemList.map(i => i.category).filter(Boolean))];
+          let counter = startCounter;
+          cats.forEach(cat => {
+            const catCode = `${secLetter}.${counter++}`;
+            const catItems = itemList.filter(i => i.category === cat);
+            detSheet.getCell(dr, 1).value = catCode;
+            detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+            detSheet.getCell(dr, 2).value = stripPrefix(cat).toUpperCase();
+            detSheet.mergeCells(dr, 2, dr, 9);
+            catRowStyle(detSheet, dr);
+            dr++;
+            const subs = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))];
+            const noSubs = catItems.filter(i => !i.sub_category);
+            let l2 = 1;
+            subs.forEach(sub => {
+              const subCode = `${catCode}.${l2++}`;
+              const subItems = catItems.filter(i => i.sub_category === sub);
+              detSheet.getCell(dr, 1).value = subCode;
+              detSheet.getCell(dr, 2).value = stripPrefix(sub);
+              detSheet.mergeCells(dr, 2, dr, 9);
+              subRowStyle(detSheet, dr);
+              dr++;
+              subItems.forEach((item, n) => { writeItemRow(detSheet, dr, item, `${subCode}.${n + 1}`, 2); itemRowsInSection.push(dr); dr++; });
+            });
+            noSubs.forEach(item => { writeItemRow(detSheet, dr, item, `${catCode}.${l2++}`, 1); itemRowsInSection.push(dr); dr++; });
+          });
+          const noCats = itemList.filter(i => !i.category);
+          noCats.forEach(item => { writeItemRow(detSheet, dr, item, `${secLetter}.${counter++}`, 0); itemRowsInSection.push(dr); dr++; });
+        };
+
+        allocatedZones.forEach(z => {
+          const zoneItems = secItems.filter(i => i.zone_name === z.name);
+          if (zoneItems.length === 0) return;
+          const zoneCode = `${secLetter}.${zCounter++}`;
+          // Zone Header Row — name only, no ORPHAN/UNALLOCATED labels
+          detSheet.getCell(dr, 1).value = zoneCode;
+          detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+          detSheet.getCell(dr, 2).value = z.name.toUpperCase();
+          detSheet.mergeCells(dr, 2, dr, 9);
+          catRowStyle(detSheet, dr);
+          detSheet.getRow(dr).height = 15;
+          dr++;
+          writeZoneItems(zoneItems, zoneCode);
+        });
+
+        if (unallocatedItems.length > 0) {
+          writeUnallocated(unallocatedItems, zCounter);
+        }
+
+      } else if (isRedundant) {
+        // SKIP category level — use sub_categories as A.1/A.2, items as A.1.1
+        const allCatItems = secItems.filter(i => i.category); // all items under these cats
+        const subCategories = [...new Set(allCatItems.map(i => i.sub_category).filter(Boolean))];
+        const noSubItems = allCatItems.filter(i => !i.sub_category);
+        let l1 = 1;
+
+        subCategories.forEach(sub => {
+          const code = `${secLetter}.${l1}`;
+          const subItems = allCatItems.filter(i => i.sub_category === sub);
+
+          // Sub-category becomes the A.1 level header
+          detSheet.getCell(dr, 1).value = code;
+          detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+          detSheet.getCell(dr, 2).value = stripPrefix(sub).toUpperCase();
+          detSheet.mergeCells(dr, 2, dr, 9);
+          catRowStyle(detSheet, dr);
+          detSheet.getRow(dr).height = 15;
+          dr++;
+
+          subItems.forEach((item, idx) => {
+            writeItemRow(detSheet, dr, item, `${code}.${idx + 1}`, 1);
+            itemRowsInSection.push(dr);
+            dr++;
+          });
+          l1++;
+        });
+
+        noSubItems.forEach(item => {
+          writeItemRow(detSheet, dr, item, `${secLetter}.${l1++}`, 0);
+          itemRowsInSection.push(dr);
+          dr++;
+        });
+
+        // Items with no category at all
+        secItems.filter(i => !i.category).forEach((item, idx) => {
+          writeItemRow(detSheet, dr, item, `${secLetter}.${l1++}`, 0);
+          itemRowsInSection.push(dr);
+          dr++;
+        });
+
+      } else if (categories.length > 0) {
+        // Normal: Category → Sub-category → Items
+        categories.forEach((cat, catIdx) => {
+          const catCode = `${secLetter}.${catIdx + 1}`;
+          const catItems = secItems.filter(i => i.category === cat);
+
+          detSheet.getCell(dr, 1).value = catCode;
+          detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+          detSheet.getCell(dr, 2).value = stripPrefix(cat).toUpperCase();
+          detSheet.mergeCells(dr, 2, dr, 9);
+          catRowStyle(detSheet, dr);
+          detSheet.getRow(dr).height = 15;
+          dr++;
+
+          const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))];
+          const noSubItems = catItems.filter(i => !i.sub_category);
+          let l2 = 1;
+
+          subCategories.forEach(sub => {
+            const subCode = `${catCode}.${l2++}`;
+            const subItems = catItems.filter(i => i.sub_category === sub);
+
+            detSheet.getCell(dr, 1).value = subCode;
+            detSheet.getCell(dr, 1).alignment = { horizontal: 'right' };
+            detSheet.getCell(dr, 2).value = stripPrefix(sub);
+            detSheet.mergeCells(dr, 2, dr, 9);
+            subRowStyle(detSheet, dr);
+            dr++;
+
+            subItems.forEach((item, itemIdx) => {
+              writeItemRow(detSheet, dr, item, `${subCode}.${itemIdx + 1}`, 2);
+              itemRowsInSection.push(dr);
+              dr++;
+            });
+          });
+
+          noSubItems.forEach(item => {
+            writeItemRow(detSheet, dr, item, `${catCode}.${l2++}`, 1);
             itemRowsInSection.push(dr);
             dr++;
           });
         });
 
-        noSubItems.forEach(item => {
-          writeItemRow(detSheet, dr, item, `${catCode}.${l2++}`, 1);
+        secItems.filter(i => !i.category).forEach((item, idx) => {
+          writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
           itemRowsInSection.push(dr);
           dr++;
         });
-      });
 
-      secItems.filter(i => !i.category).forEach((item, idx) => {
-        writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
-        itemRowsInSection.push(dr);
-        dr++;
-      });
+      } else {
+        secItems.forEach((item, idx) => {
+          writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
+          itemRowsInSection.push(dr);
+          dr++;
+        });
+      }
 
-    } else {
-      secItems.forEach((item, idx) => {
-        writeItemRow(detSheet, dr, item, `${secLetter}.${idx + 1}`, 0);
-        itemRowsInSection.push(dr);
-        dr++;
-      });
-    }
+      // Section total row — SUM formula
+      detSheet.mergeCells(dr, 1, dr, 7);
+      detSheet.getCell(dr, 8).value = 'Section Total';
+      detSheet.getCell(dr, 8).font = { bold: true, size: 9 };
+      detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
 
-    // Section total row — SUM formula
-    detSheet.mergeCells(dr, 1, dr, 7);
-    detSheet.getCell(dr, 8).value = 'Section Total';
-    detSheet.getCell(dr, 8).font = { bold: true, size: 9 };
-    detSheet.getCell(dr, 8).alignment = { horizontal: 'right' };
-
-    if (itemRowsInSection.length > 0) {
-      const sumParts = itemRowsInSection.map(r => `I${r}`).join(',');
-      detSheet.getCell(dr, 9).value = { formula: `SUM(${sumParts})` };
-    } else {
-      detSheet.getCell(dr, 9).value = 0;
-    }
-    detSheet.getCell(dr, 9).numFmt = '#,##0';
-    detSheet.getCell(dr, 9).font = { bold: true };
-    detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
-    detSheet.getCell(dr, 9).border = { top: { style: 'medium', color: { argb: 'FF1a1a1a' } }, bottom: { style: 'medium', color: { argb: 'FF1a1a1a' } } };
-    sectionTotalRows.push(dr);
-    dr += 2;
-  });
+      if (itemRowsInSection.length > 0) {
+        const sumParts = itemRowsInSection.map(r => `I${r}`).join(',');
+        detSheet.getCell(dr, 9).value = { formula: `SUM(${sumParts})` };
+      } else {
+        detSheet.getCell(dr, 9).value = 0;
+      }
+      detSheet.getCell(dr, 9).numFmt = '#,##0';
+      detSheet.getCell(dr, 9).font = { bold: true };
+      detSheet.getCell(dr, 9).alignment = { horizontal: 'right' };
+      detSheet.getCell(dr, 9).border = { top: { style: 'medium', color: { argb: 'FF1a1a1a' } }, bottom: { style: 'medium', color: { argb: 'FF1a1a1a' } } };
+      sectionTotalRows.push(dr);
+      dr += 2;
+    });
+  }
 
   // ── Financial summary with FORMULAS ──────────────────────────────
   const mgmtDecimal = (eventData.mgmt_fee_rate || 0.10);

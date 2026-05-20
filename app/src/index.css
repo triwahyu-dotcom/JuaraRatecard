@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
+
 /* ── Vercel/Geist Design Tokens ─────────────────────────────────────────── */
 :root {
   /* Colors */
@@ -29,6 +30,80 @@
   --transition:  0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow:      0 0 0 1px var(--border);
   --shadow-lg:   0 0 0 1px var(--border), 0 8px 30px rgba(0,0,0,0.4);
+
+  --section-lightness: 75%;
+}
+
+/* ── Light / Spreadsheet Theme ─────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:          #f7f8fa;
+  --bg-2:        #eef0f3;
+  --surface:     #ffffff;
+  --surface-2:   #f0f2f5;
+  --border:      #d0d5dd;
+  --border-2:    #b0b7c3;
+
+  --accent:      #1a56db;
+  --accent-glow: rgba(26, 86, 219, 0.12);
+
+  --text:        #0d1117;
+  --text-2:      #4b5563;
+  --text-3:      #6b7280;
+  --text-4:      #9ca3af;
+
+  --vercel-green:#0d7c3d;
+  --yellow:      #b45309;
+  --red:         #dc2626;
+
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.08);
+  --shadow:      0 0 0 1px var(--border);
+  --shadow-lg:   0 0 0 1px var(--border), 0 4px 16px rgba(0,0,0,0.12);
+
+  --section-lightness: 40%;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg-2); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border); }
+
+[data-theme="light"] .btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+[data-theme="light"] .btn-primary:hover { background: #1648c0; }
+
+[data-theme="light"] .btn-ghost {
+  color: var(--text-2);
+  border-color: var(--border);
+}
+[data-theme="light"] .btn-ghost:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+[data-theme="light"] .form-input {
+  background: var(--surface);
+  color: var(--text);
+}
+[data-theme="light"] .form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+[data-theme="light"] .card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="light"] .badge {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+/* Smooth theme transition for all elements */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease !important;
 }
 
 /* ── Global Reset ─────────────────────────────────────────────────────── */

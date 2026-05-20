@@ -1,13 +1,46 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import throttle from 'lodash/throttle'
 
 export function usePresence(quotationId = null) {
-  const [userName, setUserName] = useState(() => localStorage.getItem('juara_user_name') || '')
+  const [userName, setUserName] = useState(() => {
+    try { return localStorage.getItem('juara_user_name') || '' } catch { return '' }
+  })
   const [selection, setSelection] = useState(null)
   
   const updatePresence = useMutation(api.presence.update)
-  // Ensure quotationId is passed cleanly
+  
+  // Use refs to access latest values WITHOUT re-creating throttle
+  const userNameRef = useRef(userName)
+  const quotationIdRef = useRef(quotationId)
+  const selectionRef = useRef(selection)
+  
+  useEffect(() => { userNameRef.current = userName }, [userName])
+  useEffect(() => { quotationIdRef.current = quotationId }, [quotationId])
+  useEffect(() => { selectionRef.current = selection }, [selection])
+  
+  // BANDWIDTH OPTIMIZATION: Throttle to 5s to prevent quota overflow
+  // Trailing-only so rapid changes coalesce into 1 update at the end
+  const throttledUpdate = useMemo(() => 
+    throttle(() => {
+      const qid = quotationIdRef.current
+      if (!qid) return  // No quotation context, skip
+      
+      updatePresence({
+        userName: userNameRef.current,
+        quotationId: qid,
+        selection: selectionRef.current || undefined,
+      }).catch(err => console.error('[Presence] Update failed:', err))
+    }, 5000, { leading: false, trailing: true }),  // 5s throttle, trailing only
+    [updatePresence]
+  )
+
+  useEffect(() => {
+    return () => throttledUpdate.cancel()
+  }, [throttledUpdate])
+
+  // Query active users — keep this, but it's pull not push
   const activeUsers = useQuery(api.presence.listByQuotation, { 
     quotationId: quotationId || null 
   }) || []
@@ -15,45 +48,48 @@ export function usePresence(quotationId = null) {
   // Handle Identity
   useEffect(() => {
     if (!userName) {
-      const name = prompt('Selamat datang di Juara Ratecard! Masukkan nama Anda untuk mulai kolaborasi:')
-      if (name) {
-        const cleaned = name.trim()
-        localStorage.setItem('juara_user_name', cleaned)
-        setUserName(cleaned)
-      } else {
+      try {
+        const name = prompt('Selamat datang di Juara Ratecard! Masukkan nama Anda untuk mulai kolaborasi:')
+        if (name) {
+          const cleaned = name.trim()
+          localStorage.setItem('juara_user_name', cleaned)
+          setUserName(cleaned)
+        } else {
+          const fallback = 'Guest-' + Math.floor(Math.random() * 1000)
+          setUserName(fallback)
+          localStorage.setItem('juara_user_name', fallback)
+        }
+      } catch (e) {
         const fallback = 'Guest-' + Math.floor(Math.random() * 1000)
         setUserName(fallback)
-        localStorage.setItem('juara_user_name', fallback)
       }
     }
   }, [userName])
 
-  // Heartbeat every 2 seconds for faster sync
+  // HEARTBEAT: every 60 seconds (was 2s) — only to keep "active" status
+  // Selection changes also trigger updates via the trigger effect below
   useEffect(() => {
-    if (!userName || !updatePresence) return
-
-    const heartbeat = () => {
-      // GUARD 4: Skip presence update if no quotation context (e.g. Dashboard)
-      // Stops schema validation errors when quotationId is null
-      if (!quotationId) return
-
-      updatePresence({ 
-        userName, 
-        quotationId: quotationId || null, 
-        selection: selection || undefined 
-      }).catch(err => console.error('[Presence] Update failed:', err))
-    }
-
-    heartbeat()
-    const interval = setInterval(heartbeat, 2000)
+    if (!userName || !quotationId) return
+    
+    // Initial fire on mount
+    throttledUpdate()
+    
+    const interval = setInterval(throttledUpdate, 60000)  // 60s
     return () => clearInterval(interval)
-  }, [userName, quotationId, selection, updatePresence])
+  }, [userName, quotationId, throttledUpdate])
+  // Note: `selection` removed from deps — handled by separate effect below
+
+  // SELECTION TRIGGER: Fire update when selection changes
+  // Throttled to 5s, so rapid cell clicks coalesce
+  useEffect(() => {
+    if (!userName || !quotationId) return
+    throttledUpdate()
+  }, [selection, throttledUpdate, userName, quotationId])
 
   return {
     userName,
     selection,
     setSelection,
-    // Filter out self case-insensitively
     activeUsers: activeUsers.filter(u => 
       u.user_name.toLowerCase().trim() !== userName.toLowerCase().trim()
     ),

@@ -169,14 +169,21 @@ export default function Dashboard() {
                 onClick={() => fileInputRef.current.click()}
                 disabled={loading}
               >
-                📥 Import Excel
+                Import Excel
+              </button>
+              <button 
+                className="btn btn-surface btn-lg" 
+                style={{ fontWeight: 600, color: 'var(--accent)' }}
+                onClick={() => navigate('/quick-new')}
+              >
+                + Quick Builder
               </button>
               <button 
                 className="btn btn-primary btn-lg" 
                 style={{ fontWeight: 600 }}
                 onClick={handleNewQuotation}
               >
-                New Quotation
+                + Pro Builder
               </button>
             </div>
           </div>
@@ -305,12 +312,15 @@ export default function Dashboard() {
                     </div>
 
                     {/* Actions */}
-                    <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
                       <Link to={`/preview/${q._id}`} className="btn btn-ghost btn-sm">Preview</Link>
-                      <Link to={`/edit/${q._id}`}    className="btn btn-surface btn-sm">Edit</Link>
-                      <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Link to={`/edit/${q._id}`}    className="btn btn-primary btn-sm" style={{ padding: '4px 12px', fontSize: 10 }}>Pro Edit</Link>
+                        <Link to={`/quick-edit/${q._id}`} className="btn btn-surface btn-sm" style={{ padding: '4px 12px', fontSize: 10, color: 'var(--accent)' }}>Quick Edit</Link>
+                      </div>
+                      <div style={{ width: 1, height: 32, background: 'var(--border)' }} />
                       <button className="btn btn-ghost btn-sm" onClick={() => handleDuplicate(q)} title="Duplicate">⧉</button>
-                      <button className="btn btn-danger btn-sm" style={{ border: 'none' }} onClick={() => handleDelete(q._id, eventName)}>Delete</button>
+                      <button className="btn btn-danger btn-sm" style={{ border: 'none', background: 'transparent', color: 'var(--red)' }} onClick={() => handleDelete(q._id, eventName)}>✕</button>
                     </div>
                   </div>
                 )
@@ -326,9 +336,7 @@ export default function Dashboard() {
              onClick={() => confirmState.onCancel()}>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 20, padding: 40, maxWidth: 480, width: '100%', textAlign: 'center', boxShadow: '0 32px 100px rgba(0,0,0,0.6)' }}
                onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 48, marginBottom: 24 }}>
-              {confirmState.type === 'danger' ? '🗑️' : '⚠️'}
-            </div>
+            <div style={{ height: 48 }} />
             <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16, letterSpacing: '-0.02em' }}>{confirmState.title}</h2>
             <p style={{ color: 'var(--text-2)', marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>{confirmState.message}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

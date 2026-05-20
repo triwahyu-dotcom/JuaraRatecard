@@ -1,4 +1,4 @@
-import { calcLineSell, calcSummary, calcAllSectionSellTotals, getUniqueSections, getQuotationLines } from '../utils/calc'
+import { calcLineSell, calcSummary, calcAllSectionSellTotals, getUniqueSections, getQuotationLines, getUniqueZones, calcAllZoneSellTotals } from '../utils/calc'
 import { fmt, fmtDate } from '../utils/fmt'
 
 const COMPANY = 'PT Juara Berhasil Berkah Sejahtera'
@@ -130,7 +130,7 @@ function ItemRow({ item, num, depth = 0 }) {
           <span>{item.item_name || '—'}</span>
         </div>
         {(item.variant_name || item.zone_name) && (
-          <div style={{ fontSize: 7.5, color: 'var(--accent)', marginTop: 2, fontWeight: 600, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 7.5, color: '#666', marginTop: 2, fontWeight: 600, textTransform: 'uppercase' }}>
             {item.variant_name && <span>{item.variant_name}</span>}
             {item.variant_name && item.zone_name && <span style={{ color: '#ccc', margin: '0 4px' }}>|</span>}
             {item.zone_name && <span>{item.zone_name}</span>}
@@ -265,7 +265,7 @@ function SummaryPage({ eventData, items }) {
 }
 
 /* ── Detail Page (one per section) ──────────────────────────────── */
-function DetailPage({ eventData, section, items, index }) {
+function DetailPage({ eventData, section, items, index, layoutMode = 'existing' }) {
   const sectionItems = items.filter(i => (i.section_code || i.section || '_') === section.code)
   const cost = sectionItems.reduce((s, i) => s + calcLineSell(i), 0)
 
@@ -275,7 +275,68 @@ function DetailPage({ eventData, section, items, index }) {
 
   const categories = [...new Set(sectionItems.map(i => i.category).filter(Boolean))]
 
-  if (categories.length > 0) {
+  if (layoutMode === 'hybrid') {
+    const allZones = getUniqueZones(sectionItems, eventData.zones || [])
+    const zoneTotals = calcAllZoneSellTotals(sectionItems)
+
+    // For ZONED items: Zone (A.1) → SubCategory (A.1.1) → Item (A.1.1.1)
+    // Category level is SKIPPED — the zone itself acts as the category.
+    const renderZoneItems = (itemList, zCode) => {
+      const subs = [...new Set(itemList.map(i => i.sub_category).filter(Boolean))]
+      const noSubs = itemList.filter(i => !i.sub_category)
+      let l1 = 1
+      subs.forEach(sub => {
+        const subCode = `${zCode}.${l1++}`
+        const subItems = itemList.filter(i => i.sub_category === sub)
+        rows.push({ type: 'subHeader', sub, code: subCode })
+        subItems.forEach((item, n) => { globalIdx++; rows.push({ type: 'item', item, num: `${subCode}.${n + 1}`, depth: 1 }) })
+      })
+      noSubs.forEach(item => { globalIdx++; rows.push({ type: 'item', item, num: `${zCode}.${l1++}`, depth: 0 }) })
+    }
+
+    // For UNALLOCATED items: Category (A.N) → SubCategory (A.N.1) → Item (A.N.1.1)
+    const renderUnallocated = (itemList, startCounter) => {
+      const cats = [...new Set(itemList.map(i => i.category).filter(Boolean))]
+      let counter = startCounter
+      cats.forEach(cat => {
+        const catCode = `${secLetter}.${counter++}`
+        const catItems = itemList.filter(i => i.category === cat)
+        rows.push({ type: 'catHeader', cat, code: catCode })
+        const subs = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))]
+        const noSubs = catItems.filter(i => !i.sub_category)
+        let l2 = 1
+        subs.forEach(sub => {
+          const subCode = `${catCode}.${l2++}`
+          const subItems = catItems.filter(i => i.sub_category === sub)
+          rows.push({ type: 'subHeader', sub, code: subCode })
+          subItems.forEach((item, n) => { globalIdx++; rows.push({ type: 'item', item, num: `${subCode}.${n + 1}`, depth: 2 }) })
+        })
+        noSubs.forEach(item => { globalIdx++; rows.push({ type: 'item', item, num: `${catCode}.${l2++}`, depth: 1 }) })
+      })
+      // Items with no category at all
+      const noCats = itemList.filter(i => !i.category)
+      noCats.forEach(item => { globalIdx++; rows.push({ type: 'item', item, num: `${secLetter}.${counter++}`, depth: 0 }) })
+    }
+
+    const allocatedZones = allZones.filter(z => z.name !== null)
+    const unallocatedItems = sectionItems.filter(i => !i.zone_name)
+    let zCounter = 1
+
+    // 1. Render each named zone → SubCat → Item
+    allocatedZones.forEach(z => {
+      const zItems = sectionItems.filter(i => i.zone_name === z.name)
+      if (zItems.length === 0) return
+      const zCode = `${secLetter}.${zCounter++}`
+      rows.push({ type: 'zoneHeader', name: z.name, code: zCode, total: zoneTotals[z.name], isOrphan: false })
+      renderZoneItems(zItems, zCode)
+    })
+
+    // 2. Unallocated: Category → SubCat → Item, continuing numbering after zones
+    if (unallocatedItems.length > 0) {
+      renderUnallocated(unallocatedItems, zCounter)
+    }
+
+  } else if (categories.length > 0) {
     categories.forEach((cat, catIdx) => {
       const catCode = `${secLetter}.${catIdx + 1}`
       const catItems = sectionItems.filter(i => i.category === cat)
@@ -357,6 +418,141 @@ function DetailPage({ eventData, section, items, index }) {
           </tr>
 
           {rows.map((row, i) => {
+            if (row.type === 'zoneHeader') {
+              return (
+                <tr key={`zh-${i}`}>
+                   <td style={{ ...TD, background: '#f8f8f8', fontWeight: 800, textAlign: 'right', paddingRight: 8, color: '#444', fontSize: 8.5 }}>
+                    {row.code}
+                  </td>
+                  <td style={{ ...TD, background: '#f8f8f8', fontWeight: 800, paddingLeft: 10, color: '#1a1a1a', fontSize: 8.5, letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={6}>
+                    {row.name} {row.isOrphan && '(Orphan)'}
+                  </td>
+                  <td style={{ ...TD, background: '#f8f8f8', fontWeight: 800, textAlign: 'right', fontSize: 8.5, whiteSpace: 'nowrap' }} colSpan={2}>
+                    {fmt(row.total)}
+                  </td>
+                </tr>
+              )
+            }
+            if (row.type === 'catHeader') {
+              return (
+                <tr key={`ch-${i}`}>
+                  <td style={{ ...TD, background: '#fafafa', fontWeight: 800, textAlign: 'right', paddingRight: 8, color: '#444', textTransform: 'uppercase', fontSize: 8.5, letterSpacing: 0.5 }}>
+                    {row.code}
+                  </td>
+                  <td style={{ ...TD, background: '#fafafa', fontWeight: 800, paddingLeft: 10, color: '#222', textTransform: 'uppercase', fontSize: 8.5, letterSpacing: 0.5 }} colSpan={8}>
+                    {stripPrefix(row.cat)}
+                  </td>
+                </tr>
+              )
+            }
+            if (row.type === 'subHeader') {
+              return (
+                <tr key={`sub-${i}`}>
+                   <td style={{ ...TD, background: 'transparent', fontWeight: 700, textAlign: 'right', paddingRight: 8, color: '#666', fontSize: 8 }}>
+                    {row.code}
+                  </td>
+                  <td style={{ ...TD, fontWeight: 700, paddingLeft: 10, color: '#444', fontSize: 8, fontStyle: 'italic' }} colSpan={8}>
+                    {stripPrefix(row.sub)}
+                  </td>
+                </tr>
+              )
+            }
+            return <ItemRow key={`r-${i}`} item={row.item} num={row.num} depth={row.depth} />
+          })}
+        </tbody>
+      </table>
+
+      <SectionFooter
+        cost={cost}
+        ppnRate={eventData.ppn_rate || 0.12}
+        notes={eventData.notes?.length ? eventData.notes : defaultNotes}
+        signatory={eventData.signatory}
+        city={eventData.city || 'Jakarta'}
+        eventDate={eventData.event_date}
+      />
+    </div>
+  )
+}
+
+/* ── Zone Page (one per zone) ───────────────────────────────────── */
+function ZonePage({ eventData, zone, items, index }) {
+  const zoneItems = items.filter(i => (i.zone_name || null) === zone.name)
+  const cost = zoneItems.reduce((s, i) => s + calcLineSell(i), 0)
+
+  const rows = []
+  let globalIdx = 0
+  
+  // Group by category within the zone
+  const categories = [...new Set(zoneItems.map(i => i.category).filter(Boolean))]
+
+  categories.forEach((cat, catIdx) => {
+    const catCode = `${index + 1}.${catIdx + 1}`
+    const catItems = zoneItems.filter(i => i.category === cat)
+    rows.push({ type: 'catHeader', cat, code: catCode })
+
+    const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))]
+    const noSubItems = catItems.filter(i => !i.sub_category)
+    
+    let level2Counter = 1
+    subCategories.forEach((sub) => {
+      const subCode = `${catCode}.${level2Counter++}`
+      const subItems = catItems.filter(i => i.sub_category === sub)
+      rows.push({ type: 'subHeader', sub, code: subCode })
+      subItems.forEach((item, itemIdx) => {
+        globalIdx++
+        rows.push({ type: 'item', item, num: `${subCode}.${itemIdx + 1}`, depth: 2 })
+      })
+    })
+
+    if (noSubItems.length > 0) {
+      noSubItems.forEach((item) => {
+        globalIdx++
+        rows.push({ type: 'item', item, num: `${catCode}.${level2Counter++}`, depth: 1 })
+      })
+    }
+  })
+
+  // Items with no category
+  const noCatItems = zoneItems.filter(i => !i.category)
+  if (noCatItems.length > 0) {
+    noCatItems.forEach((item, itemIdx) => {
+      globalIdx++
+      rows.push({ type: 'item', item, num: `${index + 1}.${itemIdx + 1}`, depth: 0 })
+    })
+  }
+
+  const defaultNotes = [
+    'Offering Validations:',
+    'The offer price above valid as long as the term specified',
+    'The Offer Price Included Rehearsal D-1',
+  ]
+
+  return (
+    <div className="print-page" style={pageStyle}>
+      <PrintHeader eventData={eventData} />
+      <h1 style={titleStyle}>QUOTATION</h1>
+
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', fontSize: 9, marginBottom: 8 }}>
+        <thead>
+          <tr>
+            <th style={{ ...TH, width: 50 }}>NO</th>
+            <th style={{ ...TH, minWidth: 100 }}>ITEM / TASK</th>
+            <th style={{ ...TH, width: 180 }}>SPECIFICATION</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>QTY</th>
+            <th style={{ ...TH, width: 85 }} colSpan={2}>FREQ / DUR</th>
+            <th style={{ ...TH, width: 80 }}>PRICE</th>
+            <th style={{ ...TH, width: 80 }}>AMOUNT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, textAlign: 'right', paddingRight: 10, fontSize: 10 }}>{index + 1}</td>
+            <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, borderBottom: '2px solid #ccc', letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={8}>
+              ZONE: {zone.name || '(BELUM DIALOKASIKAN)'}
+            </td>
+          </tr>
+
+          {rows.map((row, i) => {
             if (row.type === 'catHeader') {
               return (
                 <tr key={`ch-${i}`}>
@@ -399,7 +595,7 @@ function DetailPage({ eventData, section, items, index }) {
 }
 
 /* ── Combined Page (Single long table) ─────────────────────────── */
-function CombinedPage({ eventData, items }) {
+function CombinedPage({ eventData, items, layoutMode = 'existing' }) {
   const cost = items.reduce((s, i) => s + calcLineSell(i), 0)
   const sections = getUniqueSections(items)
   
@@ -414,54 +610,151 @@ function CombinedPage({ eventData, items }) {
     allRows.push({ type: 'secHeader', sec, index: secIdx })
 
     const secLetter = String.fromCharCode(65 + secIdx)
-    const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))]
 
-    if (categories.length > 0) {
-      categories.forEach((cat, catIdx) => {
-        const catCode = `${secLetter}.${catIdx + 1}`
-        const catItems = secItems.filter(i => i.category === cat)
-        allRows.push({ type: 'catHeader', cat, code: catCode })
+    if (layoutMode === 'hybrid') {
+      const allZones = getUniqueZones(secItems, eventData.zones || [])
+      const zoneTotals = calcAllZoneSellTotals(secItems)
 
-        const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))]
-        const noSubItems = catItems.filter(i => !i.sub_category)
-        
-        let level2Counter = 1
-
-        // 1. Render Sub-Categories
-        subCategories.forEach((sub) => {
-          const subCode = `${catCode}.${level2Counter++}`
-          const subItems = catItems.filter(i => i.sub_category === sub)
+      // For ZONED items: Zone (A.1) → SubCategory (A.1.1) → Item (A.1.1.1) — category skipped
+      const renderZoneItems = (itemList, zCode) => {
+        const subs = [...new Set(itemList.map(i => i.sub_category).filter(Boolean))]
+        const noSubs = itemList.filter(i => !i.sub_category)
+        let l1 = 1
+        subs.forEach(sub => {
+          const subCode = `${zCode}.${l1++}`
+          const subItems = itemList.filter(i => i.sub_category === sub)
           allRows.push({ type: 'subHeader', sub, code: subCode })
+          subItems.forEach((item, n) => { globalItemIdx++; allRows.push({ type: 'item', item, num: `${subCode}.${n + 1}`, depth: 1 }) })
+        })
+        noSubs.forEach(item => { globalItemIdx++; allRows.push({ type: 'item', item, num: `${zCode}.${l1++}`, depth: 0 }) })
+      }
 
-          subItems.forEach((item, itemIdx) => {
-            globalItemIdx++
-            allRows.push({ type: 'item', item, num: `${subCode}.${itemIdx + 1}`, depth: 2 })
+      // For UNALLOCATED items: Category (A.N) → SubCategory (A.N.1) → Item (A.N.1.1)
+      const renderUnallocated = (itemList, startCounter) => {
+        const cats = [...new Set(itemList.map(i => i.category).filter(Boolean))]
+        let counter = startCounter
+        cats.forEach(cat => {
+          const catCode = `${secLetter}.${counter++}`
+          const catItems = itemList.filter(i => i.category === cat)
+          allRows.push({ type: 'catHeader', cat, code: catCode })
+          const subs = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))]
+          const noSubs = catItems.filter(i => !i.sub_category)
+          let l2 = 1
+          subs.forEach(sub => {
+            const subCode = `${catCode}.${l2++}`
+            const subItems = catItems.filter(i => i.sub_category === sub)
+            allRows.push({ type: 'subHeader', sub, code: subCode })
+            subItems.forEach((item, n) => { globalItemIdx++; allRows.push({ type: 'item', item, num: `${subCode}.${n + 1}`, depth: 2 }) })
+          })
+          noSubs.forEach(item => { globalItemIdx++; allRows.push({ type: 'item', item, num: `${catCode}.${l2++}`, depth: 1 }) })
+        })
+        const noCats = itemList.filter(i => !i.category)
+        noCats.forEach(item => { globalItemIdx++; allRows.push({ type: 'item', item, num: `${secLetter}.${counter++}`, depth: 0 }) })
+      }
+
+      const allocatedZones = allZones.filter(z => z.name !== null)
+      const unallocatedItems = secItems.filter(i => !i.zone_name)
+      let zCounter = 1
+
+      allocatedZones.forEach(z => {
+        const zItems = secItems.filter(i => i.zone_name === z.name)
+        if (zItems.length === 0) return
+        const zCode = `${secLetter}.${zCounter++}`
+        allRows.push({ type: 'zoneHeader', name: z.name, code: zCode, total: zoneTotals[z.name], isOrphan: false })
+        renderZoneItems(zItems, zCode)
+      })
+
+      if (unallocatedItems.length > 0) {
+        renderUnallocated(unallocatedItems, zCounter)
+      }
+
+    } else if (layoutMode === 'pure_zone') {
+      const allZones = getUniqueZones(items, eventData.zones || [])
+      const zoneTotals = calcAllZoneSellTotals(items)
+
+      allZones.forEach((z, zIdx) => {
+        const zItems = items.filter(i => (i.zone_name || null) === z.name)
+        if (zItems.length === 0) return
+
+        allRows.push({ type: 'zoneHeader', name: z.name, code: String(zIdx + 1), total: zoneTotals[z.name || '_unallocated'] })
+
+        const categories = [...new Set(zItems.map(i => i.category).filter(Boolean))]
+        categories.forEach((cat, catIdx) => {
+          const catCode = `${zIdx + 1}.${catIdx + 1}`
+          const catItems = zItems.filter(i => i.category === cat)
+          allRows.push({ type: 'catHeader', cat, code: catCode })
+
+          const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))]
+          const noSubItems = catItems.filter(i => !i.sub_category)
+          
+          let level2Counter = 1
+          subCategories.forEach((sub) => {
+            const subCode = `${catCode}.${level2Counter++}`
+            const subItems = catItems.filter(i => i.sub_category === sub)
+            allRows.push({ type: 'subHeader', sub, code: subCode })
+            subItems.forEach((item, n) => { globalItemIdx++; allRows.push({ type: 'item', item, num: `${subCode}.${n + 1}`, depth: 2 }) })
+          })
+
+          noSubItems.forEach((item) => {
+            globalItemIdx++; allRows.push({ type: 'item', item, num: `${catCode}.${level2Counter++}`, depth: 1 })
           })
         })
 
-        // 2. Render Flat Items
-        if (noSubItems.length > 0) {
-          noSubItems.forEach((item) => {
+        const noCatItems = zItems.filter(i => !i.category)
+        noCatItems.forEach((item, n) => {
+          globalItemIdx++; allRows.push({ type: 'item', item, num: `${zIdx + 1}.${n + 1}`, depth: 0 })
+        })
+      })
+    } else {
+      const categories = [...new Set(secItems.map(i => i.category).filter(Boolean))]
+
+      if (categories.length > 0) {
+        categories.forEach((cat, catIdx) => {
+          const catCode = `${secLetter}.${catIdx + 1}`
+          const catItems = secItems.filter(i => i.category === cat)
+          allRows.push({ type: 'catHeader', cat, code: catCode })
+
+          const subCategories = [...new Set(catItems.map(i => i.sub_category).filter(Boolean))]
+          const noSubItems = catItems.filter(i => !i.sub_category)
+          
+          let level2Counter = 1
+
+          // 1. Render Sub-Categories
+          subCategories.forEach((sub) => {
+            const subCode = `${catCode}.${level2Counter++}`
+            const subItems = catItems.filter(i => i.sub_category === sub)
+            allRows.push({ type: 'subHeader', sub, code: subCode })
+
+            subItems.forEach((item, itemIdx) => {
+              globalItemIdx++
+              allRows.push({ type: 'item', item, num: `${subCode}.${itemIdx + 1}`, depth: 2 })
+            })
+          })
+
+          // 2. Render Flat Items
+          if (noSubItems.length > 0) {
+            noSubItems.forEach((item) => {
+              globalItemIdx++
+              allRows.push({ type: 'item', item, num: `${catCode}.${level2Counter++}`, depth: 1 })
+            })
+          }
+        })
+
+        // Items with NO category at all
+        const noCatItems = secItems.filter(i => !i.category)
+        if (noCatItems.length > 0) {
+          noCatItems.forEach((item, itemIdx) => {
             globalItemIdx++
-            allRows.push({ type: 'item', item, num: `${catCode}.${level2Counter++}`, depth: 1 })
+            allRows.push({ type: 'item', item, num: `${secLetter}.${itemIdx + 1}` })
           })
         }
-      })
-
-      // Items with NO category at all
-      const noCatItems = secItems.filter(i => !i.category)
-      if (noCatItems.length > 0) {
-        noCatItems.forEach((item, itemIdx) => {
+      } else {
+        // Section has items but no categories
+        secItems.forEach((item, itemIdx) => {
           globalItemIdx++
           allRows.push({ type: 'item', item, num: `${secLetter}.${itemIdx + 1}` })
         })
       }
-    } else {
-      // Section has items but no categories
-      secItems.forEach((item, itemIdx) => {
-        globalItemIdx++
-        allRows.push({ type: 'item', item, num: `${secLetter}.${itemIdx + 1}` })
-      })
     }
   })
 
@@ -496,6 +789,21 @@ function CombinedPage({ eventData, items }) {
                    <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, textAlign: 'right', paddingRight: 10, fontSize: 10 }}>{String.fromCharCode(65 + row.index)}</td>
                   <td style={{ ...TD, background: '#f5f5f5', fontWeight: 900, borderBottom: '2px solid #ccc', letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={8}>
                     {stripPrefix(row.sec.name || `Section ${row.sec.code}`).replace(/^Set \d+ - /i, '')}
+                  </td>
+                </tr>
+              )
+            }
+            if (row.type === 'zoneHeader') {
+              return (
+                <tr key={`zh-${i}`}>
+                   <td style={{ ...TD, background: '#f8f8f8', fontWeight: 800, textAlign: 'right', paddingRight: 8, color: '#444', fontSize: 8.5 }}>
+                    {row.code}
+                  </td>
+                  <td style={{ ...TD, background: '#f8f8f8', fontWeight: 800, paddingLeft: 10, color: '#1a1a1a', fontSize: 8.5, letterSpacing: 0.5, textTransform: 'uppercase' }} colSpan={5}>
+                    {row.name} {row.isOrphan && '(Orphan)'}
+                  </td>
+                  <td style={{ ...TD, background: '#f8f8f8', fontWeight: 800, textAlign: 'right', fontSize: 8.5, whiteSpace: 'nowrap' }} colSpan={2}>
+                    {fmt(row.total)}
                   </td>
                 </tr>
               )
@@ -555,7 +863,7 @@ const titleStyle = {
 }
 
 /* ── Root Export ─────────────────────────────────────────────────── */
-export default function PrintDocument({ quotation, showSummary = true, combinedMode = false }) {
+export default function PrintDocument({ quotation, showSummary = true, combinedMode = false, layoutMode = 'existing' }) {
   if (!quotation) return null
   const items = getQuotationLines(quotation).filter(i => {
     const name = (i.item_name || '').toLowerCase();
@@ -564,6 +872,7 @@ export default function PrintDocument({ quotation, showSummary = true, combinedM
   })
   const eventData = quotation
   const sections = getUniqueSections(items)
+  const zones = getUniqueZones(items, eventData.zones || [])
 
   return (
     <div style={{ background: '#ddd', padding: '24px 0' }}>
@@ -572,11 +881,17 @@ export default function PrintDocument({ quotation, showSummary = true, combinedM
       )}
       
       {combinedMode ? (
-        <CombinedPage eventData={eventData} items={items} />
+        <CombinedPage eventData={eventData} items={items} layoutMode={layoutMode} />
       ) : (
-        sections.map((s, idx) => (
-          <DetailPage key={s.code} eventData={eventData} section={s} items={items} index={idx} />
-        ))
+        layoutMode === 'pure_zone' ? (
+          zones.map((z, idx) => (
+            <ZonePage key={z.id || idx} eventData={eventData} zone={z} items={items} index={idx} />
+          ))
+        ) : (
+          sections.map((s, idx) => (
+            <DetailPage key={s.code} eventData={eventData} section={s} items={items} index={idx} layoutMode={layoutMode} />
+          ))
+        )
       )}
     </div>
   )

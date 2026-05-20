@@ -4,12 +4,19 @@ import { api } from "../../convex/_generated/api";
 import { fmtRp } from '../utils/fmt'
 import { MASTER_CATEGORIES, CATEGORY_COLORS } from '../utils/constants'
 
-export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, onAddBulk, onAddBundle }) {
+export default function RatecardBrowser({ 
+  selectedItems = [], 
+  onAdd, 
+  onRemove, 
+  onAddBulk, 
+  onAddBundle,
+  zoneManagerContent
+}) {
   const ratecard = useQuery(api.masterData.listItems) || [];
   const bundles = useQuery(api.masterData.listBundles) || [];
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('ALL')
-  const [viewMode, setViewMode] = useState('ITEMS') // 'ITEMS' | 'PACKAGES'
+  const [viewMode, setViewMode] = useState('ITEMS') // 'ITEMS' | 'ZONES' | 'PACKAGES'
 
   const categoriesList = ['ALL', ...MASTER_CATEGORIES]
 
@@ -73,51 +80,52 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
             Items
           </button>
           <button 
-            onClick={() => setViewMode('PACKAGES')}
+            onClick={() => setViewMode('ZONES')}
             style={{
               flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 11, fontWeight: 700,
-              background: viewMode === 'PACKAGES' ? 'var(--bg)' : 'transparent',
-              color: viewMode === 'PACKAGES' ? 'var(--text)' : 'var(--text-3)',
+              background: viewMode === 'ZONES' ? 'var(--bg)' : 'transparent',
+              color: viewMode === 'ZONES' ? 'var(--text)' : 'var(--text-3)',
               border: 'none', cursor: 'pointer', transition: 'all 0.2s'
             }}>
-            Packages 📦
+            Zones
           </button>
         </div>
 
-        {/* Search + Section Filter */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
-            <input
-              className="form-input"
-              style={{ width: '100%', paddingLeft: 36, height: 36, fontSize: 13 }}
-              placeholder={viewMode === 'ITEMS' ? "Search items..." : "Search packages..."}
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-          
-          {viewMode === 'ITEMS' && (
-            <div style={{ 
-              display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 4,
-              scrollbarWidth: 'none'
-            }}>
-              {categoriesList.map(c => (
-                <button key={c} onClick={() => setActiveCategory(c)}
-                  style={{
-                    padding: '4px 10px', borderRadius: 6, fontSize: 10, fontWeight: 600,
-                    border: '1px solid transparent',
-                    whiteSpace: 'nowrap',
-                    background: activeCategory === c ? 'var(--text)' : 'var(--surface)',
-                    color: activeCategory === c ? 'var(--bg)' : 'var(--text-2)',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                  }}>
-                  {c}
-                </button>
-              ))}
+        {/* Search + Section Filter (Only for Items/Packages) */}
+        {viewMode !== 'ZONES' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ position: 'relative' }}>
+              <input
+                className="form-input"
+                style={{ width: '100%', paddingLeft: 36, height: 36, fontSize: 13 }}
+                placeholder={viewMode === 'ITEMS' ? "Search items..." : "Search packages..."}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
             </div>
-          )}
-        </div>
+            
+            {viewMode === 'ITEMS' && (
+              <div style={{ 
+                display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 4,
+                scrollbarWidth: 'none'
+              }}>
+                {categoriesList.map(c => (
+                  <button key={c} onClick={() => setActiveCategory(c)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, fontSize: 10, fontWeight: 600,
+                      border: '1px solid transparent',
+                      whiteSpace: 'nowrap',
+                      background: activeCategory === c ? 'var(--text)' : 'var(--surface)',
+                      color: activeCategory === c ? 'var(--bg)' : 'var(--text-2)',
+                      cursor: 'pointer', transition: 'all 0.15s',
+                    }}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Content Area */}
@@ -153,7 +161,7 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
                         padding: '2px 6px', height: 18, fontSize: 8, 
                         fontWeight: 700, borderRadius: 4, background: 'rgba(255,255,255,0.05)'
                       }}>
-                      + Add All
+                      Add All
                     </button>
                   )}
                 </div>
@@ -203,6 +211,10 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
               </div>
             )
           })
+        ) : viewMode === 'ZONES' ? (
+          <div style={{ marginTop: -16 }}>
+            {zoneManagerContent}
+          </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {filteredBundles.map(bundle => (
@@ -215,7 +227,7 @@ export default function RatecardBrowser({ selectedItems = [], onAdd, onRemove, o
                   <button 
                     onClick={() => onAddBundle(bundle)}
                     className="btn btn-primary" style={{ padding: '4px 12px', height: 28, fontSize: 11 }}>
-                    + Add Bundle
+                    Add Bundle
                   </button>
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.4 }}>{bundle.description}</div>

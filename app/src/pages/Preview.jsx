@@ -12,18 +12,19 @@ export default function Preview() {
   const loading = quotation === undefined;
   const [showSummary, setShowSummary] = useState(true)
   const [combinedMode, setCombinedMode] = useState(false)
+  const [layoutMode, setLayoutMode] = useState('existing') // 'existing' or 'hybrid'
 
   const handlePrint = () => window.print()
 
   if (loading) return (
     <div className="empty-state" style={{ marginTop: 80 }}>
-      <div className="empty-icon">⏳</div><p>Loading...</p>
+      <p>Loading...</p>
     </div>
   )
 
   if (!quotation) return (
     <div className="empty-state" style={{ marginTop: 80 }}>
-      <div className="empty-icon">⚠️</div><p>Quotation not found.</p>
+      <p>Quotation not found.</p>
       <Link to="/" className="btn btn-primary mt-4">Back to Dashboard</Link>
     </div>
   )
@@ -60,18 +61,38 @@ export default function Preview() {
             </button>
           </div>
 
-          <button className="btn btn-ghost" onClick={() => exportQuotationToXls(quotation)} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-            📊 Export XLS
+          <div style={{ display: 'flex', background: 'var(--surface-2)', padding: '4px', borderRadius: 8, border: '1px solid var(--border)', marginRight: 12 }}>
+            <button 
+              onClick={() => setLayoutMode('existing')}
+              className={`btn btn-sm ${layoutMode === 'existing' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ fontSize: 10, padding: '4px 10px' }}>
+              Standard
+            </button>
+            <button 
+              onClick={() => setLayoutMode('hybrid')}
+              className={`btn btn-sm ${layoutMode === 'hybrid' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ fontSize: 10, padding: '4px 10px', marginLeft: 4 }}>
+              Hybrid (Zone)
+            </button>
+          </div>
+
+          <button className="btn btn-ghost" onClick={() => exportQuotationToXls(quotation, layoutMode)} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', fontSize: 11 }}>
+            Export XLS
           </button>
-          <button className="btn btn-primary" onClick={handlePrint}>
-            🖨 Print / Save PDF
+          <button className="btn btn-primary" onClick={handlePrint} style={{ fontSize: 11 }}>
+            Print / Save PDF
           </button>
         </div>
       </div>
 
       {/* Document */}
       <div style={{ background: '#e8e8e8', minHeight: 'calc(100vh - 120px)', paddingTop: 8 }}>
-        <PrintDocument quotation={quotation} showSummary={showSummary} combinedMode={combinedMode} />
+        <PrintDocument 
+          quotation={quotation} 
+          showSummary={showSummary} 
+          combinedMode={combinedMode} 
+          layoutMode={layoutMode}
+        />
       </div>
     </>
   )

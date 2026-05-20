@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import StepBar from '../components/StepBar'
 import EventForm from '../components/EventForm'
@@ -17,9 +17,9 @@ import { diceCoefficient, predictCategory } from '../utils/stringUtils'
 import { usePresence } from '../hooks/usePresence'
 import AIEstimatorPanel from '../components/AIEstimatorPanel'
 import { suggestBundlesAI } from '../lib/aiEstimator'
-import { useRef } from 'react'
 import ActivitySidebar from '../components/ActivitySidebar'
 import ZoneManager from '../components/ZoneManager'
+import SimpleTableView from '../components/SimpleTableView'
 
 
 const STEPS = [
@@ -46,28 +46,41 @@ export default function Builder() {
   const navigate = useNavigate()
   const location = useLocation()
   const [step, setStep] = useState(() => {
-    const saved = localStorage.getItem('juara_builder_step')
-    return saved ? parseInt(saved, 10) : 0
+    try {
+      const saved = localStorage.getItem('juara_builder_step')
+      return saved ? parseInt(saved, 10) : 0
+    } catch { return 0 }
   })
 
   // Persistence for Step
   useEffect(() => {
-    localStorage.setItem('juara_builder_step', step.toString())
+    try { localStorage.setItem('juara_builder_step', step.toString()) } catch { }
   }, [step])
 
   const [eventData, setEventData] = useState(defaultEvent)
   const { userName, activeUsers, setSelection } = usePresence(id)
-  
+
   const [items, setItems] = useState([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(!!id)
   const [ratecardData, setRatecardData] = useState([])
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [successMsg, setSuccessMsg] = useState('')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('juara_sidebar_open')
+      return saved === null ? true : saved === 'true'
+    } catch { return true }
+  })
+  useEffect(() => {
+    try { localStorage.setItem('juara_sidebar_open', sidebarOpen.toString()) } catch { }
+  }, [sidebarOpen])
   const [leftSidebarTab, setLeftSidebarTab] = useState('DB') // 'DB' | 'CONFIG'
   const [isDraggingFile, setIsDraggingFile] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [prevSummary, setPrevSummary] = useState(true)
+  const [prevCombined, setPrevCombined] = useState(false)
+  const [prevLayout, setPrevLayout] = useState('existing')
   const [confirmState, setConfirmState] = useState(null) // { title, message, onConfirm, onCancel, confirmLabel, cancelLabel }
   const [history, setHistory] = useState([])
   const [redoStack, setRedoStack] = useState([])
@@ -80,7 +93,7 @@ export default function Builder() {
 
   const [historyLogs, setHistoryLogs] = useState([])
   const [showActivities, setShowActivities] = useState(false)
-  
+
   const [activeZoneName, setActiveZoneName] = useState(null)
   useEffect(() => { setActiveZoneName(null) }, [id])
   const fileInputRef = useRef(null)
@@ -90,18 +103,29 @@ export default function Builder() {
     if (isEditing) editingKeysRef.current.add(key)
     else editingKeysRef.current.delete(key)
   }
+  const deletedKeysRef = useRef(new Set())
   const lastProcessedActiveIndex = useRef(activeIndex)
+  const [zoneSidebarOpen, setZoneSidebarOpen] = useState(false)
+  const [viewMode, setViewMode] = useState(() => {
+    try { return localStorage.getItem('juara_view_mode') || 'pro' } catch { return 'pro' }
+  })
+  useEffect(() => {
+    try { localStorage.setItem('juara_view_mode', viewMode) } catch { }
+  }, [viewMode])
 
   // --- COLLABORATION STATE ---
   const [currentUser] = useState(() => {
-    const saved = localStorage.getItem('juara_user')
-    if (saved) return JSON.parse(saved)
+    try {
+      const saved = localStorage.getItem('juara_user')
+      if (saved) return JSON.parse(saved)
+    } catch { }
+
     const newUser = {
-      id: crypto.randomUUID(),
+      id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
       name: 'User ' + Math.floor(Math.random() * 1000),
       color: ['#0070f3', '#00e676', '#f50057', '#ff9100', '#7c4dff', '#00bcd4', '#ffeb3b'][Math.floor(Math.random() * 7)]
     }
-    localStorage.setItem('juara_user', JSON.stringify(newUser))
+    try { localStorage.setItem('juara_user', JSON.stringify(newUser)) } catch { }
     return newUser
   })
 
@@ -113,7 +137,7 @@ export default function Builder() {
   const logActivityMutation = useMutation(api.activities.log);
   const setItemZoneMutation = useMutation(api.quotations.setItemZone);
   const fetchedActivities = useQuery(api.activities.listByQuotation, id ? { quotationId: id } : "skip") || [];
-  
+
   const createBundleMutation = useMutation(api.masterData.createBundle);
   const addCommentMutation = useMutation(api.collaboration.addComment);
   const createCategoryMutation = useMutation(api.masterData.createCategory);
@@ -134,19 +158,29 @@ export default function Builder() {
     if (fetchedRevisions.length > 0) setHistoryLogs(fetchedRevisions);
   }, [fetchedRevisions]);
 
+  // Effect A: handles items sync, depends on [quotation, activeIndex, saving]
   useEffect(() => {
     if (quotation && !saving) {
       const remoteItems = quotation.items || []
 
-      // GUARD 1: Skip Smart Sync setItems if items already match remote and focus hasn't changed
-      // Prevents infinite loop: autosave -> mutation -> realtime broadcast -> setItems -> autosave...
+      // GUARD 1: Skip Smart Sync if items already match remote and focus hasn't changed
+      // Using Map-based comparison (O(N)) instead of O(N^2) search
+      const remoteMap = new Map(remoteItems.map(it => [it._ratecard_key, it]))
       const itemsAlreadyInSync = items.length === remoteItems.length &&
         items.every(localIt => {
-          if (!localIt._ratecard_key) return false // force re-sync for new/unsynced items
-          const remoteIt = remoteItems.find(r => r._ratecard_key === localIt._ratecard_key)
-          return remoteIt && JSON.stringify(localIt) === JSON.stringify(remoteIt)
+          if (!localIt._ratecard_key) return false
+          const remoteIt = remoteMap.get(localIt._ratecard_key)
+          if (!remoteIt) return false
+          // SHALLOW FIELD COMPARISON (Bandwidth Optimization Task)
+          return remoteIt.item_name === localIt.item_name &&
+            remoteIt.qty === localIt.qty &&
+            remoteIt.unit_sell === localIt.unit_sell &&
+            remoteIt.unit_cost === localIt.unit_cost &&
+            remoteIt.sort_order === localIt.sort_order &&
+            remoteIt.zone_name === localIt.zone_name &&
+            remoteIt.updated_at === localIt.updated_at
         })
-      
+
       if (itemsAlreadyInSync && activeIndex === lastProcessedActiveIndex.current) {
         console.log('[Sync] Smart Sync skipped — items synced and activeIndex unchanged')
       } else {
@@ -154,10 +188,10 @@ export default function Builder() {
         // SMART SYNC V4: Key-based merging with per-row edit lock
         setItems(prev => {
           if (prev.length === 0) return remoteItems
-          
+
           // 1. Create a map of remote items for quick lookup
           const remoteMap = new Map(remoteItems.map(it => [it._ratecard_key, it]))
-          
+
           // 2. Map existing local items: update with remote data unless actively being edited
           const updatedLocal = prev.map((localIt, idx) => {
             const remoteIt = remoteMap.get(localIt._ratecard_key)
@@ -170,22 +204,37 @@ export default function Builder() {
 
           // 3. Find items that exist on remote but not locally (added by others)
           const localKeys = new Set(prev.map(it => it._ratecard_key))
-          const itemsFromRemote = remoteItems.filter(it => !localKeys.has(it._ratecard_key))
+          const itemsFromRemote = remoteItems.filter(it => {
+            // Ignore items that were recently deleted locally but haven't synced to server yet
+            if (deletedKeysRef.current.has(it._ratecard_key)) return false
+            return !localKeys.has(it._ratecard_key)
+          })
+
+          // Cleanup deletedKeysRef: if a key is in the set but NOT in remoteItems, the deletion has synced
+          deletedKeysRef.current.forEach(k => {
+            if (!remoteMap.has(k)) deletedKeysRef.current.delete(k)
+          })
 
           // 4. Combine and sort
           const newItems = [...updatedLocal, ...itemsFromRemote].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
 
           // GUARD 2: Return prev reference if content unchanged
-          // React skips re-render if reference is same -> no useEffect re-fire
           if (newItems.length === prev.length &&
-              newItems.every((it, i) => JSON.stringify(it) === JSON.stringify(prev[i]))) {
+            newItems.every((it, i) => it._ratecard_key === prev[i]._ratecard_key && it.zone_name === prev[i].zone_name && it.updated_at === prev[i].updated_at)) {
             console.log('[Sync] setItems skipped — content unchanged')
             return prev
           }
           return newItems
         })
       }
+      setLoading(false)
+      setSaveStatus('saved')
+    }
+  }, [quotation, activeIndex, saving])
 
+  // Effect B: handles eventData sync, depends ONLY on [quotation, saving]
+  useEffect(() => {
+    if (quotation && !saving) {
       setEventData(prev => {
         const next = {
           ...prev,
@@ -204,18 +253,28 @@ export default function Builder() {
           status: quotation.status || prev.status,
         }
 
-        // GUARD 3: Return prev reference if content unchanged
-        if (JSON.stringify(next) === JSON.stringify(prev)) {
+        // GUARD 3: Return prev reference if content unchanged (Shallow Comparison)
+        const isUnchanged = next.title === prev.title &&
+          next.client_name === prev.client_name &&
+          next.event_date === prev.event_date &&
+          next.venue === prev.venue &&
+          next.city === prev.city &&
+          next.signatory === prev.signatory &&
+          next.quot_number === prev.quot_number &&
+          next.discount_type === prev.discount_type &&
+          next.discount_value === prev.discount_value &&
+          next.ppn_rate === prev.ppn_rate &&
+          next.mgmt_fee_rate === prev.mgmt_fee_rate &&
+          next.status === prev.status;
+
+        if (isUnchanged) {
           console.log('[Sync] setEventData skipped — content unchanged')
           return prev
         }
         return next
       })
-
-      setLoading(false)
-      setSaveStatus('saved')
     }
-  }, [quotation, activeIndex, saving])
+  }, [quotation, saving])
 
   useEffect(() => {
     // Check for import success from Dashboard
@@ -229,7 +288,7 @@ export default function Builder() {
   // --- AUTO-SAVE DEBOUNCED ---
   useEffect(() => {
     if (items.length === 0 || loading || saving) return
-    
+
     const timer = setTimeout(() => {
       // Skip autosave if user is actively interacting (typing or dropdown open)
       // editingKeysRef tracks: inline edit cells + open dropdowns
@@ -239,7 +298,7 @@ export default function Builder() {
       }
       console.log('[Sync] Auto-saving changes...')
       handleCommitUpdate(items)
-    }, 1500) // Save after 1.5s of inactivity
+    }, 5000) // BANDWIDTH OPTIMIZATION: Increased from 1500 to 5000ms to reduce write conflicts and quota usage.
 
     return () => clearTimeout(timer)
   }, [items])
@@ -303,7 +362,7 @@ export default function Builder() {
         id: id,
         updates: payload
       })
-      
+
       setSaveStatus('saved')
       console.log('[Sync] Successfully saved to cloud')
       setTimeout(() => setSaveStatus('idle'), 2000)
@@ -313,14 +372,17 @@ export default function Builder() {
     }
   }
 
-  const handleSetItemZone = async (itemKey, zoneName) => {
+  const handleSetItemZone = useCallback(async (itemKey, zoneName) => {
+    console.log('🟡 ZONE CLICK:', { itemKey, zoneName })
     if (!id) return
+    setActiveIndex(null)
     try {
-      await setItemZoneMutation({ id: id, itemKey, zoneName })
+      const result = await setItemZoneMutation({ id: id, itemKey, zoneName })
+      console.log('🟢 MUTATION DONE:', result)
     } catch (err) {
-      console.error('setItemZone failed:', err)
+      console.log('🔴 MUTATION FAILED:', err)
     }
-  }
+  }, [id, setItemZoneMutation])
 
   // --- AUTO-JUMP TO ITEMS IF DATA EXISTS ---
   useEffect(() => {
@@ -386,14 +448,19 @@ export default function Builder() {
   const handleAdd = (ratecardItem) => {
     const key = `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
+    const subName = ratecardItem.sub_category || ''
+    const subCode = subName.split('.')[0]?.charAt(0).toUpperCase()
     const sectionName = ratecardItem.category || 'A. SETUP & SYSTEM'
-    const sectionCode = sectionName.split('.')[0] || 'A'
+    const sectionCode = (subCode && /^[A-Z]$/.test(subCode)) ? subCode : (sectionName.split('.')[0] || 'A')
+    const finalSectionName = (subCode && /^[A-Z]$/.test(subCode) && !sectionName.startsWith(subCode))
+      ? `${subCode}. ${sectionName.split('. ').slice(1).join('. ') || sectionName}`
+      : sectionName
 
     const newItem = {
       _ratecard_key: key,
       item_code: ratecardItem.item_code,
       section_code: sectionCode,
-      section_name: sectionName,
+      section_name: finalSectionName,
       category: ratecardItem.category,
       sub_category: ratecardItem.sub_category || '',
       item_name: ratecardItem.item_name,
@@ -420,12 +487,16 @@ export default function Builder() {
     }
 
     if (id) {
-      logActivityMutation({
-        quotationId: id,
-        userName: userName,
-        type: 'add',
-        description: `added item "${ratecardItem.item_name}"`
-      })
+      // BANDWIDTH OPTIMIZATION: Activity logging is now toggleable via VITE_ACTIVITY_LOGGING env var.
+      // Default is false to prevent quota overflow from high-frequency edits.
+      if (import.meta.env.VITE_ACTIVITY_LOGGING === 'true') {
+        logActivityMutation({
+          quotationId: id,
+          userName: userName,
+          type: 'add',
+          description: `added item "${ratecardItem.item_name}"`
+        })
+      }
     }
   }
 
@@ -453,14 +524,19 @@ export default function Builder() {
           const mCost = rcItem.unit_cost ?? 0
           const mSell = rcItem.unit_sell ?? rcItem.unit_price ?? 0
 
+          const subName = rcItem.sub_category || ''
+          const subCode = subName.split('.')[0]?.charAt(0).toUpperCase()
           const sectionName = rcItem.category || 'A. SETUP & SYSTEM'
-          const sectionCode = sectionName.split('.')[0] || 'A'
+          const sectionCode = (subCode && /^[A-Z]$/.test(subCode)) ? subCode : (sectionName.split('.')[0] || 'A')
+          const finalSectionName = (subCode && /^[A-Z]$/.test(subCode) && !sectionName.startsWith(subCode))
+            ? `${subCode}. ${sectionName.split('. ').slice(1).join('. ') || sectionName}`
+            : sectionName
 
           newItems.push({
             _ratecard_key: key,
             item_code: rcItem.item_code,
             section_code: sectionCode,
-            section_name: sectionName,
+            section_name: finalSectionName,
             category: rcItem.category || 'Standard',
             sub_category: rcItem.sub_category || '',
             item_name: rcItem.item_name,
@@ -570,78 +646,84 @@ export default function Builder() {
     }
   }
 
-  const handleRemove = (key) => {
-    const removedItem = items.find(i => i._ratecard_key === key)
-    const updated = items.filter(i => i._ratecard_key !== key)
-    saveHistory(updated)
-    setItems(updated)
-    if (id) {
-      logActivityMutation({
-        quotationId: id,
-        userName: userName,
-        type: 'delete',
-        description: `removed item "${removedItem?.item_name || 'unknown'}"`
-      })
-    }
-  }
+  const handleRemove = useCallback((key) => {
+    // Add to deleted keys tracking to prevent sync-back
+    deletedKeysRef.current.add(key)
 
-  const handleUpdate = (key, updates) => {
-    // We don't save history on EVERY keystroke here, 
-    // it's handled by the debounced effects or specific save triggers if needed.
-    // However, for single field updates (blur), it's better to save.
-    const updated = items.map(i => i._ratecard_key === key ? { ...i, ...updates } : i)
-    // Note: handleUpdate is often called on every keystroke in InlineText.
-    // For Undo, we might want to only push to history on blur or after delay.
-    // For now, let's just update state.
-    setItems(updated)
-  }
+    setItems(prev => {
+      const removedItem = prev.find(i => i._ratecard_key === key)
+      const updated = prev.filter(i => i._ratecard_key !== key)
+      saveHistory(updated)
+
+      // Trigger immediate save to Convex instead of waiting for 5s debounce
+      handleCommitUpdate(updated)
+
+      if (id) {
+        if (import.meta.env.VITE_ACTIVITY_LOGGING === 'true') {
+          logActivityMutation({
+            quotationId: id,
+            userName: userName,
+            type: 'delete',
+            description: `removed item "${removedItem?.item_name || 'unknown'}"`
+          })
+        }
+      }
+      return updated
+    })
+  }, [id, userName, saveHistory, logActivityMutation, handleCommitUpdate])
+
+  const handleUpdate = useCallback((key, updates) => {
+    setItems(prev => prev.map(i => i._ratecard_key === key ? { ...i, ...updates } : i))
+  }, [])
 
 
 
-  const handleAddCustomItem = (sectionCode = 'A', prefillName = '', insertAfterIdx = null, prefillCategory = 'custom', prefillSubCategory = '') => {
+  const handleAddCustomItem = useCallback((sectionCode = 'A', prefillName = '', insertAfterIdx = null, prefillCategory = 'custom', prefillSubCategory = '') => {
     const key = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    const newItem = {
-      _ratecard_key: key,
-      section_code: sectionCode,
-      section_name: items.find(i => i.section_code === sectionCode)?.section_name || sectionCode,
-      category: prefillCategory,
-      sub_category: prefillSubCategory,
-      item_name: prefillName,
-      spec: '',
-      qty: 1, qty_unit: 'unit',
-      freq: 1, freq_unit: 'event',
-      unit_cost: null, unit_sell: null,
-      is_complimentary: false, children: [],
-      sort_order: insertAfterIdx ?? items.length,
-    }
-    if (insertAfterIdx !== null) {
-      setItems(prev => {
+    setItems(prev => {
+      const newItem = {
+        _ratecard_key: key,
+        section_code: sectionCode,
+        section_name: prev.find(i => i.section_code === sectionCode)?.section_name || sectionCode,
+        category: prefillCategory,
+        sub_category: prefillSubCategory,
+        item_name: prefillName,
+        spec: '',
+        qty: 1, qty_unit: 'unit',
+        freq: 1, freq_unit: 'event',
+        unit_cost: null, unit_sell: null,
+        is_complimentary: false, children: [],
+        sort_order: insertAfterIdx ?? prev.length,
+      }
+      if (insertAfterIdx !== null) {
         const next = [...prev]
         next.splice(insertAfterIdx, 0, newItem)
         return next
-      })
-    } else {
-      setItems(prev => [...prev, newItem])
-    }
-  }
+      } else {
+        return [...prev, newItem]
+      }
+    })
+  }, [])
 
-  const handleDuplicate = (item) => {
-    const key = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    const idx = items.findIndex(i => i._ratecard_key === item._ratecard_key)
-    const copy = { ...item, _ratecard_key: key, sort_order: idx + 1 }
-    const next = [...items]
-    next.splice(idx + 1, 0, copy)
-    saveHistory(next)
-    setItems(next)
-  }
+  const handleDuplicate = useCallback((item) => {
+    setItems(prev => {
+      const key = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+      const idx = prev.findIndex(i => i._ratecard_key === item._ratecard_key)
+      const copy = { ...item, _ratecard_key: key, sort_order: idx + 1 }
+      const next = [...prev]
+      next.splice(idx + 1, 0, copy)
+      saveHistory(next)
+      return next
+    })
+  }, [saveHistory])
 
-  const handleReorder = (reorderedItems) => setItems(reorderedItems)
+  const handleReorder = useCallback((reorderedItems) => setItems(reorderedItems), [])
 
-  const handleRenameSection = (sectionCode, newName) => {
+  const handleRenameSection = useCallback((sectionCode, newName) => {
     setItems(prev => prev.map(i =>
       i.section_code === sectionCode ? { ...i, section_name: newName } : i
     ))
-  }
+  }, [])
 
   const handleSaveRevision = async () => {
     if (!id || !quotation) return;
@@ -938,6 +1020,18 @@ export default function Builder() {
     }
   }
 
+  const remoteCursors = useMemo(() => activeUsers.reduce((acc, u) => {
+    if (u.selection) {
+      const [rowId, colId] = u.selection.split(':')
+      acc[u._id] = {
+        userName: u.user_name,
+        userColor: u.user_name === 'Rama' ? '#ff0055' : '#0070f3',
+        rowId, colId
+      }
+    }
+    return acc
+  }, {}), [activeUsers])
+
   if (loading) return (
     <div className="empty-state" style={{ marginTop: 80 }}>
       <div style={{ width: 40, height: 40, border: '2px solid var(--border)', borderTopColor: 'var(--text)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
@@ -954,22 +1048,12 @@ export default function Builder() {
   })
 
   return (
-    <main style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
+    <main style={{
+      minHeight: '100vh',
+      display: 'flex',
       flexDirection: 'column',
-      paddingLeft: (id && quotation) ? 280 : 0,
-      transition: 'padding-left 0.2s ease'
+      transition: 'all 0.2s ease'
     }} className="fade-in">
-      {id && quotation && (
-        <ZoneManager
-          quotationId={id}
-          zones={quotation?.zones || []}
-          items={items}
-          activeZoneName={activeZoneName}
-          onActiveZoneChange={setActiveZoneName}
-        />
-      )}
       {/* EMERGENCY CLEANUP BANNER */}
       {(items || []).some(i => (i.section_name || '').toLowerCase().includes('misc') || (i.category || '').toLowerCase().includes('misc')) && (
         <div style={{
@@ -1017,87 +1101,77 @@ export default function Builder() {
         </div>
       )}
       {/* ── BUILDER HEADER ── */}
+      {/* ── BUILDER HEADER ── */}
       <header style={{
-        padding: '32px 0 0 0',
+        padding: '16px 32px',
         borderBottom: '1px solid var(--border)',
         background: 'var(--bg)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        <div className="page-fluid" style={{ padding: '0 32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <button
-                  onClick={() => navigate('/')}
-                  className="btn-ghost"
-                  style={{ padding: '0 8px 0 0', display: 'flex', alignItems: 'center', color: 'var(--text-3)', fontSize: 13 }}
-                >
-                  ← Back
-                </button>
-                <span className="badge" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  {id ? 'Project Editor' : 'New Project'}
-                </span>
-                
-                {/* Presence List */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
-                  <div style={{ 
-                    width: 24, height: 24, borderRadius: '50%', background: 'var(--accent)', 
-                    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                    fontSize: 10, fontWeight: 700, border: '2px solid var(--bg)'
-                  }} title={`You (${userName})`}>
-                    {userName[0]?.toUpperCase()}
-                  </div>
-                  {activeUsers.map(u => (
-                    <div 
-                      key={u._id} 
-                      onClick={() => {
-                        if (u.selection) {
-                          const [rowKey] = u.selection.split(':')
-                          const el = document.querySelector(`[data-row-key="${rowKey}"]`)
-                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                        }
-                      }}
-                      style={{ 
-                        width: 24, height: 24, borderRadius: '50%', background: 'var(--surface)', 
-                        color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                        fontSize: 10, fontWeight: 700, border: '2px solid var(--vercel-green)',
-                        cursor: 'pointer'
-                      }} 
-                      title={`Click to Follow ${u.user_name}`}
-                    >
-                      {u.user_name[0]?.toUpperCase()}
-                    </div>
-                  ))}
-                  {activeUsers.length > 0 && (
-                    <span style={{ fontSize: 9, color: 'var(--vercel-green)', fontWeight: 700, marginLeft: 4 }}>
-                      • LIVE
-                    </span>
-                  )}
-                </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 10px', borderRadius: 6, transition: 'all 0.15s',
+              fontSize: 12, fontWeight: 600, marginLeft: -10
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--surface-2)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-3)'; e.currentTarget.style.background = 'transparent' }}
+          >
+            <span style={{ fontSize: 16, lineHeight: 1 }}>←</span> Back
+          </button>
 
-                <span style={{ fontSize: 13, color: 'var(--text-3)', marginLeft: 8 }}>—</span>
-                <span style={{ fontSize: 13, color: 'var(--text-3)' }}>{eventData.quot_number || 'REF-PENDING'}</span>
-                <span className="badge badge-success" style={{ marginLeft: 12, fontSize: 9, background: 'rgba(0, 112, 243, 0.1)', color: 'var(--vercel-blue)', border: '1px solid rgba(0, 112, 243, 0.2)' }}>
-                  V2.4 COLLABORATIVE
-                </span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 2 }}>
+              <h1 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+                {eventData.title || 'Untitled Quotation'}
+              </h1>
+              <span className="badge" style={{ fontSize: 9, opacity: 0.6 }}>
+                {eventData.quot_number || 'REF-PENDING'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-3)' }}>
+              <span>{eventData.client_name || 'No Client'}</span>
+              <span>•</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10 }}>ID: {id?.slice(-6)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <div style={{ minWidth: 320 }}>
+            <StepBar steps={STEPS} current={step} />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderLeft: '1px solid var(--border)', paddingLeft: 20 }}>
+            <div style={{ display: 'flex' }}>
+              <div style={{
+                width: 24, height: 24, borderRadius: '50%', background: 'var(--accent)',
+                color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, fontWeight: 700, border: '2px solid var(--bg)'
+              }} title={`You (${userName})`}>
+                {userName[0]?.toUpperCase()}
               </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.03em' }}>
-                    {eventData.title || 'Untitled Quotation'}
-                  </h1>
-                  <span style={{ 
-                    fontSize: 10, background: 'var(--bg-2)', padding: '2px 8px', 
-                    borderRadius: 4, color: 'var(--text-3)', fontFamily: 'var(--font-mono)' 
-                  }}>
-                    ID: {id?.slice(-6)}
-                  </span>
+              {activeUsers.map(u => (
+                <div
+                  key={u._id}
+                  style={{
+                    width: 24, height: 24, borderRadius: '50%', background: 'var(--surface)',
+                    color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 10, fontWeight: 700, border: '2px solid var(--vercel-green)',
+                    marginLeft: -8
+                  }}
+                  title={u.user_name}
+                >
+                  {u.user_name[0]?.toUpperCase()}
                 </div>
-              <p className="text-muted text-sm">
-                {eventData.client_name ? `Client: ${eventData.client_name}` : 'Configure event details and line items'}
-              </p>
+              ))}
             </div>
-            <div style={{ minWidth: 460 }}>
-              <StepBar steps={STEPS} current={step} />
-            </div>
+            {activeUsers.length > 0 && <span style={{ fontSize: 9, color: 'var(--vercel-green)', fontWeight: 800 }}>LIVE</span>}
           </div>
         </div>
       </header>
@@ -1146,119 +1220,103 @@ export default function Builder() {
         {step === 1 && (
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
 
-            {/* Vercel-style Metrics Bar */}
+            {/* Optimized Metrics & Actions Bar */}
             <div style={{
               background: 'var(--bg)', borderBottom: '1px solid var(--border)',
               position: 'sticky', top: 0, zIndex: 10
             }}>
-              <div className="page-fluid" style={{ display: 'flex', gap: 24, padding: '12px 32px', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 1 }}>Grand Total</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
-                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.grandTotal)}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 1 }}>Modal (HPP)</span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)', fontFamily: 'var(--font-mono)' }}>
-                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.totalHPP)}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 1 }}>Net Profit</span>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--vercel-green)', fontFamily: 'var(--font-mono)' }}>
-                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.netProfit || 0)}
-                    </span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--vercel-green)', opacity: 0.8 }}>
-                      {Math.round(summary.netMarginPct || 0)}%
+              <div className="page-fluid" style={{ display: 'flex', padding: '16px 32px', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Grand Total</span>
+                    <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)', fontFamily: 'var(--font-mono)', letterSpacing: '-0.02em' }}>
+                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.grandTotal)}
                     </span>
                   </div>
-                </div>
-
-                {/* Collaboration Avatars (Disabled for now) */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div className="badge badge-surface" style={{ padding: '6px 12px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)' }} />
-                    <span>Real-time Sync Active</span>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Modal (HPP)</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)', fontFamily: 'var(--font-mono)' }}>
+                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.totalHPP)}
+                    </span>
                   </div>
-                </div>
-
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
-                  <div style={{ 
-                    display: 'flex', alignItems: 'center', gap: 6, 
-                    padding: '4px 10px', borderRadius: 6,
-                    background: 'var(--bg-2)', border: '1px solid var(--border)',
-                    opacity: saveStatus === 'idle' ? 0.3 : 1,
-                    transition: 'opacity 0.3s ease'
-                  }}>
-                    {saveStatus === 'saving' ? (
-                      <div className="saving-spinner" style={{ width: 10, height: 10, borderWeight: 1.5 }} />
-                    ) : (
-                      <span style={{ fontSize: 12, color: saveStatus === 'saved' ? 'var(--vercel-green)' : 'var(--text-3)' }}>
-                        ☁️
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Profitability</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--vercel-green)', fontFamily: 'var(--font-mono)' }}>
+                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(summary.netProfit || 0)}
                       </span>
-                    )}
-                    <span style={{ fontSize: 9, fontWeight: 500, color: 'var(--text-3)', letterSpacing: '0.02em' }}>
-                      {saveStatus === 'saving' ? 'SYNCING' : 'SYNCED'}
-                    </span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 800,
+                        color: 'white', background: 'var(--vercel-green)',
+                        padding: '1px 6px', borderRadius: 4
+                      }}>
+                        {Math.round(summary.netMarginPct || 0)}%
+                      </span>
+                    </div>
                   </div>
+                </div>
 
-                  <div style={{ display: 'flex', gap: 2, marginRight: 8, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
-                    <button className="btn-ghost" onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)" style={{ opacity: history.length === 0 ? 0.3 : 1, padding: '4px' }}>↩️</button>
-                    <button className="btn-ghost" onClick={redo} disabled={redoStack.length === 0} title="Redo (Ctrl+Y)" style={{ opacity: redoStack.length === 0 ? 0.3 : 1, padding: '4px' }}>↪️</button>
-                    <button className="btn-ghost" onClick={() => {
-                      setShowHistory(true)
-                    }} title="Version History" style={{ padding: '4px' }}>🕒</button>
-                    <button className="btn-ghost" onClick={() => {
-                      setShowActivities(!showActivities)
-                    }} title="Activity Log" style={{ padding: '4px', filter: showActivities ? 'drop-shadow(0 0 2px var(--vercel-green))' : 'none' }}>📜</button>
-                  </div>
-
-                  <button
-                    className={`btn btn-sm ${sidebarOpen ? 'btn-surface' : 'btn-primary'}`}
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    style={{ fontSize: 11, padding: '4px 10px' }}
-                  >
-                    {sidebarOpen ? 'Hide DB' : '📁 DB'}
-                  </button>
-
-                  <button
-                    className="btn btn-sm btn-surface"
-                    onClick={() => handleSave('draft')}
-                    disabled={saving}
-                    style={{ fontSize: 11, padding: '4px 10px', color: 'var(--vercel-blue)', fontWeight: 700 }}
-                  >
-                    {saving ? 'Saving...' : '💾 Save'}
-                  </button>
-
-                  <button
-                    className="btn btn-sm btn-surface"
-                    onClick={() => setShowPreview(true)}
-                    style={{ fontSize: 11, padding: '4px 10px' }}
-                  >
-                    👁️ Preview
-                  </button>
-
-                  <div style={{ display: 'flex', gap: 4, borderLeft: '1px solid var(--border)', paddingLeft: 12 }}>
-                    <button className="btn btn-sm btn-surface" onClick={handleExportExcel} style={{ fontSize: 11, padding: '4px 10px' }}>
-                      📥 Exp
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ display: 'flex', background: 'var(--surface)', padding: 2, borderRadius: 6, border: '1px solid var(--border)' }}>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={undo}
+                      disabled={history.length === 0}
+                      style={{ fontSize: 11, fontWeight: 700 }}>
+                      Undo
                     </button>
-                    <button className="btn btn-sm btn-surface" onClick={() => fileInputRef.current?.click()} style={{ fontSize: 11, padding: '4px 10px' }}>
-                      📤 Imp
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={redo}
+                      disabled={redoStack.length === 0}
+                      style={{ fontSize: 11, fontWeight: 700 }}>
+                      Redo
                     </button>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      style={{ display: 'none' }}
-                      accept=".xlsx, .xls, .csv, .pdf"
-                      onChange={handleImportExcel}
-                    />
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => setShowHistory(true)}
+                      style={{ fontSize: 11, fontWeight: 700 }}>
+                      History
+                    </button>
                   </div>
 
-                  <button className="btn btn-sm btn-primary" onClick={() => setStep(2)} style={{ fontSize: 11, padding: '4px 12px', marginLeft: 8 }}>
-                    Invoice →
-                  </button>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => setStep(0)}
+                      className="btn btn-surface btn-sm"
+                      style={{ fontSize: 11, fontWeight: 700 }}
+                      title="Back to Project Details"
+                    >
+                      ← Details
+                    </button>
+                    <button
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                      className="btn btn-surface btn-sm"
+                      style={{
+                        fontSize: 11, fontWeight: 700,
+                        background: sidebarOpen ? 'var(--surface-2)' : 'var(--surface)',
+                        color: sidebarOpen ? 'var(--accent)' : 'var(--text-2)'
+                      }}
+                    >
+                      {sidebarOpen ? 'Hide Database' : 'Show Database'}
+                    </button>
+                    <button
+                      onClick={() => setShowPreview(true)}
+                      className="btn btn-surface btn-sm"
+                      style={{ fontSize: 11, fontWeight: 700 }}>
+                      Preview
+                    </button>
+                    <button className="btn btn-surface btn-sm" onClick={handleExportExcel} style={{ fontSize: 11, fontWeight: 700 }}>
+                      Export
+                    </button>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleSave('draft')}
+                      disabled={saving}
+                      style={{ fontSize: 11, fontWeight: 700 }}>
+                      {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1268,7 +1326,7 @@ export default function Builder() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative', padding: '0 32px 32px 32px' }}
+              style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative', padding: '0 24px 24px 24px', gap: 16 }}
             >
               {isDraggingFile && (
                 <div style={{
@@ -1279,24 +1337,20 @@ export default function Builder() {
                   backdropFilter: 'blur(4px)', pointerEvents: 'none'
                 }}>
                   <div style={{ background: 'var(--bg)', padding: '24px 48px', borderRadius: 12, boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}>
-                    <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
                     <div style={{ fontSize: 18, fontWeight: 700 }}>Drop Excel file to Import</div>
                     <div style={{ fontSize: 13, color: 'var(--text-3)', marginTop: 8 }}>Supports Flat & Hierarchical formats</div>
                   </div>
                 </div>
               )}
 
-              {/* Left Sidebar (Database & Config) */}
+              {/* ── LEFT SIDEBAR (CONSOLIDATED) ── */}
               {sidebarOpen && (
                 <div style={{
-                  width: 320,
-                  borderRight: '1px solid var(--border)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  background: 'var(--bg-2)',
-                  flexShrink: 0
+                  width: 320, background: 'var(--bg)', borderRight: '1px solid var(--border)',
+                  display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden'
                 }}>
-                  <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
+                  {/* Tabs: DATABASE | CONFIG */}
+                  <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg)', position: 'sticky', top: 0, zIndex: 10 }}>
                     <button
                       onClick={() => setLeftSidebarTab('DB')}
                       style={{
@@ -1321,11 +1375,26 @@ export default function Builder() {
                     </button>
                   </div>
 
-                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: '16px' }}>
                     {leftSidebarTab === 'DB' ? (
-                      <RatecardBrowser selectedItems={items} onAdd={handleAdd} onAddBundle={handleAddBundle} />
+                      <RatecardBrowser
+                        selectedItems={items}
+                        onAdd={handleAdd}
+                        onAddBundle={handleAddBundle}
+                        zoneManagerContent={
+                          <ZoneManager
+                            quotationId={id}
+                            zones={quotation?.zones || []}
+                            items={items}
+                            activeZoneName={activeZoneName}
+                            onActiveZoneChange={setActiveZoneName}
+                            isOpen={true} // Always open within the sidebar
+                            onToggle={() => { }} // No-op as it's embedded
+                          />
+                        }
+                      />
                     ) : (
-                      <div style={{ padding: '24px' }}>
+                      <div style={{ padding: '8px' }}>
                         {/* Financial Config */}
                         <div style={{ marginBottom: 32 }}>
                           <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', marginBottom: 16 }}>Financial Config</h3>
@@ -1401,40 +1470,74 @@ export default function Builder() {
                 </div>
               )}
 
-              <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <QuotationCart
-                  items={items}
-                  zones={quotation?.zones || []}
-                  onSetItemZone={handleSetItemZone}
-                  activeIndex={activeIndex}
-                  onSetActive={setActiveIndex}
-                  onUpdate={handleUpdate}
-                  onCommit={() => handleCommitUpdate(items)}
-                  onRemove={handleRemove}
-                  onDuplicate={handleDuplicate}
-                  onAddCustom={handleAddCustomItem}
-                  onReorder={handleReorder}
-                  onRenameSection={handleRenameSection}
-                  onEditingKey={setEditingKey}
-                  remoteCursors={activeUsers.reduce((acc, u) => {
-                    if (u.selection) {
-                      const [rowId, colId] = u.selection.split(':')
-                      acc[u._id] = { 
-                        userName: u.user_name, 
-                        userColor: u.user_name === 'Rama' ? '#ff0055' : '#0070f3',
-                        rowId, colId 
-                      }
-                    }
-                    return acc
-                  }, {})}
-                  onFocusCell={(rowId, colId) => setSelection(`${rowId}:${colId}`)}
-                  comments={comments}
-                  onComment={(key) => setCommentTarget(key)}
-                />
+              {/* ── RIGHT CONTENT AREA ── */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                {/* ── VIEW MODE TAB TOGGLE ── */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 0,
+                  borderBottom: '1px solid var(--border)',
+                  background: 'var(--surface)', padding: '0 16px',
+                  flexShrink: 0
+                }}>
+                  {[['pro', 'Pro View'], ['simple', 'Simple View']].map(([mode, label]) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode)}
+                      className="view-tab"
+                      style={{
+                        padding: '12px 20px', fontSize: 11, fontWeight: 700,
+                        color: viewMode === mode ? 'var(--text)' : 'var(--text-3)',
+                        background: 'transparent', border: 'none',
+                        borderBottom: viewMode === mode ? '2px solid var(--text)' : '2px solid transparent',
+                        cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase',
+                        transition: 'all 0.2s ease',
+                        opacity: viewMode === mode ? 1 : 0.7
+                      }}
+                      onMouseEnter={e => { if (viewMode !== mode) e.currentTarget.style.opacity = 1 }}
+                      onMouseLeave={e => { if (viewMode !== mode) e.currentTarget.style.opacity = 0.7 }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                  {viewMode === 'pro' ? (
+                    <QuotationCart
+                      items={items}
+                      zones={quotation?.zones || []}
+                      onSetItemZone={handleSetItemZone}
+                      activeIndex={activeIndex}
+                      onSetActive={setActiveIndex}
+                      onUpdate={handleUpdate}
+                      onCommit={() => handleCommitUpdate(items)}
+                      onRemove={handleRemove}
+                      onDuplicate={handleDuplicate}
+                      onAddCustom={handleAddCustomItem}
+                      onReorder={handleReorder}
+                      onRenameSection={handleRenameSection}
+                      onEditingKey={setEditingKey}
+                      remoteCursors={remoteCursors}
+                      onFocusCell={(rowId, colId) => setSelection(`${rowId}:${colId}`)}
+                      comments={comments}
+                      onComment={(key) => setCommentTarget(key)}
+                    />
+                  ) : (
+                    <SimpleTableView
+                      items={items}
+                      onUpdate={(key, updates) => handleUpdate(key, updates)}
+                      onRemove={handleRemove}
+                      onDuplicate={handleDuplicate}
+                      onAddCustom={handleAddCustomItem}
+                      onRenameSection={handleRenameSection}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
         )}
+
 
         {/* COMMENT SIDEBAR */}
         {commentTarget && (
@@ -1496,7 +1599,7 @@ export default function Builder() {
           <div className="page-fluid" style={{ display: 'flex', justifyContent: 'space-between' }}>
             <button className="btn btn-ghost" onClick={() => setStep(0)}>← Event Details</button>
             <div style={{ display: 'flex', gap: 12 }}>
-              <button className="btn btn-ghost" onClick={handleSaveRevision} disabled={saving}>💾 Create Revision</button>
+              <button className="btn btn-ghost" onClick={handleSaveRevision} disabled={saving}>Create Revision</button>
             </div>
           </div>
         </div>
@@ -1525,7 +1628,7 @@ export default function Builder() {
           onClick={() => confirmState.onCancel()}>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 20, padding: 40, maxWidth: 480, width: '100%', textAlign: 'center', boxShadow: '0 32px 100px rgba(0,0,0,0.6)' }}
             onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 48, marginBottom: 24 }}>⚠️</div>
+            <div style={{ height: 48 }} />
             <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16, letterSpacing: '-0.02em' }}>{confirmState.title}</h2>
             <p style={{ color: 'var(--text-2)', marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>{confirmState.message}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1556,7 +1659,7 @@ export default function Builder() {
           onClick={() => setSuccessMsg(null)}>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 32, maxWidth: 400, width: '100%', textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,0.4)' }}
             onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
+            <div style={{ height: 48 }} />
             <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>Success!</h2>
             <p style={{ color: 'var(--text-2)', marginBottom: 24 }}>{successMsg}</p>
             <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={() => setSuccessMsg(null)}>OK, Continue</button>
@@ -1566,21 +1669,71 @@ export default function Builder() {
 
       {/* Live Preview Modal */}
       {showPreview && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)',
-          backdropFilter: 'blur(8px)', zIndex: 1100,
-          display: 'flex', flexDirection: 'column'
-        }}>
-          <header style={{
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1200, display: 'flex', flexDirection: 'column' }}>
+          <header className="no-print" style={{
             height: 64, borderBottom: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '0 24px', background: 'var(--bg)'
+            padding: '0 24px', background: 'var(--surface)', position: 'sticky', top: 0, zIndex: 10
           }}>
-            <h2 style={{ fontSize: 16, fontWeight: 700 }}>Live Print Preview</h2>
-            <button className="btn btn-surface" onClick={() => setShowPreview(false)}>Close Preview</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Live Preview</h2>
+
+              <div style={{ display: 'flex', background: 'var(--bg)', padding: '2px', borderRadius: 6, border: '1px solid var(--border)' }}>
+                <button
+                  onClick={() => setPrevSummary(!prevSummary)}
+                  className={`btn btn-sm ${prevSummary ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ fontSize: 10, padding: '4px 10px', height: 24 }}>
+                  {prevSummary ? '✓ Summary' : 'No Summary'}
+                </button>
+                <button
+                  onClick={() => setPrevCombined(!prevCombined)}
+                  className={`btn btn-sm ${prevCombined ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ fontSize: 10, padding: '4px 10px', height: 24, marginLeft: 2 }}>
+                  {prevCombined ? 'Combined' : 'Sections'}
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', background: 'var(--bg)', padding: '2px', borderRadius: 6, border: '1px solid var(--border)' }}>
+                <button
+                  onClick={() => setPrevLayout('existing')}
+                  className={`btn btn-sm ${prevLayout === 'existing' ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ fontSize: 10, padding: '4px 10px', height: 24 }}>
+                  Standard
+                </button>
+                <button
+                  onClick={() => setPrevLayout('hybrid')}
+                  className={`btn btn-sm ${prevLayout === 'hybrid' ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ fontSize: 10, padding: '4px 10px', height: 24, marginLeft: 2 }}>
+                  Hybrid
+                </button>
+                <button
+                  onClick={() => setPrevLayout('pure_zone')}
+                  className={`btn btn-sm ${prevLayout === 'pure_zone' ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ fontSize: 10, padding: '4px 10px', height: 24, marginLeft: 2 }}>
+                  By Zone
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button className="btn btn-surface btn-sm" onClick={() => exportQuotationToXls({ ...eventData, items }, prevLayout)} style={{ fontSize: 11 }}>
+                Export XLS
+              </button>
+              <button className="btn btn-primary btn-sm" onClick={() => window.print()} style={{ fontSize: 11 }}>
+                Print PDF
+              </button>
+              <div style={{ width: 1, height: 24, background: 'var(--border)', margin: '0 4px' }} />
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowPreview(false)}>Close</button>
+            </div>
           </header>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '40px 0' }}>
-            <PrintDocument quotation={{ ...eventData, quotation_items: items }} combinedMode={true} showSummary={true} />
+
+          <div style={{ flex: 1, overflowY: 'auto', background: '#ddd' }}>
+            <PrintDocument
+              quotation={{ ...eventData, quotation_items: items }}
+              showSummary={prevSummary}
+              combinedMode={prevCombined}
+              layoutMode={prevLayout}
+            />
           </div>
         </div>
       )}
@@ -1593,7 +1746,7 @@ export default function Builder() {
                 <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>Activity & Versions</h2>
                 <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>Audit log of all changes to this quotation</p>
               </div>
-              <button onClick={() => setShowHistory(false)} className="btn btn-ghost" style={{ fontSize: 20 }}>✕</button>
+              <button onClick={() => setShowHistory(false)} className="btn btn-ghost" style={{ fontSize: 16 }}>X</button>
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '32px', position: 'relative' }}>
@@ -1614,7 +1767,7 @@ export default function Builder() {
                       fontSize: 10, fontWeight: 900, border: '4px solid var(--bg)',
                       flexShrink: 0, boxShadow: '0 0 0 1px var(--border)'
                     }}>
-                      {idx === 0 ? '✨' : (log.changed_by?.charAt(0) || 'U')}
+                      {idx === 0 ? 'L' : (log.changed_by?.charAt(0) || 'U')}
                     </div>
 
                     <div style={{ flex: 1 }}>
@@ -1691,13 +1844,12 @@ function CommentSidebar({ rowKey, itemName, comments, currentUser, onAdd, onClos
           <h4 style={{ fontSize: 13, fontWeight: 700 }}>Item Comments</h4>
           <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 4 }}>{itemName}</p>
         </div>
-        <button onClick={onClose} className="btn btn-ghost" style={{ padding: 4 }}>✕</button>
+        <button onClick={onClose} className="btn btn-ghost" style={{ padding: 4 }}>X</button>
       </div>
 
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {comments.length === 0 && (
           <div style={{ textAlign: 'center', marginTop: 40, opacity: 0.3 }}>
-            <div style={{ fontSize: 32 }}>💬</div>
             <p style={{ fontSize: 11 }}>No comments yet</p>
           </div>
         )}

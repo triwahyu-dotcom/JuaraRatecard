@@ -231,16 +231,16 @@ export const setItemZone = mutation({
       return { updated: 0 };
     }
     
+    const now = new Date().toISOString();
     let updatedCount = 0;
     const newItems = quotation.items.map((item: any) => {
       if (item._ratecard_key === itemKey) {
         updatedCount++;
-        return { ...item, zone_name: zoneName };
+        return { ...item, zone_name: zoneName, updated_at: now };
       }
       return item;
     });
     
-    const now = new Date().toISOString();
     await ctx.db.patch(id, {
       items: newItems,
       updated_at: now,

@@ -2,6 +2,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState } from 'react'
+import { useTheme } from '../hooks/useTheme.jsx'
+
 
 const NAV_LINKS = [
   { to: '/ratecard', label: 'Ratecard' },
@@ -13,6 +15,7 @@ export default function Header() {
   const navigate = useNavigate()
   const createQuotation = useMutation(api.quotations.create)
   const [isCreating, setIsCreating] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   const isBuilder = pathname.startsWith('/new') || pathname.startsWith('/edit')
   const isPreview = pathname.startsWith('/preview')
@@ -38,10 +41,11 @@ export default function Header() {
 
   return (
     <header style={{
-      background: 'rgba(0,0,0,0.8)',
+      background: 'var(--surface)',
       borderBottom: '1px solid var(--border)',
       position: 'sticky', top: 0, zIndex: 100,
       backdropFilter: 'saturate(180%) blur(20px)',
+      opacity: 0.98
     }}>
       <div className={isBuilder ? "page-fluid" : "page-wrap"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
 
@@ -110,6 +114,39 @@ export default function Header() {
 
         {/* Right Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to Light mode' : 'Switch to Dark mode'}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '5px 10px', borderRadius: 6, cursor: 'pointer',
+              fontSize: 11, fontWeight: 600, letterSpacing: 0.3,
+              background: 'var(--surface)', color: 'var(--text-2)',
+              border: '1px solid var(--border)',
+              transition: 'all 0.15s'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'var(--border-2)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-2)'; e.currentTarget.style.borderColor = 'var(--border)' }}
+          >
+            {theme === 'dark' ? (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <circle cx="12" cy="12" r="4"/>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
+                Light
+              </>
+            ) : (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+                Dark
+              </>
+            )}
+          </button>
+
           {(isBuilder || isPreview) && (
             <Link to="/" className="btn btn-ghost btn-sm" style={{ border: 'none' }}>Back</Link>
           )}

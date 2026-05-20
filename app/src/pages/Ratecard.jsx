@@ -6,25 +6,27 @@ import { ITEM_BUNDLES } from '../data/bundles'
 
 // Utility to generate consistent pastel colors for random section codes
 // Utility to generate vibrant, readable colors for dark mode (HSL 70-85% Lightness)
-function getColorForSection(str) {
-  if (!str) return '#888888';
+function getColorForSection(str, alpha = 1) {
+  if (!str) return `hsla(0, 0%, 50%, ${alpha})`;
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  // Hue 0-360, Saturation 70%, Lightness 75%
+  // Hue 0-360, Saturation 70%, Lightness comes from CSS variable
   const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 75%, 75%)`;
+  return `hsla(${hue}, 75%, var(--section-lightness), ${alpha})`;
 }
 
 function SectionBadge({ code }) {
   const color = getColorForSection(code?.charAt(0));
+  const bgColor = getColorForSection(code?.charAt(0), 0.15);
+  const borderColor = getColorForSection(code?.charAt(0), 0.3);
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       minWidth: 22, height: 22, padding: '0 6px', borderRadius: 6, fontSize: 11, fontWeight: 800,
-      background: color + '22', color: color,
-      border: `1px solid ${color}44`,
+      background: bgColor, color: color,
+      border: `1px solid ${borderColor}`,
     }}>{code || '?'}</span>
   )
 }
@@ -380,13 +382,13 @@ export default function Ratecard() {
             <p className="text-muted text-sm">Kelola harga dan item layanan PT Juara dengan antarmuka Grid Spreadsheet</p>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button className="btn btn-primary btn-sm" onClick={() => document.getElementById('excel-import').click()}>⬆ Import Excel</button>
+            <button className="btn btn-primary btn-sm" onClick={() => document.getElementById('excel-import').click()}>Import Excel</button>
             <input type="file" id="excel-import" hidden accept=".xlsx, .xls" onChange={handleImportExcel} />
             
-            <button className="btn btn-surface btn-sm" onClick={handleExportExcel}>⬇ Export Excel</button>
-            <button className="btn btn-surface btn-sm" onClick={handleExportBundles}>📦 Export Paket</button>
-            <button className="btn btn-ghost btn-sm" onClick={handleExport}>⬇ Export JSON</button>
-            <button className="btn btn-ghost btn-sm" onClick={handleReset} style={{ color: 'var(--text-3)' }}>🔄 Reset Data Default</button>
+            <button className="btn btn-surface btn-sm" onClick={handleExportExcel}>Export Excel</button>
+            <button className="btn btn-surface btn-sm" onClick={handleExportBundles}>Export Paket</button>
+            <button className="btn btn-ghost btn-sm" onClick={handleExport}>Export JSON</button>
+            <button className="btn btn-ghost btn-sm" onClick={handleReset} style={{ color: 'var(--text-3)' }}>Reset Data Default</button>
           </div>
         </div>
       </header>
@@ -535,7 +537,7 @@ function SectionHeaderRow({ sec, secData, onRename }) {
   }
 
   return (
-    <tr style={{ background: getColorForSection(sec?.charAt(0)) + '08', borderTop: '2px solid var(--border)' }}>
+    <tr style={{ background: getColorForSection(sec?.charAt(0), 0.05), borderTop: '2px solid var(--border)' }}>
       <td style={{ padding: '10px 14px', width: 60 }}>
         <input 
           value={localCode} 
@@ -642,8 +644,8 @@ function ItemRow({ item, onUpdate, onDelete, onDuplicate, colWidths }) {
       </td>
       <td style={{ padding: '8px 14px', width: colWidths.actions }}>
         <div style={{ display: 'flex', gap: 4 }}>
-          <button className="btn btn-ghost btn-sm" onClick={onDuplicate} title="Duplicate Item" style={{ padding: '4px 6px', fontSize: 14 }}>⧉</button>
-          <button className="btn btn-danger btn-sm" onClick={onDelete} title="Delete Item" style={{ padding: '4px 8px', fontSize: 12 }}>🗑</button>
+          <button className="btn btn-ghost btn-sm" onClick={onDuplicate} title="Duplicate Item" style={{ padding: '4px 6px', fontSize: 14 }}>D</button>
+          <button className="btn btn-danger btn-sm" onClick={onDelete} title="Delete Item" style={{ padding: '4px 8px', fontSize: 12 }}>X</button>
         </div>
       </td>
     </tr>

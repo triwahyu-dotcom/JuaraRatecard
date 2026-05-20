@@ -20,13 +20,7 @@ export default function ActivitySidebar({ activities, onClose }) {
   }
 
   const getTypeIcon = (type) => {
-    switch (type) {
-      case 'add': return '➕';
-      case 'delete': return '🗑️';
-      case 'edit': return '📝';
-      case 'status': return '🚀';
-      default: return '🔔';
-    }
+    return null; // No icon, just text color
   }
 
   return (
@@ -47,7 +41,6 @@ export default function ActivitySidebar({ activities, onClose }) {
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
         {activities.length === 0 && (
           <div style={{ textAlign: 'center', marginTop: 40, opacity: 0.3 }}>
-            <div style={{ fontSize: 32 }}>📜</div>
             <p style={{ fontSize: 11 }}>No activities yet</p>
           </div>
         )}
